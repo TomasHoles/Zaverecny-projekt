@@ -1,7 +1,3 @@
-Níže je návrh **README.md** souboru pro GitHub, který popisuje váš projekt osobního finančního plánovače. README je strukturované tak, aby bylo přehledné, profesionální a poskytovalo všechny potřebné informace o projektu, jeho funkcích, technologiích a instalaci. Obsah je přizpůsoben tomu, aby byl srozumitelný pro maturitní komisi i potenciální uživatele nebo vývojáře.
-
----
-
 # Osobní Finanční Plánovač
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
