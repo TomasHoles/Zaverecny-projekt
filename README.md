@@ -1,28 +1,38 @@
-# Osobní Finanční Plánovač
+# Osobní Finanční Plánovač - Webová Aplikace
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+## Popis Projektu
 
-**Osobní Finanční Plánovač** je webová aplikace, která pomáhá uživatelům spravovat jejich finance. Umožňuje sledovat příjmy a výdaje, plánovat rozpočet a získávat přehled o finanční situaci prostřednictvím přehledů a grafů. Aplikace je navržena jako maturitní projekt a demonstruje kombinaci frontendu, backendu a databázového systému.
+Osobní Finanční Plánovač je webová aplikace vytvořená jako maturitní projekt. Cílem aplikace je poskytnout uživatelům nástroj pro snadnou a efektivní správu osobních financí. Uživatelé mohou sledovat své příjmy a výdaje, vytvářet rozpočty, kategorizovat transakce a analyzovat své finanční návyky prostřednictvím přehledných grafů a statistik. Aplikace klade důraz na moderní design, bezpečnost a intuitivní ovládání.
 
-## Hlavní funkce
-- **Správa transakcí**: Uživatelé mohou zadávat příjmy (např. výplata, brigáda) a výdaje (např. nákupy, účty).
-- **Rozpočtové plánování**: Možnost nastavit měsíční rozpočet pro různé kategorie (jídlo, zábava, bydlení).
-- **Přehledy a grafy**: Vizualizace finančních dat pomocí tabulek a grafů (např. koláčový graf výdajů podle kategorií).
-- **Upozornění**: Notifikace při překročení rozpočtu nebo blížícím se limitu.
-- **Uživatelské účty**: Registrace a přihlášení pro ukládání osobních dat.
+## 🚀 Klíčové Funkce
 
-## Technologie (ještě není jisté)
-- **Frontend**:
-  - HTML, CSS, JavaScript
-  - Framework: [React](https://reactjs.org/) (pro dynamické rozhraní)
-  - Knihovna pro grafy: [Chart.js](https://www.chartjs.org/)
-- **Backend**:
-  - [Node.js](https://nodejs.org/) s frameworkem [Express](https://expressjs.com/)
-  - API: RESTful pro komunikaci mezi frontendem a backendem
-- **Databáze**:
-  - [MongoDB](https://www.mongodb.com/) (NoSQL databáze pro ukládání transakcí a uživatelských dat)
-  - Alternativa: [SQLite](https://www.sqlite.org/) (pro jednodušší verzi)
-- **Další nástroje**:
-  - [Git](https://git-scm.com/) pro správu verzí
-  - [Docker](https://www.docker.com/) (volitelné pro kontejnerizaci)
-  - [ESLint](https://eslint.org/) a [Prettier](https://prettier.io/) pro konzistentní kód
+*   **Správa Transakcí:** Možnost přidávat, upravovat a mazat příjmy a výdaje.
+*   **Uživatelské Kategorie:** Flexibilní systém kategorií, které si uživatel může sám definovat a přiřazovat k transakcím.
+*   **Tvorba Rozpočtů:** Nastavení měsíčních limitů pro jednotlivé kategorie a sledování jejich plnění v reálném čase.
+*   **Vizuální Přehledy:** Interaktivní grafy a diagramy pro rychlou analýzu finanční situace (např. struktura výdajů, srovnání měsíců).
+*   **Bezpečná Autentizace:** Registrace a přihlašování uživatelů pomocí zabezpečeného systému pro ochranu citlivých dat.
+*   **Responzivní Design:** Aplikace je plně optimalizovaná pro všechna zařízení, od desktopových počítačů po mobilní telefony.
+
+## 🛠️ Použité Technologie
+
+Pro realizaci projektu byl zvolen moderní technologický stack, který kombinuje sílu Pythonu na backendu s flexibilitou JavaScriptu na frontendu.
+
+### **Frontend (Klientská část)**
+
+*   **[React](https://reactjs.org/):** Deklarativní a efektivní JavaScriptová knihovna pro tvorbu uživatelských rozhraní.
+*   **[Tailwind CSS](https://tailwindcss.com/):** Moderní "utility-first" CSS framework pro rychlé a konzistentní stylování.
+*   **[Chart.js](https://www.chartjs.org/):** Jednoduchá a flexibilní JavaScriptová knihovna pro vizualizaci dat a tvorbu grafů.
+
+### **Backend (Serverová část)**
+
+*   **[Python](https://www.python.org/):** Univerzální a snadno čitelný programovací jazyk pro backendovou logiku.
+*   **[Django](https://www.djangoproject.com/):** "High-level" Python webový framework, který podporuje rychlý vývoj a čistý design.
+
+### **Databáze**
+
+*   **[MongoDB](https://www.mongodb.com/):** Populární NoSQL databáze orientovaná na dokumenty, poskytující flexibilitu a vysoký výkon.
+
+### **Doplňkové Nástroje**
+
+*   **Git & GitHub:** Systém pro správu verzí kódu.
+*   **Visual Studio Code:** Univerzální editor kódu.
