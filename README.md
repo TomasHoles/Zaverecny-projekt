@@ -13,7 +13,7 @@ Osobní Finanční Plánovač je webová aplikace vytvořená jako maturitní pr
 *   **Bezpečná Autentizace:** Registrace a přihlašování uživatelů pomocí zabezpečeného systému pro ochranu citlivých dat.
 *   **Responzivní Design:** Aplikace je plně optimalizovaná pro všechna zařízení, od desktopových počítačů po mobilní telefony.
 
-## Použité Technologie
+## Technologie
 
 Pro realizaci projektu byl zvolen moderní technologický stack, který kombinuje sílu Pythonu na backendu s flexibilitou JavaScriptu na frontendu.
 
