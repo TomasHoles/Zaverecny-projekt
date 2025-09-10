@@ -4,7 +4,7 @@
 
 Osobní Finanční Plánovač je webová aplikace vytvořená jako maturitní projekt. Cílem aplikace je poskytnout uživatelům nástroj pro snadnou a efektivní správu osobních financí. Uživatelé mohou sledovat své příjmy a výdaje, vytvářet rozpočty, kategorizovat transakce a analyzovat své finanční návyky prostřednictvím přehledných grafů a statistik. Aplikace klade důraz na moderní design, bezpečnost a intuitivní ovládání.
 
-## 🚀 Klíčové Funkce
+## Klíčové Funkce
 
 *   **Správa Transakcí:** Možnost přidávat, upravovat a mazat příjmy a výdaje.
 *   **Uživatelské Kategorie:** Flexibilní systém kategorií, které si uživatel může sám definovat a přiřazovat k transakcím.
@@ -13,7 +13,7 @@ Osobní Finanční Plánovač je webová aplikace vytvořená jako maturitní pr
 *   **Bezpečná Autentizace:** Registrace a přihlašování uživatelů pomocí zabezpečeného systému pro ochranu citlivých dat.
 *   **Responzivní Design:** Aplikace je plně optimalizovaná pro všechna zařízení, od desktopových počítačů po mobilní telefony.
 
-## 🛠️ Použité Technologie
+## Použité Technologie
 
 Pro realizaci projektu byl zvolen moderní technologický stack, který kombinuje sílu Pythonu na backendu s flexibilitou JavaScriptu na frontendu.
 
