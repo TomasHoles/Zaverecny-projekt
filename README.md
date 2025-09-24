@@ -1,8 +1,8 @@
-# Osobní Finanční Plánovač - Webová Aplikace
+# Osobní finanční plánovač - Webová Aplikace
 
 ## Popis Projektu
 
-Osobní Finanční Plánovač je webová aplikace vytvořená jako maturitní projekt. Cílem aplikace je poskytnout uživatelům nástroj pro snadnou a efektivní správu osobních financí. Uživatelé mohou sledovat své příjmy a výdaje, vytvářet rozpočty, kategorizovat transakce a analyzovat své finanční návyky prostřednictvím přehledných grafů a statistik. Aplikace klade důraz na moderní design, bezpečnost a intuitivní ovládání.
+Osobní finanční plánovač je webová aplikace vytvořená jako maturitní projekt. Cílem aplikace je poskytnout uživatelům nástroj pro snadnou a efektivní správu osobních financí. Uživatelé mohou sledovat své příjmy a výdaje, vytvářet rozpočty, kategorizovat transakce a analyzovat své finanční návyky prostřednictvím přehledných grafů a statistik. Aplikace klade důraz na moderní design, bezpečnost a intuitivní ovládání.
 
 ## Klíčové Funkce
 
@@ -28,11 +28,6 @@ Pro realizaci projektu byl zvolen moderní technologický stack, který kombinuj
 *   **[Python](https://www.python.org/):** Univerzální a snadno čitelný programovací jazyk pro backendovou logiku.
 *   **[Django](https://www.djangoproject.com/):** "High-level" Python webový framework, který podporuje rychlý vývoj a čistý design.
 
-### **Databáze**
+ #### 3. Databáze (úložiště dat) 
 
-*   **[MongoDB](https://www.mongodb.com/):** Populární NoSQL databáze orientovaná na dokumenty, poskytující flexibilitu a vysoký výkon.
-
-### **Doplňkové Nástroje**
-
-*   **Git & GitHub:** Systém pro správu verzí kódu.
-*   **Visual Studio Code:** Univerzální editor kódu.
+ *   **PostgreSQL:** Jedná se o jednu z nejvyspělejších open-source relačních databází.  
