@@ -1,0 +1,158 @@
+:root {
+  /* Moderní kryptoměnový dark mode design */
+  --bg-primary: #0A0A0B;      /* Téměř černé pozadí s nádechem fialové */
+  --bg-secondary: #1A1A1D;     /* Antracitová pro karty */
+  --bg-tertiary: #2A2A2F;      /* Tmavě šedá pro hover efekty */
+  
+  /* Text */
+  --text-primary: #FFFFFF;     /* Čistě bílý hlavní text */
+  --text-secondary: #A0A0B0;   /* Světle šedý sekundární text */
+  
+  /* Akcenty - kryptoměnová paleta */
+  --accent-primary: #FF4742;   /* Zářivá oranžovo-korálová pro CTA */
+  --accent-secondary: #9B4DCA; /* Jemná fialová pro okraje */
+  --accent-tertiary: #E91E63;  /* Růžová pro detaily */
+}
+
+body {
+  background: radial-gradient(circle at center, rgba(155, 77, 202, 0.05) 0%, var(--bg-primary) 70%);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  min-height: 100vh;
+  font-weight: 400;
+}
+
+.navbar {
+  background: rgba(10, 10, 11, 0.9); /* Téměř černá s průhledností */
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 71, 66, 0.1); /* Jemný oranžový okraj */
+  box-shadow: 0 2px 30px rgba(0, 0, 0, 0.3);
+  padding: 1rem 2rem;
+}
+
+.card {
+  background-color: var(--bg-secondary);
+  border: 1px solid rgba(155, 77, 202, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 71, 66, 0.2);
+}
+
+.button-primary {
+  background-color: var(--accent-primary);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 4px 15px rgba(255, 71, 66, 0.3);
+}
+
+.button-primary:hover {
+  background-color: #FF6B5A;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 71, 66, 0.4);
+}
+
+.button-secondary {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--accent-secondary);
+  border-radius: 8px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.button-secondary:hover {
+  background-color: rgba(155, 77, 202, 0.1);
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+}
+
+.input-field {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--bg-tertiary);
+  color: var(--text-primary);
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.input-field:focus {
+  border-color: var(--accent-primary);
+  outline: none;
+}
+
+.table {
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table th {
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  padding: 12px;
+  text-align: left;
+}
+
+.table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--bg-tertiary);
+}
+
+.table tr:hover {
+  background-color: var(--bg-tertiary);
+}
+
+/* Logo a nadpisy */
+.logo, h1, h2, h3 {
+  color: var(--text-primary);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: 3rem;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: 2.25rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+  line-height: 1.3;
+  margin-bottom: 0.75rem;
+}
+
+/* Přihlašovací formulář */
+.login-container {
+  background: rgba(26, 26, 29, 0.8);
+  border-radius: 16px;
+  padding: 3rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 71, 66, 0.1);
+  max-width: 400px;
+  margin: 2rem auto;
+}

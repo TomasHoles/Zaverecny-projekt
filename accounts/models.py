@@ -1,49 +1,89 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
+# Vlastní správce uživatelů pro naši custom User model
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError(_('The Email field must be set'))
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+    """
+    Správce uživatelů upravený pro naši custom User model.
+    Umožňuje vytváření uživatelů pouze s username a heslem.
+    """
+    
+    def create_user(self, username, password=None, **extra_fields):
+        """
+        Vytvoří běžného uživatele s povinným username a heslem.
+        Ostatní pole jsou volitelná.
+        """
+        if not username:
+            raise ValueError(_('Uživatelské jméno musí být zadáno'))
+        user = self.model(username=username, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
+    def create_superuser(self, username, password=None, **extra_fields):
+        """
+        Vytvoří superuživatele s administrátorskými právy.
+        Superuživatelé jsou automaticky ověřeni.
+        """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_verified', True)  # Superusers are verified by default
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError(_('Superuser must have is_staff=True.'))
         if extra_fields.get('is_superuser') is not True:
             raise ValueError(_('Superuser must have is_superuser=True.'))
 
-        return self.create_user(email, password, **extra_fields)
+        return self.create_user(username, password, **extra_fields)
 
 class User(AbstractUser):
-    username = None
-    email = models.EmailField(_('email address'), unique=True)
-    first_name = models.CharField(_('first name'), max_length=30)
-    last_name = models.CharField(_('last name'), max_length=30)
+    """
+    Vlastní User model pro personal finance platform.
+    Rozšiřuje Django AbstractUser o specifické funkce pro finanční aplikaci.
+    
+    Klíčové vlastnosti:
+    - Registrace pouze s username a heslem (bez emailu)
+    - Volitelná jména a příjmení
+    - Automatická verifikace (bez email verifikace)
+    - Podpora pro avatary a měnové preference
+    """
+    
+    # Email je úplně volitelný - pouze pro případné budoucí použití
+    email = models.EmailField(_('email address'), blank=True, null=True)
+    
+    # Povinné pole pro přihlášení
+    username = models.CharField(_('username'), max_length=30, unique=True)
+    
+    # Volitelná jména - uživatel je nemusí vyplnit
+    first_name = models.CharField(_('first name'), max_length=30, blank=True)
+    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    
+    # Automaticky nastavená pole
     date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
     is_active = models.BooleanField(_('active'), default=True)
+    is_verified = models.BooleanField(_('verified'), default=True)  # Vždy True, protože nepoužíváme email verifikaci
+    
+    # Volitelná pole pro personalizaci
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     currency_preference = models.CharField(max_length=3, default='USD')
     
+    # Konfigurace modelu
     objects = CustomUserManager()
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name']
+    USERNAME_FIELD = 'username'  # Pole pro přihlášení
+    REQUIRED_FIELDS = []  # Žádné povinné pole kromě username
 
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')
 
     def get_full_name(self):
-        return f'{self.first_name} {self.last_name}'
+        """Vrátí celé jméno uživatele nebo username pokud jméno není vyplněno."""
+        if self.first_name and self.last_name:
+            return f'{self.first_name} {self.last_name}'
+        return self.username
 
     def __str__(self):
-        return self.email
+        """String reprezentace uživatele pro admin rozhraní."""
+        return self.username

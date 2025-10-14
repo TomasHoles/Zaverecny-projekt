@@ -9,6 +9,7 @@ import BudgetList from './components/BudgetList';
 import BudgetForm from './components/BudgetForm';
 import LoginForm from './components/LoginForm';
 import './App.css';
+import './styles/App.css';
 
 // Protected Route wrapper component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {

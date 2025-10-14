@@ -1,0 +1,226 @@
+/* ========================================
+   LOGIN/REGISTER FORM STYLES
+   ======================================== */
+
+/* Hlavní kontejner pro přihlašovací formulář */
+.login-container {
+  display: flex;
+  justify-content: center;  /* Horizontální centrování */
+  align-items: center;      /* Vertikální centrování */
+  min-height: calc(100vh - 80px);  /* Minimální výška minus výška navbaru */
+  padding: 2rem;
+}
+
+/* Karta s formulářem - glassmorphism design */
+.login-card {
+  background: rgba(255, 255, 255, 0.05);  /* Poloprůhledné bílé pozadí */
+  backdrop-filter: blur(10px);  /* Rozostření pro glassmorphism efekt */
+  border-radius: 20px;  /* Zaoblené rohy */
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 450px;  /* Maximální šířka karty */
+  border: 1px solid rgba(255, 255, 255, 0.1);  /* Jemný bílý okraj */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);  /* Stín pro hloubku */
+}
+
+/* Nadpis formuláře */
+.login-card h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* ========================================
+   FORM ELEMENTS
+   ======================================== */
+
+/* Skupina formulářových polí */
+.login-form {
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  margin: 2rem auto;
+  border: 1px solid var(--bg-tertiary);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--bg-tertiary);
+  border-radius: 4px;
+  color: var(--text-primary);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+/* Labely pro formulářová pole */
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Input pole s glassmorphism efektem */
+.form-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);  /* Jemný bílý okraj */
+  background: rgba(255, 255, 255, 0.05);  /* Poloprůhledné pozadí */
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all 0.3s ease;  /* Plynulé přechody */
+}
+
+/* Focus stav pro input pole */
+.form-group input:focus {
+  outline: none;
+  border-color: rgba(0, 212, 255, 0.5);  /* Meteora blue border on focus */
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);  /* Meteora blue shadow */
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+
+/* Hlavní tlačítko pro přihlášení/registraci */
+.login-button {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));  /* Meteora blue gradient */
+  color: var(--text-primary);
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;  /* Plynulé přechody */
+  margin-top: 1rem;
+}
+
+/* Hover efekt pro tlačítko */
+.login-button:hover {
+  transform: translateY(-2px);  /* Zvednutí nahoru */
+  box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);  /* Meteora blue shadow */
+}
+
+/* Disabled stav tlačítka */
+.login-button:disabled {
+  opacity: 0.7;  /* Snížená průhlednost */
+  cursor: not-allowed;  /* Kurzor "zakázáno" */
+  transform: none;  /* Bez animace */
+}
+
+/* ========================================
+   MESSAGES & LINKS
+   ======================================== */
+
+/* Chybové zprávy */
+.error-message {
+  background: rgba(255, 99, 71, 0.1);  /* Poloprůhledné červené pozadí */
+  color: #ff6347;  /* Červený text */
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 99, 71, 0.2);  /* Červený okraj */
+}
+
+/* Odkaz na registraci */
+.register-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: rgba(255, 255, 255, 0.7);  /* Poloprůhledný bílý text */
+}
+
+/* Styl pro odkaz v registračním textu */
+.register-link a {
+  color: var(--accent-primary);  /* Meteora blue */
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;  /* Plynulá změna barvy */
+}
+
+.register-link a:hover {
+  color: var(--accent-secondary);
+  text-decoration: underline;
+}
+
+/* ========================================
+   PASSWORD FIELDS
+   ======================================== */
+
+/* Skupina pro hesla s tlačítkem pro zobrazení/skrytí */
+.password-group {
+  position: relative;
+}
+
+/* Kontejner pro input a tlačítko */
+.password-input-container {
+  display: flex;
+  align-items: center;
+}
+
+/* Input pole zabírá zbývající prostor */
+.password-input-container input {
+  flex: 1;
+}
+
+/* Tlačítko pro zobrazení/skrytí hesla */
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--accent-primary);  /* Meteora blue */
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* Hover efekt pro tlačítko hesla */
+.toggle-password:hover {
+  color: #ff6584;  /* Růžová barva při hover */
+}
+
+/* ========================================
+   ADDITIONAL MESSAGES
+   ======================================== */
+
+/* Odkaz na ověření emailu */
+.verification-link {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.verification-link a {
+  color: #6c63ff;  /* Fialová barva */
+  text-decoration: underline;
+}
+
+.verification-link a:hover {
+  color: #5a56e0;  /* Tmavší fialová při hover */
+}

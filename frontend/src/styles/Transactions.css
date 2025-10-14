@@ -1,0 +1,82 @@
+.transactions-container {
+  background-color: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 8px;
+  color: var(--text-primary);
+}
+
+.search-input,
+.filter-select {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--bg-tertiary);
+}
+
+.search-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.transactions-content {
+  margin-top: 20px;
+}
+
+.transactions-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 200px;
+}
+
+.filter-select {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.transactions-list {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.transactions {
+  padding: 2rem;
+}
+
+.transactions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.transactions-table {
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.transactions-table th {
+  background-color: var(--bg-tertiary);
+  padding: 1rem;
+  text-align: left;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.transactions-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--bg-tertiary);
+}
+
+.transactions-table tr:hover {
+  background-color: var(--bg-tertiary);
+}
