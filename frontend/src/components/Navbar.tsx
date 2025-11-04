@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/Navbar.css';
+import logo from '../assets/logo.png';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -32,10 +33,14 @@ const Navbar: React.FC = () => {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <Link to="/" className="navbar-logo">FinanceFlow</Link>
+        <Link to="/" className="navbar-logo">
+          <img src={logo} alt="Plutoa Logo" className="logo-icon" />
+          <span className="logo-text">Plutoa</span>
+        </Link>
       </div>
       <div className="navbar-links">
-        <Link to="/dashboard" className="nav-link">Přehled</Link>
+        <Link to="/dashboard" className="nav-link">Dashboard</Link>
+        <Link to="/overview" className="nav-link">Přehled</Link>
         <Link to="/transactions" className="nav-link">Transakce</Link>
         <Link to="/budgets" className="nav-link">Rozpočty</Link>
         <Link to="/analytics" className="nav-link">Analytics</Link>

@@ -10,6 +10,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Transactions from './components/Transactions'; // Nový import
 import Budgets from './components/Budgets'; // Nový import
 import Analytics from './components/Analytics'; // Nový import
+import Overview from './components/Overview'; // Nový import
 import './styles/App.css';
 import EmailVerification from './components/EmailVerification';
 
@@ -45,6 +46,11 @@ function App() {
               <Route path="/analytics" element={
                 <ProtectedRoute>
                   <Analytics />
+                </ProtectedRoute>
+              } />
+              <Route path="/overview" element={
+                <ProtectedRoute>
+                  <Overview />
                 </ProtectedRoute>
               } />
               <Route path="*" element={<Navigate to="/" />} />

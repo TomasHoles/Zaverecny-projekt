@@ -1,0 +1,117 @@
+Table users {
+  id integer [pk, increment]
+  username varchar(30) [unique, not null]
+  email varchar(254) [unique]
+  password varchar(128) [not null]
+  first_name varchar(30)
+  last_name varchar(30)
+  avatar varchar(100)
+  currency_preference varchar(3) [default: 'USD']
+  is_active boolean [default: true]
+  is_verified boolean [default: true]
+  is_staff boolean [default: false]
+  is_superuser boolean [default: false]
+  date_joined timestamp [not null, default: `now()`]
+  last_login timestamp
+}
+
+Table categories {
+  id integer [pk, increment]
+  name varchar(100) [not null]
+  description text
+  icon varchar(50)
+  color varchar(7) [default: '#000000']
+  user_id integer [not null, ref: > users.id]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table transactions {
+  id integer [pk, increment]
+  amount decimal(10,2) [not null]
+  type varchar(10) [not null]
+  category_id integer [ref: > categories.id]
+  user_id integer [not null, ref: > users.id]
+  date date [not null]
+  description text
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table budgets {
+  id integer [pk, increment]
+  name varchar(100) [not null]
+  amount decimal(10,2) [not null]
+  start_date date [not null]
+  end_date date [not null]
+  period varchar(10) [not null]
+  user_id integer [not null, ref: > users.id]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table budget_categories {
+  id integer [pk, increment]
+  budget_id integer [not null, ref: > budgets.id]
+  category_id integer [not null, ref: > categories.id]
+  allocated_amount decimal(10,2) [not null]
+}
+
+Table authtoken_token {
+  key varchar(40) [pk]
+  created timestamp [not null, default: `now()`]
+  user_id integer [unique, not null, ref: > users.id]
+}
+
+Table django_session {
+  session_key varchar(40) [pk]
+  session_data text [not null]
+  expire_date timestamp [not null]
+}
+
+Table django_admin_log {
+  id integer [pk, increment]
+  action_time timestamp [not null]
+  object_id text
+  object_repr varchar(200) [not null]
+  action_flag smallint [not null]
+  change_message text [not null]
+  content_type_id integer
+  user_id integer [not null, ref: > users.id]
+}
+
+Table django_content_type {
+  id integer [pk, increment]
+  app_label varchar(100) [not null]
+  model varchar(100) [not null]
+}
+
+Table auth_permission {
+  id integer [pk, increment]
+  name varchar(255) [not null]
+  content_type_id integer [not null, ref: > django_content_type.id]
+  codename varchar(100) [not null]
+}
+
+Table auth_group {
+  id integer [pk, increment]
+  name varchar(150) [unique, not null]
+}
+
+Table auth_group_permissions {
+  id integer [pk, increment]
+  group_id integer [not null, ref: > auth_group.id]
+  permission_id integer [not null, ref: > auth_permission.id]
+}
+
+Table users_groups {
+  id integer [pk, increment]
+  user_id integer [not null, ref: > users.id]
+  group_id integer [not null, ref: > auth_group.id]
+}
+
+Table users_user_permissions {
+  id integer [pk, increment]
+  user_id integer [not null, ref: > users.id]
+  permission_id integer [not null, ref: > auth_permission.id]
+}

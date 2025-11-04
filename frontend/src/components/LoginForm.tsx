@@ -31,7 +31,7 @@ const LoginForm: React.FC = () => {
   return (
     <div className="login-container">
       <div className="login-form">
-        <h2>Přihlášení do Nexus Finances</h2>
+        <h2>Přihlášení do Plutoa</h2>
         
         {error && (
           <div className="error-message">

@@ -7,8 +7,9 @@
   display: flex;
   justify-content: center;  /* Horizontální centrování */
   align-items: center;      /* Vertikální centrování */
-  min-height: calc(100vh - 80px);  /* Minimální výška minus výška navbaru */
-  padding: 2rem;
+  min-height: auto;  /* Automatická výška podle obsahu */
+  padding: 3rem 1rem;  /* Menší vertikální padding shora a zdola */
+  width: 100%;
 }
 
 /* Karta s formulářem - glassmorphism design */
@@ -16,16 +17,16 @@
   background: rgba(255, 255, 255, 0.05);  /* Poloprůhledné bílé pozadí */
   backdrop-filter: blur(10px);  /* Rozostření pro glassmorphism efekt */
   border-radius: 20px;  /* Zaoblené rohy */
-  padding: 2.5rem;
-  width: 100%;
-  max-width: 450px;  /* Maximální šířka karty */
+  padding: 2rem 3rem;  /* Zmenšený vertikální padding */
+  width: 90%;  /* Zabere 90% šířky kontejneru */
+  max-width: 900px;  /* Maximální šířka 900px */
   border: 1px solid rgba(255, 255, 255, 0.1);  /* Jemný bílý okraj */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);  /* Stín pro hloubku */
 }
 
 /* Nadpis formuláře */
 .login-card h2 {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;  /* Zmenšený spodní margin */
   text-align: center;
   color: var(--text-primary);
   font-weight: 600;
@@ -39,15 +40,16 @@
 .login-form {
   background-color: var(--bg-secondary);
   border-radius: 8px;
-  padding: 2rem;
-  max-width: 400px;
-  width: 100%;
+  padding: 2rem 2.5rem;  /* Zmenšený vertikální padding */
+  width: 90%;  /* Zabere 90% šířky */
+  max-width: 900px;  /* Maximální šířka 900px */
   margin: 2rem auto;
   border: 1px solid var(--bg-tertiary);
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;  /* Zmenšený rozestup mezi řádky */
+  width: 100%;  /* Zajistí, že všechny řádky mají stejnou šířku */
 }
 
 .form-label {
@@ -58,11 +60,12 @@
 
 .form-input {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.875rem 1.25rem;  /* Zvětšený padding */
   background-color: var(--bg-tertiary);
   border: 1px solid var(--bg-tertiary);
   border-radius: 4px;
   color: var(--text-primary);
+  box-sizing: border-box;  /* Zahrnutí paddingu do šířky */
 }
 
 .form-input:focus {
@@ -81,13 +84,14 @@
 /* Input pole s glassmorphism efektem */
 .form-group input {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1.25rem;  /* Zvětšený padding pro větší input */
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);  /* Jemný bílý okraj */
   background: rgba(255, 255, 255, 0.05);  /* Poloprůhledné pozadí */
   color: var(--text-primary);
   font-size: 1rem;
   transition: all 0.3s ease;  /* Plynulé přechody */
+  box-sizing: border-box;  /* Zahrnutí paddingu do šířky */
 }
 
 /* Focus stav pro input pole */
@@ -104,7 +108,7 @@
 /* Hlavní tlačítko pro přihlášení/registraci */
 .login-button {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.875rem;  /* Zvětšený padding */
   background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));  /* Meteora blue gradient */
   color: var(--text-primary);
   border: none;
@@ -113,7 +117,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;  /* Plynulé přechody */
-  margin-top: 1rem;
+  margin-top: 0.5rem;  /* Zmenšený horní margin */
 }
 
 /* Hover efekt pro tlačítko */
@@ -137,16 +141,16 @@
 .error-message {
   background: rgba(255, 99, 71, 0.1);  /* Poloprůhledné červené pozadí */
   color: #ff6347;  /* Červený text */
-  padding: 0.75rem 1rem;
+  padding: 0.625rem 1rem;  /* Zmenšený padding */
   border-radius: 10px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;  /* Zmenšený spodní margin */
   border: 1px solid rgba(255, 99, 71, 0.2);  /* Červený okraj */
 }
 
 /* Odkaz na registraci */
 .register-link {
   text-align: center;
-  margin-top: 1.5rem;
+  margin-top: 1rem;  /* Zmenšený horní margin */
   color: rgba(255, 255, 255, 0.7);  /* Poloprůhledný bílý text */
 }
 
@@ -176,11 +180,15 @@
 .password-input-container {
   display: flex;
   align-items: center;
+  position: relative;  /* Pro absolutní pozicování tlačítka */
+  width: 100%;
 }
 
-/* Input pole zabírá zbývající prostor */
+/* Input pole zabírá celou šířku */
 .password-input-container input {
-  flex: 1;
+  width: 100%;
+  padding-right: 80px;  /* Prostor pro tlačítko vpravo */
+  box-sizing: border-box;  /* Zahrnutí paddingu do šířky */
 }
 
 /* Tlačítko pro zobrazení/skrytí hesla */
@@ -223,4 +231,44 @@
 
 .verification-link a:hover {
   color: #5a56e0;  /* Tmavší fialová při hover */
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+/* Tablet a menší obrazovky */
+@media (max-width: 768px) {
+  .login-card {
+    max-width: 90%;
+    padding: 2rem;
+  }
+
+  .login-form {
+    max-width: 90%;
+    padding: 1.5rem;
+  }
+  
+  .login-container {
+    padding: 1rem;
+  }
+}
+
+/* Mobilní telefony */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 1.5rem;
+  }
+
+  .login-form {
+    padding: 1rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+  
+  .login-button {
+    padding: 0.875rem;
+  }
 }
