@@ -5,7 +5,7 @@ const Analytics: React.FC = () => {
   return (
     <div className="analytics-page">
       <div className="analytics-empty">
-        <p>Analytics page - coming soon</p>
+        <p>Analytika - již brzy</p>
       </div>
     </div>
   );

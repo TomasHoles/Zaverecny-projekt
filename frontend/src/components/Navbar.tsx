@@ -43,7 +43,7 @@ const Navbar: React.FC = () => {
         <Link to="/overview" className="nav-link">Přehled</Link>
         <Link to="/transactions" className="nav-link">Transakce</Link>
         <Link to="/budgets" className="nav-link">Rozpočty</Link>
-        <Link to="/analytics" className="nav-link">Analytics</Link>
+        <Link to="/analytics" className="nav-link">Analytika</Link>
       </div>
       <div className="user-section" ref={dropdownRef}>
         {user ? (

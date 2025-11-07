@@ -17,10 +17,10 @@ const LandingPage: React.FC = () => {
           </p>
           <div className="hero-buttons">
             <Link to="/register" className="button-primary">
-              Příhlasit se
+              Registrace
             </Link>
             <Link to="/login" className="button-secondary">
-              Registrace
+              Přihlásit se
             </Link>
           </div>
         </div>

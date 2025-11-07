@@ -120,10 +120,10 @@ const RegisterForm: React.FC = () => {
       });
       
       setSuccessMessage(result.message);
-      // Neodvedeme uživatele hned - necháme ho vidět zprávu o úspěchu
+      // Přesměrování na úvodní stránku po úspěšné registraci
       setTimeout(() => {
-        navigate('/login');
-      }, 5000);
+        navigate('/');
+      }, 4000);
     } catch (err: any) {
       console.error('Registration error:', err);
       
@@ -164,8 +164,17 @@ const RegisterForm: React.FC = () => {
         
         {/* Zobrazení zprávy o úspěšné registraci */}
         {successMessage && (
-          <div className="success-message">
-            {successMessage}
+          <div className="success-message-box">
+            <div className="success-icon-wrapper">
+              <svg className="success-checkmark" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="success-content">
+              <h3>Registrace úspěšná!</h3>
+              <p>{successMessage}</p>
+              <p className="redirect-info">Za chvíli budete přesměrováni na přihlašovací stránku...</p>
+            </div>
           </div>
         )}
         

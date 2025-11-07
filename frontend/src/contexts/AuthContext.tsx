@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
 
 interface User {
@@ -8,11 +8,11 @@ interface User {
     last_name: string;
     avatar?: string;
     currency_preference: string;
-    currency: string; // Přidáno
+    currency: string;
     email?: string;
+    date_joined: string;
+    is_active: boolean;
 }
-
-// ... zbytek souboru ...
 
 interface AuthContextType {
     user: User | null;
@@ -29,6 +29,7 @@ interface AuthContextType {
     }) => Promise<{message: string}>;
     verifyEmail: (token: string) => Promise<{message: string}>;
     resendVerification: (email: string) => Promise<{message: string}>;
+    setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 interface AuthResponse {
@@ -91,7 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout, register, verifyEmail, resendVerification }}>
+        <AuthContext.Provider value={{ user, loading, login, logout, register, verifyEmail, resendVerification, setUser }}>
             {children}
         </AuthContext.Provider>
     );
