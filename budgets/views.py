@@ -17,6 +17,17 @@ class BudgetCategoryViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+
+class BudgetViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = BudgetSerializer
+
+    def get_queryset(self):
+        return Budget.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
     @action(detail=False, methods=['get'])
     def overview(self, request):
         """Přehled rozpočtů a jejich využití"""
@@ -57,13 +68,3 @@ class BudgetCategoryViewSet(viewsets.ModelViewSet):
             'total_remaining': float(total_budget - total_spent),
             'overall_percentage': (total_spent / total_budget * 100) if total_budget > 0 else 0
         })
-
-class BudgetViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    serializer_class = BudgetSerializer
-
-    def get_queryset(self):
-        return Budget.objects.filter(user=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)

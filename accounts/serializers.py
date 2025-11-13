@@ -78,8 +78,19 @@ class UserProfileSerializer(serializers.ModelSerializer):
     Serializer pro zobrazení profilu uživatele.
     Používá se pro vracení dat o uživateli po přihlášení/registraci.
     """
+    avatar = serializers.SerializerMethodField()
+    
     class Meta:
         model = User
         fields = ('id', 'username', 'first_name', 'last_name', 'currency_preference', 
                  'avatar', 'date_joined', 'is_active', 'email')
         read_only_fields = ('username', 'date_joined', 'is_active')
+    
+    def get_avatar(self, obj):
+        """Vrací úplnou URL avatara včetně domény."""
+        if obj.avatar:
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(obj.avatar.url)
+            return obj.avatar.url
+        return None

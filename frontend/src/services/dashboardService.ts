@@ -5,6 +5,15 @@ export interface DashboardStats {
     total_expenses: number;
     balance: number;
     recent_transactions: Transaction[];
+    top_expense_categories?: Array<{
+        name: string;
+        icon: string;
+        color: string;
+        total: number;
+        percentage: number;
+    }>;
+    current_month_savings?: number;
+    savings_change?: number;
 }
 
 export interface Transaction {
@@ -16,7 +25,8 @@ export interface Transaction {
         name: string;
         color: string;
         icon: string;
-    };
+        category_type?: 'INCOME' | 'EXPENSE' | 'BOTH';
+    } | null;
     date: string;
     description: string;
     created_at: string;
@@ -65,17 +75,17 @@ export interface MonthlyData {
 
 class DashboardService {
     async getDashboardStats(): Promise<DashboardStats> {
-        const response = await api.get<DashboardStats>('/transactions/dashboard_stats/');
+        const response = await api.get<DashboardStats>('/transactions/transactions/dashboard_stats/');
         return response.data;
     }
 
     async getBudgetOverview(): Promise<BudgetOverview> {
-        const response = await api.get<BudgetOverview>('/budgets/overview/');
+        const response = await api.get<BudgetOverview>('/budgets/budgets/overview/');
         return response.data;
     }
 
     async getAnalytics(timeRange: string = '6m'): Promise<AnalyticsData> {
-        const response = await api.get<AnalyticsData>(`/transactions/analytics/?time_range=${timeRange}`);
+        const response = await api.get<AnalyticsData>(`/transactions/transactions/analytics/?time_range=${timeRange}`);
         return response.data;
     }
 }

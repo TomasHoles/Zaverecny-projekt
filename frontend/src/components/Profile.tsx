@@ -10,10 +10,18 @@ interface ProfileData {
   currency_preference: string;
 }
 
+interface PasswordData {
+  old_password: string;
+  new_password: string;
+  new_password2: string;
+}
+
 const Profile: React.FC = () => {
   const { user, setUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   
@@ -22,6 +30,12 @@ const Profile: React.FC = () => {
     last_name: user?.last_name || '',
     email: user?.email || '',
     currency_preference: user?.currency_preference || 'CZK'
+  });
+
+  const [passwordData, setPasswordData] = useState<PasswordData>({
+    old_password: '',
+    new_password: '',
+    new_password2: ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -71,6 +85,105 @@ const Profile: React.FC = () => {
     setSuccessMessage('');
   };
 
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPasswordData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    setSuccessMessage('');
+    setErrorMessage('');
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+    
+    try {
+      await api.post('/accounts/users/change_password/', passwordData);
+      setSuccessMessage('Heslo bylo úspěšně změněno!');
+      setIsChangingPassword(false);
+      setPasswordData({
+        old_password: '',
+        new_password: '',
+        new_password2: ''
+      });
+      
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000);
+    } catch (err: any) {
+      console.error('Error changing password:', err);
+      setErrorMessage(err.response?.data?.error || 'Nepodařilo se změnit heslo. Zkuste to prosím znovu.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validace typu souboru
+    if (!file.type.startsWith('image/')) {
+      setErrorMessage('Můžete nahrát pouze obrázky.');
+      return;
+    }
+
+    // Validace velikosti (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMessage('Soubor je příliš velký. Maximální velikost je 5MB.');
+      return;
+    }
+
+    setUploadingAvatar(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    try {
+      const response = await api.post('/accounts/users/upload_avatar/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      console.log('Avatar upload response:', response.data);
+      
+      // Aktualizujeme uživatele s novým avatarem
+      if (user && response.data.avatar) {
+        setUser({
+          ...user,
+          avatar: response.data.avatar
+        });
+        
+        // Aktualizujeme také localStorage pro persistenci
+        const token = localStorage.getItem('token');
+        if (token) {
+          // Načteme aktualizovaná data uživatele
+          const userResponse = await api.get('/accounts/users/me/');
+          setUser(userResponse.data);
+        }
+      }
+      
+      setSuccessMessage('Avatar byl úspěšně nahrán!');
+      
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000);
+    } catch (err: any) {
+      console.error('Error uploading avatar:', err);
+      console.error('Error response:', err.response?.data);
+      setErrorMessage(err.response?.data?.error || 'Nepodařilo se nahrát avatar. Zkuste to prosím znovu.');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   if (!user) {
     return (
       <div className="profile-page">
@@ -96,6 +209,21 @@ const Profile: React.FC = () => {
                 }
               </div>
             )}
+            <label htmlFor="avatar-upload" className="avatar-upload-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              {uploadingAvatar ? 'Nahrávání...' : 'Změnit'}
+            </label>
+            <input
+              id="avatar-upload"
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarUpload}
+              style={{ display: 'none' }}
+              disabled={uploadingAvatar}
+            />
           </div>
           <div className="profile-header-info">
             <h1>{user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.username}</h1>
@@ -229,6 +357,98 @@ const Profile: React.FC = () => {
               <div className="info-item">
                 <label>Preferovaná měna</label>
                 <p>{user.currency_preference}</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="profile-card">
+          <div className="profile-card-header">
+            <h2>Zabezpečení</h2>
+            {!isChangingPassword && (
+              <button className="edit-button" onClick={() => setIsChangingPassword(true)}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                </svg>
+                Změnit heslo
+              </button>
+            )}
+          </div>
+
+          {isChangingPassword ? (
+            <form onSubmit={handlePasswordSubmit} className="profile-form">
+              <div className="form-group">
+                <label htmlFor="old_password">Staré heslo</label>
+                <input
+                  type="password"
+                  id="old_password"
+                  name="old_password"
+                  value={passwordData.old_password}
+                  onChange={handlePasswordChange}
+                  disabled={loading}
+                  required
+                  placeholder="Zadejte staré heslo"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="new_password">Nové heslo</label>
+                <input
+                  type="password"
+                  id="new_password"
+                  name="new_password"
+                  value={passwordData.new_password}
+                  onChange={handlePasswordChange}
+                  disabled={loading}
+                  required
+                  placeholder="Zadejte nové heslo"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="new_password2">Potvrdit nové heslo</label>
+                <input
+                  type="password"
+                  id="new_password2"
+                  name="new_password2"
+                  value={passwordData.new_password2}
+                  onChange={handlePasswordChange}
+                  disabled={loading}
+                  required
+                  placeholder="Zadejte nové heslo znovu"
+                />
+              </div>
+
+              <div className="form-actions">
+                <button 
+                  type="button" 
+                  className="cancel-button" 
+                  onClick={() => {
+                    setIsChangingPassword(false);
+                    setPasswordData({ old_password: '', new_password: '', new_password2: '' });
+                    setErrorMessage('');
+                    setSuccessMessage('');
+                  }} 
+                  disabled={loading}
+                >
+                  Zrušit
+                </button>
+                <button type="submit" className="save-button" disabled={loading}>
+                  {loading ? 'Měním heslo...' : 'Změnit heslo'}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className="profile-info">
+              <div className="info-item">
+                <label>Heslo</label>
+                <p>••••••••</p>
+              </div>
+              <div className="security-note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p>Doporučujeme pravidelně měnit heslo pro zajištění bezpečnosti vašeho účtu.</p>
               </div>
             </div>
           )}

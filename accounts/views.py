@@ -50,7 +50,7 @@ class UserViewSet(viewsets.ModelViewSet):
             
             return Response({
                 'token': auth_token.key,
-                'user': UserProfileSerializer(user).data,
+                'user': UserProfileSerializer(user, context={'request': request}).data,
                 'message': 'Registrace úspěšná!'
             }, status=status.HTTP_201_CREATED)
         except serializers.ValidationError as e:
@@ -61,7 +61,7 @@ class UserViewSet(viewsets.ModelViewSet):
         """
         Vrátí data aktuálně přihlášeného uživatele.
         """
-        serializer = UserProfileSerializer(request.user)
+        serializer = UserProfileSerializer(request.user, context={'request': request})
         return Response(serializer.data)
     
     @action(detail=False, methods=['put', 'patch'])
@@ -70,11 +70,84 @@ class UserViewSet(viewsets.ModelViewSet):
         Aktualizuje profil aktuálně přihlášeného uživatele.
         """
         user = request.user
-        serializer = UserProfileSerializer(user, data=request.data, partial=True)
+        serializer = UserProfileSerializer(user, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=False, methods=['post'])
+    def change_password(self, request):
+        """
+        Změní heslo aktuálně přihlášeného uživatele.
+        """
+        user = request.user
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        new_password2 = request.data.get('new_password2')
+        
+        if not all([old_password, new_password, new_password2]):
+            return Response(
+                {'error': 'Všechna pole jsou povinná.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if not user.check_password(old_password):
+            return Response(
+                {'error': 'Staré heslo je nesprávné.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if new_password != new_password2:
+            return Response(
+                {'error': 'Nová hesla se neshodují.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Validujeme nové heslo
+        try:
+            from django.contrib.auth.password_validation import validate_password
+            validate_password(new_password, user)
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        user.set_password(new_password)
+        user.save()
+        
+        return Response({'message': 'Heslo bylo úspěšně změněno.'})
+    
+    @action(detail=False, methods=['post'])
+    def upload_avatar(self, request):
+        """
+        Nahraje avatar aktuálně přihlášeného uživatele.
+        """
+        user = request.user
+        
+        if 'avatar' not in request.FILES:
+            return Response(
+                {'error': 'Nebyl nahrán žádný soubor.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Smažeme starý avatar pokud existuje
+        if user.avatar:
+            user.avatar.delete(save=False)
+        
+        user.avatar = request.FILES['avatar']
+        user.save()
+        
+        # Vrátíme úplnou URL avatara
+        avatar_url = None
+        if user.avatar:
+            avatar_url = request.build_absolute_uri(user.avatar.url)
+        
+        return Response({
+            'message': 'Avatar byl úspěšně nahrán.',
+            'avatar': avatar_url
+        })
 
 
 class LoginView(generics.GenericAPIView):
@@ -104,7 +177,7 @@ class LoginView(generics.GenericAPIView):
             token, created = Token.objects.get_or_create(user=user)
             return Response({
                 'token': token.key,
-                'user': UserProfileSerializer(user).data
+                'user': UserProfileSerializer(user, context={'request': request}).data
             })
         
         return Response(
@@ -131,9 +204,41 @@ class RegisterView(generics.GenericAPIView):
             serializer.is_valid(raise_exception=True)
             user = serializer.save()
             
+            # Vytvoření výchozích kategorií pro nového uživatele
+            self.create_default_categories(user)
+            
             return Response({
-                'user': UserProfileSerializer(user).data,
+                'user': UserProfileSerializer(user, context={'request': request}).data,
                 'message': 'Registrace úspěšná!'
             }, status=status.HTTP_201_CREATED)
         except serializers.ValidationError as e:
             return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+    
+    def create_default_categories(self, user):
+        """Vytvoří výchozí kategorie pro nového uživatele"""
+        from transactions.models import Category
+        
+        default_categories = [
+            {'name': 'Jídlo a nápoje', 'icon': '🍔', 'color': '#FF6B6B', 'description': 'Nákupy potravin, restaurace', 'category_type': 'EXPENSE'},
+            {'name': 'Doprava', 'icon': '🚗', 'color': '#4ECDC4', 'description': 'MHD, benzín, taxi', 'category_type': 'EXPENSE'},
+            {'name': 'Bydlení', 'icon': '🏠', 'color': '#45B7D1', 'description': 'Nájem, energie, opravy', 'category_type': 'EXPENSE'},
+            {'name': 'Zábava', 'icon': '🎮', 'color': '#F7DC6F', 'description': 'Kino, sport, hobby', 'category_type': 'EXPENSE'},
+            {'name': 'Oblečení', 'icon': '👕', 'color': '#BB8FCE', 'description': 'Oblečení a obuv', 'category_type': 'EXPENSE'},
+            {'name': 'Zdraví', 'icon': '💊', 'color': '#85C1E2', 'description': 'Léky, lékař, fitness', 'category_type': 'EXPENSE'},
+            {'name': 'Vzdělání', 'icon': '📚', 'color': '#52B788', 'description': 'Kurzy, knihy, škola', 'category_type': 'EXPENSE'},
+            {'name': 'Ostatní výdaje', 'icon': '💸', 'color': '#95A5A6', 'description': 'Ostatní výdaje', 'category_type': 'EXPENSE'},
+            {'name': 'Mzda', 'icon': '💰', 'color': '#2ECC71', 'description': 'Pravidelný příjem z práce', 'category_type': 'INCOME'},
+            {'name': 'Investice', 'icon': '📈', 'color': '#3498DB', 'description': 'Výnosy z investic', 'category_type': 'INCOME'},
+            {'name': 'Dary', 'icon': '🎁', 'color': '#E74C3C', 'description': 'Dárky od rodiny a přátel', 'category_type': 'INCOME'},
+            {'name': 'Ostatní příjmy', 'icon': '💵', 'color': '#16A085', 'description': 'Ostatní příjmy', 'category_type': 'INCOME'},
+        ]
+        
+        for cat_data in default_categories:
+            Category.objects.create(
+                user=user,
+                name=cat_data['name'],
+                icon=cat_data['icon'],
+                color=cat_data['color'],
+                description=cat_data['description'],
+                category_type=cat_data['category_type']
+            )

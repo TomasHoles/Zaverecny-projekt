@@ -1,10 +1,26 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Prism from './Prism';
 import '../styles/LandingPage.css';
 
 const LandingPage: React.FC = () => {
   return (
     <div className="landing-page">
+      {/* Prism Background */}
+      <div className="dither-background">
+        <Prism
+          animationType="rotate"
+          timeScale={0.5}
+          height={3.5}
+          baseWidth={5.5}
+          scale={3.6}
+          hueShift={0.46}
+          colorFrequency={2.15}
+          noise={0}
+          glow={1}
+        />
+      </div>
+
       {/* Hero sekce */}
       <section className="hero-section">
         <div className="hero-content">

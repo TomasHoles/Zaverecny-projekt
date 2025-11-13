@@ -45,8 +45,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Transactions from './components/Transactions';
 import Budgets from './components/Budgets';
 import Analytics from './components/Analytics';
-import Overview from './components/Overview';
 import Profile from './components/Profile';
+import Notifications from './components/Notifications';
 import './styles/App.css';
 import EmailVerification from './components/EmailVerification';
 
@@ -98,17 +98,20 @@ function App() {
                 </ProtectedRoute>
               } />
               
-              {/* Přehled - detailní pohled na finance */}
-              <Route path="/overview" element={
-                <ProtectedRoute>
-                  <Overview />
-                </ProtectedRoute>
-              } />
+              {/* Přehled - přesměrováno na Dashboard (sloučeno) */}
+              <Route path="/overview" element={<Navigate to="/dashboard" replace />} />
               
               {/* Profil - nastavení uživatele */}
               <Route path="/profile" element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              } />
+              
+              {/* Notifikace - centrum oznámení */}
+              <Route path="/notifications" element={
+                <ProtectedRoute>
+                  <Notifications />
                 </ProtectedRoute>
               } />
               

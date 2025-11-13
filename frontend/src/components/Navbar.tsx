@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
+import Icon from './Icon';
 import '../styles/Navbar.css';
 import logo from '../assets/logo.png';
 
@@ -8,6 +10,7 @@ const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = () => {
@@ -30,6 +33,26 @@ const Navbar: React.FC = () => {
     };
   }, []);
 
+  // Načte počet nepřečtených notifikací
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      if (user) {
+        try {
+          const response = await api.get('/notifications/notifications/');
+          const unread = response.data.filter((n: any) => !n.is_read).length;
+          setUnreadCount(unread);
+        } catch (error) {
+          console.error('Chyba při načítání notifikací:', error);
+        }
+      }
+    };
+
+    fetchUnreadCount();
+    // Aktualizuje počet každých 30 sekund
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, [user]);
+
   return (
     <nav className="navbar">
       <div className="navbar-brand">
@@ -39,11 +62,18 @@ const Navbar: React.FC = () => {
         </Link>
       </div>
       <div className="navbar-links">
-        <Link to="/dashboard" className="nav-link">Dashboard</Link>
-        <Link to="/overview" className="nav-link">Přehled</Link>
+        <Link to="/dashboard" className="nav-link">Přehled</Link>
         <Link to="/transactions" className="nav-link">Transakce</Link>
         <Link to="/budgets" className="nav-link">Rozpočty</Link>
         <Link to="/analytics" className="nav-link">Analytika</Link>
+        {user && (
+          <Link to="/notifications" className="nav-link notification-link">
+            <Icon name="bell" size={20} color="currentColor" />
+            {unreadCount > 0 && (
+              <span className="notification-badge">{unreadCount}</span>
+            )}
+          </Link>
+        )}
       </div>
       <div className="user-section" ref={dropdownRef}>
         {user ? (
