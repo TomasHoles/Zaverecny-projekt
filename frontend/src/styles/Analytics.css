@@ -3,6 +3,8 @@
   max-width: 1500px;
   margin: 0 auto;
   min-height: calc(100vh - 80px);
+  position: relative;
+  background: linear-gradient(135deg, #0A0A0B 0%, #1A0E0F 25%, #0D0506 50%, #1A1A1D 75%, #0A0A0B 100%);
 }
 
 .analytics-header {
@@ -17,10 +19,7 @@
 .analytics-title {
   font-size: 2.25rem;
   margin: 0 0 0.75rem 0;
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -97,7 +96,9 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
 }
 
 .summary-card {
@@ -106,15 +107,195 @@
   border-radius: 14px;
   padding: 2rem 1.75rem;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1.5rem;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glow Effects */
+.card-glow {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.income-glow {
+  background: #10B981;
+  top: -100px;
+  right: -100px;
+}
+
+.expense-glow {
+  background: #EF4444;
+  top: -100px;
+  left: -100px;
+}
+
+.savings-glow {
+  background: #8B5CF6;
+  bottom: -100px;
+  right: -100px;
 }
 
 .summary-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.summary-card:hover .card-glow {
+  opacity: 0.15;
+}
+
+.summary-content {
+  flex: 1;
+}
+
+/* Sparkline Charts */
+.summary-sparkline {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 40px;
+  margin-top: 1rem;
+}
+
+.sparkline-bar {
+  flex: 1;
+  min-width: 4px;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  opacity: 0.7;
+}
+
+.sparkline-bar.income {
+  background: linear-gradient(to top, #10B981, #34D399);
+}
+
+.sparkline-bar.expense {
+  background: linear-gradient(to top, #EF4444, #F87171);
+}
+
+.sparkline-bar:hover {
+  opacity: 1;
+  transform: scaleY(1.1);
+}
+
+/* Savings Rate Indicator */
+.savings-rate-indicator {
+  margin-top: 1rem;
+}
+
+.rate-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.rate-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8B5CF6, #A78BFA);
+  border-radius: 10px;
+  transition: width 1s ease;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+.rate-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* Trend Cards */
+.trend-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+.trend-card {
+  background: rgba(26, 26, 29, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.trend-card:hover {
+  background: rgba(26, 26, 29, 0.8);
+  transform: translateX(5px);
+  border-color: var(--accent-primary);
+}
+
+.trend-icon {
+  font-size: 1.8rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.trend-icon-positive {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+}
+
+.trend-icon-category {
+  background: rgba(255, 71, 66, 0.15);
+  color: var(--accent-primary);
+}
+
+.trend-icon-money {
+  background: rgba(155, 77, 202, 0.15);
+  color: var(--accent-secondary);
+}
+
+.trend-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.trend-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.trend-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.trend-value.positive {
+  color: #10B981;
+}
+
+.trend-value.negative {
+  color: #EF4444;
 }
 
 .income-card:hover {
@@ -194,6 +375,12 @@
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
   margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+.chart-card-large {
+  grid-column: 1 / -1;
 }
 
 .chart-card {
@@ -203,11 +390,29 @@
   padding: 2rem;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .chart-card:hover {
-  border-color: rgba(255, 71, 66, 0.25);
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 71, 66, 0.3);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.chart-card:hover::before {
+  opacity: 1;
 }
 
 .chart-header {
@@ -488,8 +693,152 @@
   }
 }
 
+/* Bar Shine Effect */
+.bar-shine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3), transparent);
+  border-radius: 6px 6px 0 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.bar:hover .bar-shine {
+  opacity: 1;
+}
+
+/* Animated Bar Effect */
+.animated-bar {
+  position: relative;
+  overflow: hidden;
+}
+
+.bar-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    left: 100%;
+  }
+}
+
+/* Line Chart Styles */
+.line-chart {
+  padding: 1.5rem 0;
+  min-height: 200px;
+}
+
+.line-chart-container {
+  width: 100%;
+  height: 150px;
+}
+
+.line-chart-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.animated-line {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: draw-line 2s ease-in-out forwards;
+}
+
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.chart-point {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.chart-point:hover {
+  r: 6;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+/* Donut Chart */
+.donut-chart {
+  padding: 1.5rem 0;
+  min-height: 250px;
+}
+
+.donut-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.donut-svg {
+  width: 200px;
+  height: 200px;
+}
+
+.donut-segment {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.donut-segment:hover {
+  filter: brightness(1.2);
+  stroke-width: 28;
+}
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.donut-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.donut-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.donut-dot.income {
+  background: #10B981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.donut-dot.expense {
+  background: #EF4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
 @media (max-width: 1200px) {
   .analytics-charts {
+    grid-template-columns: 1fr;
+  }
+  
+  .chart-card-large {
+    grid-column: 1;
+  }
+  
+  .trend-cards {
     grid-template-columns: 1fr;
   }
 }

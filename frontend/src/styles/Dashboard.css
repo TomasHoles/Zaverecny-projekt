@@ -4,6 +4,8 @@
   max-width: 1500px;
   margin: 0 auto;
   min-height: calc(100vh - 80px);
+  position: relative;
+  background: linear-gradient(135deg, #0A0A0B 0%, #1A0E0F 25%, #0D0506 50%, #1A1A1D 75%, #0A0A0B 100%);
 }
 
 /* Header */
@@ -14,15 +16,35 @@
   margin-bottom: 2.5rem;
   padding-bottom: 2rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 150px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-primary), transparent);
+  border-radius: 2px;
 }
 
 .dashboard-title {
   font-size: 2.25rem;
   margin: 0 0 0.75rem 0;
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-primary);
+  animation: title-glow 3s ease-in-out infinite;
+}
+
+@keyframes title-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 0px rgba(255, 71, 66, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(255, 71, 66, 0.3));
+  }
 }
 
 .dashboard-subtitle {
@@ -32,7 +54,7 @@
 }
 
 .btn-add-transaction {
-  background: var(--accent-primary);
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   color: white;
   padding: 0.9rem 1.75rem;
   border-radius: 10px;
@@ -42,12 +64,28 @@
   transition: all 0.3s ease;
   border: none;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-add-transaction::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-add-transaction:hover::before {
+  left: 100%;
 }
 
 .btn-add-transaction:hover {
-  background: var(--accent-secondary);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(255, 71, 66, 0.35);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 30px rgba(255, 71, 66, 0.4);
 }
 
 /* Stats Grid */

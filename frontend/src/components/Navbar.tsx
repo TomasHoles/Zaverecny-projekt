@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import Icon from './Icon';
@@ -9,6 +9,7 @@ import logo from '../assets/logo.png';
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -62,10 +63,13 @@ const Navbar: React.FC = () => {
         </Link>
       </div>
       <div className="navbar-links">
-        <Link to="/dashboard" className="nav-link">Přehled</Link>
-        <Link to="/transactions" className="nav-link">Transakce</Link>
-        <Link to="/budgets" className="nav-link">Rozpočty</Link>
-        <Link to="/analytics" className="nav-link">Analytika</Link>
+        <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>Home</Link>
+        <Link to="/dashboard" className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}>Přehled</Link>
+        <Link to="/transactions" className={`nav-link ${location.pathname === '/transactions' ? 'active' : ''}`}>Transakce</Link>
+        <Link to="/budgets" className={`nav-link ${location.pathname === '/budgets' ? 'active' : ''}`}>Rozpočty</Link>
+        <Link to="/analytics" className={`nav-link ${location.pathname === '/analytics' ? 'active' : ''}`}>Analytika</Link>
+      </div>
+      <div className="user-section" ref={dropdownRef}>
         {user && (
           <Link to="/notifications" className="nav-link notification-link">
             <Icon name="bell" size={20} color="currentColor" />
@@ -74,8 +78,6 @@ const Navbar: React.FC = () => {
             )}
           </Link>
         )}
-      </div>
-      <div className="user-section" ref={dropdownRef}>
         {user ? (
           <>
             <div 

@@ -1,7 +1,7 @@
 ﻿/* Transactions Page */
 .transactions-page {
   min-height: 100vh;
-  background: radial-gradient(circle at center, rgba(155, 77, 202, 0.05) 0%, var(--bg-primary) 70%);
+  background: linear-gradient(135deg, #0A0A0B 0%, #1A0E0F 25%, #0D0506 50%, #1A1A1D 75%, #0A0A0B 100%);
   color: var(--text-primary);
   padding: 3rem 2rem;
 }
@@ -16,10 +16,7 @@
   font-size: 2.5rem;
   font-weight: 800;
   margin-bottom: 0.75rem;
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-primary);
 }
 
 .transactions-subtitle {
@@ -32,10 +29,10 @@
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
-  background: rgba(26, 26, 29, 0.8);
+  background: rgba(26, 26, 29, 0.4);
   padding: 0.5rem;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
@@ -845,8 +842,8 @@ select.form-input option:disabled {
 }
 
 .recurring-section-card {
-  background: rgba(26, 26, 29, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(26, 26, 29, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 14px;
   padding: 2rem;
   backdrop-filter: blur(10px);

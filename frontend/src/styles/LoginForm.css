@@ -10,18 +10,19 @@
   min-height: auto;  /* Automatická výška podle obsahu */
   padding: 3rem 1rem;  /* Menší vertikální padding shora a zdola */
   width: 100%;
+  background: linear-gradient(135deg, #0A0A0B 0%, #1A0E0F 25%, #0D0506 50%, #1A1A1D 75%, #0A0A0B 100%);
 }
 
 /* Karta s formulářem - glassmorphism design */
 .login-card {
-  background: rgba(255, 255, 255, 0.05);  /* Poloprůhledné bílé pozadí */
-  backdrop-filter: blur(10px);  /* Rozostření pro glassmorphism efekt */
+  background: rgba(255, 255, 255, 0.02);  /* Vyšší průhlednost */
+  backdrop-filter: blur(15px);  /* Rozostření pro glassmorphism efekt */
   border-radius: 20px;  /* Zaoblené rohy */
   padding: 2rem 3rem;  /* Zmenšený vertikální padding */
   width: 90%;  /* Zabere 90% šířky kontejneru */
   max-width: 900px;  /* Maximální šířka 900px */
-  border: 1px solid rgba(255, 255, 255, 0.1);  /* Jemný bílý okraj */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);  /* Stín pro hloubku */
+  border: 1px solid rgba(255, 255, 255, 0.05);  /* Jemnější bílý okraj */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);  /* Stín pro hloubku */
 }
 
 /* Nadpis formuláře */

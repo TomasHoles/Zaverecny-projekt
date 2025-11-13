@@ -57,10 +57,7 @@
 }
 
 .logo-text {
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-primary);
   font-weight: 700;
   font-size: 1.5rem;
 }
@@ -73,7 +70,7 @@
 }
 
 .nav-link {
-  color: var(--text-primary);
+  color: var(--text-secondary);
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
@@ -82,7 +79,11 @@
 }
 
 .nav-link:hover {
-  color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+.nav-link.active {
+  color: var(--text-primary);
 }
 
 .nav-link::after {
@@ -145,6 +146,10 @@
 .user-section {
   position: relative;
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-right: 1rem;
 }
 
 .user-avatar {
