@@ -1,0 +1,175 @@
+/* Skeleton Loading Animations */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 0%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 100%
+  );
+  background-size: 200% 100%;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animation Types */
+.skeleton-pulse {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-wave {
+  animation: skeleton-wave 1.5s linear infinite;
+}
+
+.skeleton-none {
+  background: var(--skeleton-base);
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes skeleton-wave {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* CSS Variables for Skeleton Colors */
+:root {
+  --skeleton-base: rgba(255, 255, 255, 0.05);
+  --skeleton-highlight: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] {
+  --skeleton-base: rgba(0, 0, 0, 0.08);
+  --skeleton-highlight: rgba(0, 0, 0, 0.12);
+}
+
+/* Skeleton Card Layouts */
+.skeleton-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--bg-tertiary);
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skeleton-stat-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--bg-tertiary);
+  border-radius: 20px;
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.skeleton-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--skeleton-base);
+  flex-shrink: 0;
+}
+
+.skeleton-stat-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skeleton-transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  border: 1px solid var(--bg-tertiary);
+}
+
+.skeleton-transaction-left {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex: 1;
+}
+
+.skeleton-transaction-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--skeleton-base);
+  flex-shrink: 0;
+}
+
+.skeleton-transaction-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.skeleton-budget-item {
+  background: var(--bg-primary);
+  border-radius: 15px;
+  border: 1px solid var(--bg-tertiary);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skeleton-budget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skeleton-budget-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skeleton-progress-bar {
+  height: 8px;
+  background: var(--skeleton-base);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Grid Layouts */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .skeleton-card {
+    padding: 1.5rem;
+  }
+  
+  .skeleton-stat-card {
+    padding: 1rem;
+  }
+}

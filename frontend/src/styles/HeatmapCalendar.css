@@ -1,0 +1,182 @@
+/* Heatmap Calendar Component */
+.heatmap-calendar {
+  background: var(--bg-secondary);
+  border: 1px solid var(--bg-tertiary);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.heatmap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.heatmap-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.legend-colors {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.legend-square {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--bg-tertiary);
+}
+
+.heatmap-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 1rem 0;
+}
+
+.heatmap-week {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.heatmap-day {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.heatmap-day:hover {
+  transform: scale(1.15);
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.heatmap-day .day-number {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  opacity: 0.7;
+}
+
+.heatmap-day:hover .day-number {
+  opacity: 1;
+}
+
+/* Tooltip */
+.heatmap-day::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-primary);
+  border: 1px solid var(--bg-tertiary);
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  white-space: pre-line;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+  min-width: 150px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.heatmap-day:hover::after {
+  opacity: 1;
+}
+
+/* Color Variables */
+:root {
+  --heatmap-empty: rgba(255, 255, 255, 0.05);
+  --heatmap-positive-1: rgba(16, 185, 129, 0.2);
+  --heatmap-positive-2: rgba(16, 185, 129, 0.4);
+  --heatmap-positive-3: rgba(16, 185, 129, 0.6);
+  --heatmap-positive-4: rgba(16, 185, 129, 0.8);
+  --heatmap-negative-1: rgba(239, 68, 68, 0.2);
+  --heatmap-negative-2: rgba(239, 68, 68, 0.4);
+  --heatmap-negative-3: rgba(239, 68, 68, 0.6);
+  --heatmap-negative-4: rgba(239, 68, 68, 0.8);
+}
+
+[data-theme="light"] {
+  --heatmap-empty: rgba(0, 0, 0, 0.05);
+  --heatmap-positive-1: rgba(16, 185, 129, 0.3);
+  --heatmap-positive-2: rgba(16, 185, 129, 0.5);
+  --heatmap-positive-3: rgba(16, 185, 129, 0.7);
+  --heatmap-positive-4: rgba(16, 185, 129, 0.9);
+  --heatmap-negative-1: rgba(239, 68, 68, 0.3);
+  --heatmap-negative-2: rgba(239, 68, 68, 0.5);
+  --heatmap-negative-3: rgba(239, 68, 68, 0.7);
+  --heatmap-negative-4: rgba(239, 68, 68, 0.9);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .heatmap-calendar {
+    padding: 1.5rem;
+  }
+
+  .heatmap-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .heatmap-day {
+    width: 32px;
+    height: 32px;
+  }
+
+  .heatmap-day .day-number {
+    font-size: 0.625rem;
+  }
+
+  .heatmap-grid {
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .heatmap-day::after {
+    font-size: 0.75rem;
+    min-width: 120px;
+  }
+}
+
+/* Light Mode */
+[data-theme="light"] .heatmap-calendar {
+  background: var(--bg-secondary);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .heatmap-day::after {
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}

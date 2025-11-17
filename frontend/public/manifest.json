@@ -1,6 +1,7 @@
 {
   "short_name": "Plutoa",
-  "name": "Plutoa - Správa osobních financí",
+  "name": "Plutoa - Personal Finance Manager",
+  "description": "Kompletní správa osobních financí. Sledujte příjmy, výdaje, rozpočty a finanční cíle na jednom místě.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,16 +11,22 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#FF4742",
+  "background_color": "#1a1a1d",
+  "orientation": "portrait",
+  "scope": "/",
+  "categories": ["finance", "productivity", "business"],
+  "prefer_related_applications": false
 }

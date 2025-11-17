@@ -1,12 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import dashboardService, { AnalyticsData } from '../services/dashboardService';
+import dashboardService, { 
+  AnalyticsData, 
+  FinancialInsight, 
+  FinancialHealthScore,
+  TrendAnalysis,
+  CategoryBreakdown 
+} from '../services/dashboardService';
 import Icon from './Icon';
+import HeatmapCalendar from './HeatmapCalendar';
+import WaterfallChart from './WaterfallChart';
+import CategoryPieChart from './CategoryPieChart';
+import {
+  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart
+} from 'recharts';
 import '../styles/Analytics.css';
+
+// Helper function for health rating
+const getHealthRating = (score: number) => {
+  if (score >= 80) {
+    return { 
+      icon: <Icon name="check" size={32} color="#10b981" />, 
+      color: '#10b981' 
+    };
+  } else if (score >= 60) {
+    return { 
+      icon: <Icon name="trending-up" size={32} color="#f59e0b" />, 
+      color: '#f59e0b' 
+    };
+  } else {
+    return { 
+      icon: <Icon name="warning" size={32} color="#ef4444" />, 
+      color: '#ef4444' 
+    };
+  }
+};
 
 const Analytics: React.FC = () => {
   const { user } = useAuth();
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
+  const [insights, setInsights] = useState<FinancialInsight[]>([]);
+  const [healthScore, setHealthScore] = useState<FinancialHealthScore | null>(null);
+  const [trends, setTrends] = useState<TrendAnalysis[]>([]);
+  const [categoryBreakdown, setCategoryBreakdown] = useState<CategoryBreakdown[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<string>('6m');
@@ -25,14 +62,58 @@ const Analytics: React.FC = () => {
           return;
         }
         
-        console.log('🔍 Načítám analytická data pro:', timeRange);
-        const data = await dashboardService.getAnalytics(timeRange);
-        console.log('✅ Analytics data:', data);
-        setAnalytics(data);
+        console.log('Načítám analytická data pro:', timeRange);
+        
+        // Paralelní načtení všech dat s error handling pro každý endpoint
+        const results = await Promise.allSettled([
+          dashboardService.getAnalytics(timeRange),
+          dashboardService.getFinancialInsights(timeRange),
+          dashboardService.getFinancialHealthScore(),
+          dashboardService.getTrends(timeRange),
+          dashboardService.getCategoryBreakdown(timeRange)
+        ]);
+        
+        const analyticsData = results[0].status === 'fulfilled' ? results[0].value : null;
+        const insightsData = results[1].status === 'fulfilled' ? results[1].value : [];
+        const healthScoreData = results[2].status === 'fulfilled' ? results[2].value : null;
+        const trendsData = results[3].status === 'fulfilled' ? results[3].value : [];
+        const categoryData = results[4].status === 'fulfilled' ? results[4].value : [];
+        
+        console.log('Analytics data:', analyticsData);
+        console.log('Insights:', insightsData);
+        console.log('Health Score:', healthScoreData);
+        console.log('Trends:', trendsData);
+        console.log('Category:', categoryData);
+        
+        setAnalytics(analyticsData);
+        setInsights(insightsData);
+        setHealthScore(healthScoreData);
+        setTrends(trendsData);
+        setCategoryBreakdown(categoryData);
+        
+        // Pokud analytics data chybí, zobrazíme error
+        if (!analyticsData) {
+          throw new Error('Nepodařilo se načíst základní analytická data');
+        }
       } catch (err: any) {
-        console.error('❌ Chyba při načítání analytických dat:', err);
+        console.error('Chyba při načítání analytických dat:', err);
         console.error('Response:', err.response?.data);
-        setError('Nepodařilo se načíst analytická data');
+        console.error('Status:', err.response?.status);
+        console.error('Full error:', err);
+        
+        let errorMessage = 'Nepodařilo se načíst analytická data';
+        
+        if (err.response?.status === 401) {
+          errorMessage = 'Nejste přihlášeni. Přihlaste se prosím.';
+        } else if (err.response?.status === 404) {
+          errorMessage = 'API endpoint nenalezen. Zkontrolujte backend.';
+        } else if (err.response?.data?.detail) {
+          errorMessage = err.response.data.detail;
+        } else if (err.message) {
+          errorMessage = `${errorMessage}: ${err.message}`;
+        }
+        
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -59,6 +140,29 @@ const Analytics: React.FC = () => {
       maximumFractionDigits: 0,
     }).format(amount);
   };
+
+  // Custom tooltip pro grafy
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="custom-tooltip">
+          <p className="tooltip-label">{label}</p>
+          {payload.map((entry: any, index: number) => (
+            <p key={index} style={{ color: entry.color }}>
+              {entry.name}: {formatCurrency(entry.value)}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  // Barvy pro kategorie
+  const CATEGORY_COLORS = [
+    '#FF6B6B', '#4ECDC4', '#45B7D1', '#F7DC6F', '#BB8FCE', 
+    '#85C1E2', '#52B788', '#F28B82', '#FBC02D', '#7986CB'
+  ];
 
   const getMaxAmount = () => {
     if (!analytics || !analytics.monthly_data || analytics.monthly_data.length === 0) return 1000;
@@ -100,12 +204,12 @@ const Analytics: React.FC = () => {
     );
   }
 
-  if (error) {
+  if (error || !analytics) {
     return (
       <div className="analytics-page">
         <div className="analytics-empty">
-          <p className="error-message">❌ {error}</p>
-          <button onClick={() => window.location.reload()} className="retry-button">
+          <p className="error-message">{error || 'Nepodařilo se načíst data'}</p>
+          <button onClick={() => setRefreshTrigger(prev => prev + 1)} className="retry-button">
             Zkusit znovu
           </button>
         </div>
@@ -117,6 +221,30 @@ const Analytics: React.FC = () => {
   const trend = calculateTrend();
   const topCategory = getTopCategory();
   const savingsRate = getSavingsRate();
+  
+  // Kontrola, zda má uživatel nějaká data
+  const hasData = analytics && (
+    analytics.total_income > 0 || 
+    analytics.total_expenses > 0 || 
+    (analytics.monthly_data && analytics.monthly_data.length > 0)
+  );
+  
+  const getInsightIcon = (type: string) => {
+    switch(type) {
+      case 'warning': return { name: 'warning', color: '#F97316' };
+      case 'tip': return { name: 'lightbulb', color: '#3B82F6' };
+      case 'achievement': return { name: 'star', color: '#10B981' };
+      case 'info': return { name: 'info', color: '#6366F1' };
+      default: return { name: 'chart', color: '#8B5CF6' };
+    }
+  };
+  
+  const getHealthScoreStatus = (score: number) => {
+    if (score >= 80) return { color: '#10B981', icon: 'star', label: 'Výborné' };
+    if (score >= 60) return { color: '#3B82F6', icon: 'check', label: 'Dobré' };
+    if (score >= 40) return { color: '#F97316', icon: 'warning', label: 'Průměrné' };
+    return { color: '#EF4444', icon: 'close', label: 'Vyžaduje zlepšení' };
+  };
 
   return (
     <div className="analytics-page">
@@ -134,7 +262,7 @@ const Analytics: React.FC = () => {
             onClick={() => setRefreshTrigger(prev => prev + 1)}
             title="Obnovit data"
           >
-            🔄
+            ↻
           </button>
           <div className="time-range-selector">
             <button 
@@ -155,9 +283,169 @@ const Analytics: React.FC = () => {
             >
               6 měsíců
             </button>
+            <button 
+              className={`time-range-btn ${timeRange === '1y' ? 'active' : ''}`}
+              onClick={() => setTimeRange('1y')}
+            >
+              1 rok
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Empty State - když nemáte žádná data */}
+      {!hasData && (
+        <div className="analytics-empty">
+          <h2>Zatím nemáte dostatek dat</h2>
+          <p>Začněte přidávat transakce, abychom mohli zobrazit vaši analytiku.</p>
+          <a href="/transactions" className="btn-primary">
+            Přidat transakci
+          </a>
+        </div>
+      )}
+
+      {/* Data content */}
+      {hasData && (
+        <>
+      {/* Financial Health Score Card */}
+      {healthScore && (
+        <div className="health-score-card">
+          <div className="health-score-header">
+            <div className="health-score-icon">
+              {getHealthRating(healthScore.score).icon}
+            </div>
+            <div className="health-score-info">
+              <h2>Finanční zdraví</h2>
+              <p className="health-score-rating">{healthScore.rating}</p>
+            </div>
+          </div>
+          <div className="health-score-body">
+            <div className="health-score-gauge">
+              <svg viewBox="0 0 200 120" className="gauge-svg">
+                <path
+                  d="M 20 100 A 80 80 0 0 1 180 100"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.1)"
+                  strokeWidth="20"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M 20 100 A 80 80 0 0 1 180 100"
+                  fill="none"
+                  stroke={getHealthRating(healthScore.score).color}
+                  strokeWidth="20"
+                  strokeLinecap="round"
+                  strokeDasharray={`${(healthScore.score / 100) * 251.2} 251.2`}
+                  style={{ transition: 'stroke-dasharray 1s ease' }}
+                />
+                <text x="100" y="90" textAnchor="middle" className="gauge-score">
+                  {healthScore.score.toFixed(0)}
+                </text>
+                <text x="100" y="110" textAnchor="middle" className="gauge-max">
+                  / {healthScore.max_score}
+                </text>
+              </svg>
+            </div>
+            {healthScore.recommendations && healthScore.recommendations.length > 0 && (
+              <div className="health-recommendations">
+                <h4>Doporučení:</h4>
+                <ul>
+                  {healthScore.recommendations.map((rec, idx) => (
+                    <li key={idx}>{rec}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Insights Section */}
+      {insights && insights.length > 0 && (
+        <div className="insights-section">
+          <h2 className="section-title">Finanční Insights</h2>
+          <div className="insights-grid">
+            {insights.slice(0, 6).map((insight, idx) => {
+              const iconData = getInsightIcon(insight.type);
+              return (
+                <div key={idx} className={`insight-card insight-${insight.type}`}>
+                  <div className="insight-header">
+                    <span className="insight-icon">
+                      <Icon name={iconData.name as any} size={20} color={iconData.color} />
+                    </span>
+                    <h4>{insight.title}</h4>
+                  </div>
+                  <p className="insight-message">{insight.message}</p>
+                  {insight.amount && (
+                    <div className="insight-amount">
+                      {formatCurrency(insight.amount)}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Trends Section */}
+      {trends && trends.length > 0 && (
+        <div className="trends-section">
+          <h2 className="section-title">Trendy</h2>
+          <div className="trends-grid">
+            {trends.map((trend, idx) => (
+              <div key={idx} className="trend-card">
+                <div className="trend-header">
+                  <Icon 
+                    name={trend.trend === 'up' ? 'trending-up' : trend.trend === 'down' ? 'trending-down' : 'minus'} 
+                    size={24}
+                    color={trend.trend === 'up' ? '#10B981' : trend.trend === 'down' ? '#EF4444' : '#6B7280'}
+                  />
+                  <h4>{trend.metric === 'income' ? 'Příjmy' : trend.metric === 'expenses' ? 'Výdaje' : 'Úspory'}</h4>
+                </div>
+                <div className="trend-change">
+                  <span className={`trend-percentage ${trend.trend}`}>
+                    {trend.change_percentage > 0 ? '+' : ''}{trend.change_percentage.toFixed(1)}%
+                  </span>
+                  <span className="trend-amount">
+                    {trend.change_amount > 0 ? '+' : ''}{formatCurrency(trend.change_amount)}
+                  </span>
+                </div>
+                <p className="trend-comparison">{trend.comparison_text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Enhanced Visualizations */}
+      {analytics?.transactions && analytics.transactions.length > 0 && (
+        <>
+          {/* Heatmap Calendar */}
+          <HeatmapCalendar 
+            transactions={analytics.transactions}
+            months={3}
+          />
+
+          {/* Waterfall Chart */}
+          <WaterfallChart 
+            transactions={analytics.transactions}
+            startBalance={0}
+          />
+
+          {/* Category Pie Charts */}
+          <div className="pie-charts-grid">
+            <CategoryPieChart 
+              transactions={analytics.transactions}
+              type="EXPENSE"
+            />
+            <CategoryPieChart 
+              transactions={analytics.transactions}
+              type="INCOME"
+            />
+          </div>
+        </>
+      )}
 
       {/* Summary Cards */}
       <div className="analytics-summary">
@@ -259,257 +547,178 @@ const Analytics: React.FC = () => {
 
       {/* Charts Section */}
       <div className="analytics-charts">
-        {/* Monthly Comparison Chart */}
-        <div className="chart-card chart-card-large">
+        {/* Monthly Comparison Chart - Recharts */}
+        <div className="chart-card chart-card-full">
           <div className="chart-header">
-            <h3>Měsíční přehled</h3>
-            <small style={{color: 'var(--text-secondary)', fontSize: '0.85rem'}}>
-              {analytics?.monthly_data ? `${analytics.monthly_data.length} měsíců` : 'Načítám...'}
-            </small>
+            <h3>Měsíční přehled - Příjmy vs Výdaje</h3>
           </div>
-          <div className="bar-chart">
+          <div className="recharts-container">
             {analytics?.monthly_data && analytics.monthly_data.length > 0 ? (
-              analytics.monthly_data.slice().reverse().map((month, index) => (
-                <div key={index} className="bar-group">
-                  <div className="bars">
-                    <div 
-                      className="bar income-bar"
-                      style={{ height: `${(month.income / maxAmount) * 200}px` }}
-                      title={`Příjmy: ${formatCurrency(month.income)}`}
-                      data-value={formatCurrency(month.income)}
-                    >
-                      {month.income > 0 && <span className="bar-value">{formatCurrency(month.income)}</span>}
-                      <div className="bar-shine"></div>
-                    </div>
-                    <div 
-                      className="bar expense-bar"
-                      style={{ height: `${(month.expenses / maxAmount) * 200}px` }}
-                      title={`Výdaje: ${formatCurrency(month.expenses)}`}
-                      data-value={formatCurrency(month.expenses)}
-                    >
-                      {month.expenses > 0 && <span className="bar-value">{formatCurrency(month.expenses)}</span>}
-                      <div className="bar-shine"></div>
-                    </div>
-                  </div>
-                  <div className="bar-label">{month.month}</div>
-                </div>
-              ))
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={analytics.monthly_data.slice().reverse()}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis 
+                    dataKey="month" 
+                    stroke="var(--text-secondary)"
+                    style={{ fontSize: '0.875rem' }}
+                  />
+                  <YAxis 
+                    stroke="var(--text-secondary)"
+                    style={{ fontSize: '0.875rem' }}
+                    tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend 
+                    wrapperStyle={{ fontSize: '0.875rem' }}
+                    iconType="circle"
+                  />
+                  <Bar 
+                    dataKey="income" 
+                    name="Příjmy" 
+                    fill="#10B981" 
+                    radius={[8, 8, 0, 0]}
+                  />
+                  <Bar 
+                    dataKey="expenses" 
+                    name="Výdaje" 
+                    fill="#EF4444" 
+                    radius={[8, 8, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             ) : (
               <div className="chart-empty">
-                <Icon name="chart" size={48} />
-                <p style={{ marginTop: '1rem', fontSize: '1.1rem', fontWeight: '600' }}>
-                  Zatím žádné transakce
-                </p>
-                <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-                  Přidejte své první příjmy a výdaje pro zobrazení grafů
-                </p>
+                <Icon name="bar-chart" size={48} />
+                <p>Zatím žádná data k zobrazení</p>
               </div>
             )}
           </div>
-          <div className="chart-legend">
-            <div className="legend-item">
-              <span className="legend-color income-color"></span>
-              <span>Příjmy</span>
-            </div>
-            <div className="legend-item">
-              <span className="legend-color expense-color"></span>
-              <span>Výdaje</span>
-            </div>
-          </div>
         </div>
+      </div>
 
-        {/* Savings Trend Line Chart */}
+      {/* Second Row - Savings Trend + Category Pie */}
+      <div className="analytics-charts-row">
+        {/* Savings Trend - Area Chart */}
         <div className="chart-card">
           <div className="chart-header">
-            <h3>Trend úspor</h3>
+            <h3>Trend úspor v čase</h3>
           </div>
-          <div className="line-chart">
+          <div className="recharts-container">
             {analytics?.monthly_data && analytics.monthly_data.length > 0 ? (
-              <div className="line-chart-container">
-                <svg className="line-chart-svg" viewBox="0 0 400 150">
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={analytics.monthly_data.slice().reverse()}>
                   <defs>
-                    <linearGradient id="savingsGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.3" />
-                      <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0" />
+                    <linearGradient id="colorSavings" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0.1}/>
                     </linearGradient>
                   </defs>
-                  {(() => {
-                    const data = analytics.monthly_data.slice().reverse();
-                    const maxSavings = Math.max(...data.map(d => Math.abs(d.savings)), 1);
-                    const points = data.map((d, i) => {
-                      const x = (i / (data.length - 1)) * 380 + 10;
-                      const y = 120 - ((d.savings + maxSavings) / (maxSavings * 2)) * 100;
-                      return `${x},${y}`;
-                    }).join(' ');
-                    const areaPoints = `10,120 ${points} ${380},120`;
-                    return (
-                      <>
-                        <polyline
-                          points={areaPoints}
-                          fill="url(#savingsGradient)"
-                          stroke="none"
-                        />
-                        <polyline
-                          points={points}
-                          fill="none"
-                          stroke="#8B5CF6"
-                          strokeWidth="3"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="animated-line"
-                        />
-                        {data.map((d, i) => {
-                          const x = (i / (data.length - 1)) * 380 + 10;
-                          const y = 120 - ((d.savings + maxSavings) / (maxSavings * 2)) * 100;
-                          return (
-                            <circle
-                              key={i}
-                              cx={x}
-                              cy={y}
-                              r="4"
-                              fill="#8B5CF6"
-                              className="chart-point"
-                            >
-                              <title>{`${d.month}: ${formatCurrency(d.savings)}`}</title>
-                            </circle>
-                          );
-                        })}
-                      </>
-                    );
-                  })()}
-                </svg>
-              </div>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis 
+                    dataKey="month" 
+                    stroke="var(--text-secondary)"
+                    style={{ fontSize: '0.875rem' }}
+                  />
+                  <YAxis 
+                    stroke="var(--text-secondary)"
+                    style={{ fontSize: '0.875rem' }}
+                    tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Area 
+                    type="monotone" 
+                    dataKey="savings" 
+                    name="Úspory"
+                    stroke="#8B5CF6" 
+                    strokeWidth={3}
+                    fill="url(#colorSavings)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             ) : (
               <div className="chart-empty">
+                <Icon name="trending-up" size={48} />
                 <p>Žádná data k zobrazení</p>
               </div>
             )}
           </div>
         </div>
-      </div>
 
-      {/* Second Row Charts */}
-      <div className="analytics-charts">
-        {/* Category Breakdown */}
+        {/* Category Breakdown - Pie Chart */}
         <div className="chart-card">
           <div className="chart-header">
             <h3>Výdaje podle kategorií</h3>
           </div>
-          <div className="category-chart">
+          <div className="recharts-container">
             {analytics?.category_data && analytics.category_data.length > 0 ? (
-              analytics.category_data.map((category, index) => {
-                const totalExpenses = analytics.total_expenses || 1;
-                const percentage = (category.total / totalExpenses) * 100;
-                const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#F7DC6F', '#BB8FCE', '#85C1E2'];
-                const color = colors[index % colors.length];
-                return (
-                  <div key={index} className="category-item">
-                    <div className="category-info">
-                      <span className="category-name">{category.category__name || 'Ostatní'}</span>
-                      <span className="category-amount">{formatCurrency(category.total)}</span>
-                    </div>
-                    <div className="category-bar-container">
-                      <div 
-                        className="category-bar animated-bar"
-                        style={{ 
-                          width: `${percentage}%`,
-                          background: `linear-gradient(90deg, ${color}, ${color}dd)`,
-                          boxShadow: `0 0 10px ${color}55`
-                        }}
-                      >
-                        <div className="bar-shimmer"></div>
-                      </div>
-                    </div>
-                    <span className="category-percentage">{percentage.toFixed(1)}%</span>
-                  </div>
-                );
-              })
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={analytics.category_data as any}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={(entry: any) => `${entry.category__name}: ${((entry.total / analytics.total_expenses) * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="total"
+                  >
+                    {analytics.category_data.map((entry: any, index: number) => (
+                      <Cell key={`cell-${index}`} fill={CATEGORY_COLORS[index % CATEGORY_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    formatter={(value: any) => formatCurrency(value)}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
             ) : (
               <div className="chart-empty">
-                <Icon name="target" size={48} />
-                <p style={{ marginTop: '1rem', fontSize: '1.1rem', fontWeight: '600' }}>
-                  Zatím žádné výdaje
-                </p>
-                <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-                  Graf se zobrazí po přidání výdajů s kategoriemi
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Donut Chart */}
-        <div className="chart-card">
-          <div className="chart-header">
-            <h3>Rozložení financí</h3>
-          </div>
-          <div className="donut-chart">
-            {analytics && (analytics.total_income > 0 || analytics.total_expenses > 0) ? (
-              <div className="donut-container">
-                <svg className="donut-svg" viewBox="0 0 200 200">
-                  {(() => {
-                    const total = analytics.total_income + analytics.total_expenses;
-                    const incomePercent = (analytics.total_income / total) * 100;
-                    const expensePercent = (analytics.total_expenses / total) * 100;
-                    const circumference = 2 * Math.PI * 60;
-                    const incomeLength = (incomePercent / 100) * circumference;
-                    const expenseOffset = incomeLength;
-                    
-                    return (
-                      <>
-                        <circle
-                          cx="100"
-                          cy="100"
-                          r="60"
-                          fill="none"
-                          stroke="#10B981"
-                          strokeWidth="25"
-                          strokeDasharray={`${incomeLength} ${circumference}`}
-                          strokeDashoffset="0"
-                          transform="rotate(-90 100 100)"
-                          className="donut-segment"
-                        />
-                        <circle
-                          cx="100"
-                          cy="100"
-                          r="60"
-                          fill="none"
-                          stroke="#EF4444"
-                          strokeWidth="25"
-                          strokeDasharray={`${(expensePercent / 100) * circumference} ${circumference}`}
-                          strokeDashoffset={-expenseOffset}
-                          transform="rotate(-90 100 100)"
-                          className="donut-segment"
-                        />
-                        <text x="100" y="95" textAnchor="middle" fontSize="14" fill="var(--text-secondary)">
-                          Rozdělení
-                        </text>
-                        <text x="100" y="115" textAnchor="middle" fontSize="20" fontWeight="bold" fill="var(--text-primary)">
-                          {((analytics.total_income / total) * 100).toFixed(0)}%
-                        </text>
-                      </>
-                    );
-                  })()}
-                </svg>
-                <div className="donut-legend">
-                  <div className="donut-legend-item">
-                    <span className="donut-dot income"></span>
-                    <span>Příjmy ({((analytics.total_income / (analytics.total_income + analytics.total_expenses)) * 100).toFixed(0)}%)</span>
-                  </div>
-                  <div className="donut-legend-item">
-                    <span className="donut-dot expense"></span>
-                    <span>Výdaje ({((analytics.total_expenses / (analytics.total_income + analytics.total_expenses)) * 100).toFixed(0)}%)</span>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="chart-empty">
-                <p>Žádná data</p>
+                <Icon name="pie-chart" size={48} />
+                <p>Žádné kategorie</p>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Category Details List */}
+      {analytics?.category_data && analytics.category_data.length > 0 && (
+        <div className="chart-card">
+          <div className="chart-header">
+            <h3>Detailní přehled kategorií</h3>
+          </div>
+          <div className="category-list">
+            {analytics.category_data.map((category, index) => {
+              const percentage = (category.total / analytics.total_expenses) * 100;
+              return (
+                <div key={index} className="category-item">
+                  <div className="category-info">
+                    <div 
+                      className="category-color" 
+                      style={{ backgroundColor: CATEGORY_COLORS[index % CATEGORY_COLORS.length] }}
+                    ></div>
+                    <span className="category-name">{category.category__name || 'Ostatní'}</span>
+                  </div>
+                  <div className="category-stats">
+                    <span className="category-amount">{formatCurrency(category.total)}</span>
+                    <span className="category-percentage">{percentage.toFixed(1)}%</span>
+                  </div>
+                  <div className="category-bar-container">
+                    <div 
+                      className="category-bar"
+                      style={{ 
+                        width: `${percentage}%`,
+                        backgroundColor: CATEGORY_COLORS[index % CATEGORY_COLORS.length]
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Insights */}
       <div className="analytics-insights">
@@ -529,6 +738,8 @@ const Analytics: React.FC = () => {
           </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 };

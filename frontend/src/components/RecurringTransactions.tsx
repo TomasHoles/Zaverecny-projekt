@@ -418,7 +418,7 @@ const RecurringTransactions: React.FC = () => {
                 {item.auto_create && (
                   <div className="detail-item">
                     <span className="detail-label">Auto:</span>
-                    <span className="detail-value">✓ Automatické vytváření</span>
+                    <span className="detail-value">Automatické vytváření</span>
                   </div>
                 )}
               </div>

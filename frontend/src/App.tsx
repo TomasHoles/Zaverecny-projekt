@@ -1,40 +1,11 @@
 /**
- * Hlavní komponenta aplikace Plutoa - Osobní finanční plánovač
- * 
- * @description
- * Toto je root komponenta aplikace, která nastavuje routing a globální layout.
- * Všechny stránky sdílejí společný Navbar a Footer.
- * 
- * @structure
- * - Router: Zajišťuje navigaci mezi stránkami (React Router v6)
- * - AuthProvider: Poskytuje autentizační kontext pro celou aplikaci
- * - Navbar: Horní navigační lišta (vždy viditelná)
- * - main.main-content: Kontejner pro obsah stránek (flex: 1 pro sticky footer)
- * - Footer: Spodní patička (vždy na spodku díky flexboxu)
- * 
- * @routes
- * Veřejné routy (přístupné bez přihlášení):
- * - / : Landing page (úvodní stránka)
- * - /login : Přihlašovací formulář
- * - /register : Registrační formulář
- * - /verify-email : Email verifikace (momentálně neaktivní)
- * 
- * Chráněné routy (vyžadují přihlášení pomocí ProtectedRoute):
- * - /dashboard : Hlavní dashboard s přehledem financí
- * - /overview : Detailní přehled s grafy a statistikami
- * - /transactions : Správa transakcí (příjmy/výdaje)
- * - /budgets : Správa rozpočtů
- * - /analytics : Analytické nástroje (v přípravě)
- * - /profile : Uživatelský profil a nastavení
- * 
- * @notes
- * - Všechny chráněné routy automaticky přesměrují na /login pokud uživatel není přihlášen
- * - Layout používá flexbox (min-height: 100vh) pro sticky footer
- * - Catch-all route (*) přesměruje na homepage
+ * Hlavní komponenta aplikace Plutoa
  */
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import Dashboard from './components/Dashboard';
@@ -46,85 +17,128 @@ import Transactions from './components/Transactions';
 import Budgets from './components/Budgets';
 import Analytics from './components/Analytics';
 import Profile from './components/Profile';
+import InstallPrompt from './components/InstallPrompt';
 import Notifications from './components/Notifications';
-import './styles/App.css';
+import Goals from './components/Goals';
+import Breadcrumbs from './components/Breadcrumbs';
 import EmailVerification from './components/EmailVerification';
+import './styles/App.css';
 
 function App() {
   return (
-    <Router>
-      {/* AuthProvider obaluje celou aplikaci a poskytuje autentizační stav */}
-      <AuthProvider>
-        <div className="app">
-          {/* Navbar - viditelný na všech stránkách */}
-          <Navbar />
-          
-          {/* Main content - flex: 1 zajistí, že footer bude vždy na spodku */}
-          <main className="main-content">
-            <Routes>
-              {/* === VEŘEJNÉ ROUTY === */}
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/login" element={<LoginForm />} />
-              <Route path="/register" element={<RegisterForm />} />
-              <Route path="/verify-email" element={<EmailVerification />} />
-              <Route path="/verify-email/:token" element={<EmailVerification />} />
+    <ThemeProvider>
+      <Router>
+        <AuthProvider>
+          <ToastProvider>
+            <div className="app">
+              <Navbar />
               
-              {/* === CHRÁNĚNÉ ROUTY === */}
-              {/* Dashboard - hlavní přehled financí */}
-              <Route path="/dashboard" element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } />
+              <main className="main-content">
+                <Routes>
+                  {/* Veřejné stránky */}
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/login" element={
+                    <div className="page-container">
+                      <Breadcrumbs />
+                      <LoginForm />
+                    </div>
+                  } />
+                  <Route path="/register" element={
+                    <div className="page-container">
+                      <Breadcrumbs />
+                      <RegisterForm />
+                    </div>
+                  } />
+                  <Route path="/verify-email" element={
+                    <div className="page-container">
+                      <Breadcrumbs />
+                      <EmailVerification />
+                    </div>
+                  } />
+                  <Route path="/verify-email/:token" element={
+                    <div className="page-container">
+                      <Breadcrumbs />
+                      <EmailVerification />
+                    </div>
+                  } />
+                  
+                  {/* Chráněné stránky */}
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute>
+                      <div className="page-container">
+                        <Breadcrumbs />
+                        <Dashboard />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  
+                  <Route path="/transactions" element={
+                    <ProtectedRoute>
+                      <div className="page-container">
+                        <Breadcrumbs />
+                        <Transactions />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  
+                  <Route path="/budgets" element={
+                    <ProtectedRoute>
+                      <div className="page-container">
+                        <Breadcrumbs />
+                        <Budgets />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  
+                  <Route path="/goals" element={
+                    <ProtectedRoute>
+                      <div className="page-container">
+                        <Breadcrumbs />
+                        <Goals />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  
+                  <Route path="/analytics" element={
+                    <ProtectedRoute>
+                      <div className="page-container">
+                        <Breadcrumbs />
+                        <Analytics />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  
+                  <Route path="/profile" element={
+                    <ProtectedRoute>
+                      <div className="page-container">
+                        <Breadcrumbs />
+                        <Profile />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  
+                  <Route path="/notifications" element={
+                    <ProtectedRoute>
+                      <div className="page-container">
+                        <Breadcrumbs />
+                        <Notifications />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  
+                  {/* Přesměrování */}
+                  <Route path="/overview" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="*" element={<Navigate to="/" />} />
+                </Routes>
+              </main>
               
-              {/* Transakce - správa příjmů a výdajů */}
-              <Route path="/transactions" element={
-                <ProtectedRoute>
-                  <Transactions />
-                </ProtectedRoute>
-              } />
-              
-              {/* Rozpočty - plánování a sledování rozpočtů */}
-              <Route path="/budgets" element={
-                <ProtectedRoute>
-                  <Budgets />
-                </ProtectedRoute>
-              } />
-              
-              {/* Analytika - grafy a statistiky (v přípravě) */}
-              <Route path="/analytics" element={
-                <ProtectedRoute>
-                  <Analytics />
-                </ProtectedRoute>
-              } />
-              
-              {/* Přehled - přesměrováno na Dashboard (sloučeno) */}
-              <Route path="/overview" element={<Navigate to="/dashboard" replace />} />
-              
-              {/* Profil - nastavení uživatele */}
-              <Route path="/profile" element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              } />
-              
-              {/* Notifikace - centrum oznámení */}
-              <Route path="/notifications" element={
-                <ProtectedRoute>
-                  <Notifications />
-                </ProtectedRoute>
-              } />
-              
-              {/* Catch-all route - přesměruje na homepage */}
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-          </main>
-          
-          {/* Footer - viditelný na všech stránkách, sticky na spodku */}
-          <Footer />
-        </div>
-      </AuthProvider>
-    </Router>
+              <InstallPrompt />
+              <Footer />
+            </div>
+          </ToastProvider>
+        </AuthProvider>
+      </Router>
+    </ThemeProvider>
   );
 }
 

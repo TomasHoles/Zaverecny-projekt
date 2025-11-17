@@ -1,16 +1,18 @@
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, Count
 from django.utils import timezone
 from django.http import HttpResponse
 from datetime import timedelta, datetime
+from dateutil.relativedelta import relativedelta
 import csv
 import json
 from .models import Transaction, Category, RecurringTransaction, RecurringTransactionHistory
 from .serializers import TransactionSerializer, CategorySerializer, RecurringTransactionSerializer, RecurringTransactionHistorySerializer
 from notifications.models import Notification
+from budgets.services import BudgetAlertService
 
 class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -28,18 +30,18 @@ class CategoryViewSet(viewsets.ModelViewSet):
         user = request.user
         
         default_categories = [
-            {'name': 'Jídlo a nápoje', 'icon': '🍔', 'color': '#FF6B6B', 'description': 'Nákupy potravin, restaurace', 'category_type': 'EXPENSE'},
-            {'name': 'Doprava', 'icon': '🚗', 'color': '#4ECDC4', 'description': 'MHD, benzín, taxi', 'category_type': 'EXPENSE'},
-            {'name': 'Bydlení', 'icon': '🏠', 'color': '#45B7D1', 'description': 'Nájem, energie, opravy', 'category_type': 'EXPENSE'},
-            {'name': 'Zábava', 'icon': '🎮', 'color': '#F7DC6F', 'description': 'Kino, sport, hobby', 'category_type': 'EXPENSE'},
-            {'name': 'Oblečení', 'icon': '👕', 'color': '#BB8FCE', 'description': 'Oblečení a obuv', 'category_type': 'EXPENSE'},
-            {'name': 'Zdraví', 'icon': '💊', 'color': '#85C1E2', 'description': 'Léky, lékař, fitness', 'category_type': 'EXPENSE'},
-            {'name': 'Vzdělání', 'icon': '📚', 'color': '#52B788', 'description': 'Kurzy, knihy, škola', 'category_type': 'EXPENSE'},
-            {'name': 'Ostatní výdaje', 'icon': '💸', 'color': '#95A5A6', 'description': 'Ostatní výdaje', 'category_type': 'EXPENSE'},
-            {'name': 'Mzda', 'icon': '💰', 'color': '#2ECC71', 'description': 'Pravidelný příjem z práce', 'category_type': 'INCOME'},
-            {'name': 'Investice', 'icon': '📈', 'color': '#3498DB', 'description': 'Výnosy z investic', 'category_type': 'INCOME'},
-            {'name': 'Dary', 'icon': '🎁', 'color': '#E74C3C', 'description': 'Dárky od rodiny a přátel', 'category_type': 'INCOME'},
-            {'name': 'Ostatní příjmy', 'icon': '💵', 'color': '#16A085', 'description': 'Ostatní příjmy', 'category_type': 'INCOME'},
+            {'name': 'Jídlo a nápoje', 'icon': 'food', 'color': '#FF6B6B', 'description': 'Nákupy potravin, restaurace', 'category_type': 'EXPENSE'},
+            {'name': 'Doprava', 'icon': 'transport', 'color': '#4ECDC4', 'description': 'MHD, benzín, taxi', 'category_type': 'EXPENSE'},
+            {'name': 'Bydlení', 'icon': 'home', 'color': '#45B7D1', 'description': 'Nájem, energie, opravy', 'category_type': 'EXPENSE'},
+            {'name': 'Zábava', 'icon': 'entertainment', 'color': '#F7DC6F', 'description': 'Kino, sport, hobby', 'category_type': 'EXPENSE'},
+            {'name': 'Oblečení', 'icon': 'shopping', 'color': '#BB8FCE', 'description': 'Oblečení a obuv', 'category_type': 'EXPENSE'},
+            {'name': 'Zdraví', 'icon': 'health', 'color': '#85C1E2', 'description': 'Léky, lékař, fitness', 'category_type': 'EXPENSE'},
+            {'name': 'Vzdělání', 'icon': 'education', 'color': '#52B788', 'description': 'Kurzy, knihy, škola', 'category_type': 'EXPENSE'},
+            {'name': 'Ostatní výdaje', 'icon': 'money', 'color': '#95A5A6', 'description': 'Ostatní výdaje', 'category_type': 'EXPENSE'},
+            {'name': 'Mzda', 'icon': 'money', 'color': '#2ECC71', 'description': 'Pravidelný příjem z práce', 'category_type': 'INCOME'},
+            {'name': 'Investice', 'icon': 'trending-up', 'color': '#3498DB', 'description': 'Výnosy z investic', 'category_type': 'INCOME'},
+            {'name': 'Dary', 'icon': 'gift', 'color': '#E74C3C', 'description': 'Dárky od rodiny a přátel', 'category_type': 'INCOME'},
+            {'name': 'Ostatní příjmy', 'icon': 'dollar-sign', 'color': '#16A085', 'description': 'Ostatní příjmy', 'category_type': 'INCOME'},
         ]
         
         created_count = 0
@@ -125,16 +127,31 @@ class TransactionViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        """Uložení transakce a kontrola budget alerts"""
+        transaction = serializer.save(user=self.request.user)
+        
+        # Kontrola rozpočtů a vytvoření notifikací při překročení
+        if transaction.type == 'EXPENSE':
+            BudgetAlertService.check_budget_alerts(self.request.user, transaction)
+    
+    def perform_update(self, serializer):
+        """Aktualizace transakce a kontrola budget alerts"""
+        transaction = serializer.save()
+        
+        # Kontrola rozpočtů po úpravě transakce
+        if transaction.type == 'EXPENSE':
+            BudgetAlertService.check_budget_alerts(self.request.user, transaction)
 
     @action(detail=False, methods=['get'])
     def dashboard_stats(self, request):
-        """Získá základní statistiky pro dashboard"""
+        """Získá základní statistiky pro dashboard s rozšířenými KPI"""
         try:
             user = request.user
             now = timezone.now()
             current_month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
             previous_month_start = (current_month_start - timedelta(days=1)).replace(day=1)
+            last_7_days = now - timedelta(days=7)
+            last_30_days = now - timedelta(days=30)
             
             # Celkové příjmy
             total_income = Transaction.objects.filter(
@@ -223,6 +240,94 @@ class TransactionViewSet(viewsets.ModelViewSet):
             else:
                 savings_change = 0.0
             
+            # --- ROZŠÍŘENÉ KPI ---
+            
+            # 1. Průměrné denní výdaje (posledních 30 dní)
+            last_30_expenses = Transaction.objects.filter(
+                user=user,
+                type='EXPENSE',
+                date__gte=last_30_days
+            ).aggregate(total=Sum('amount'))['total'] or 0
+            avg_daily_spending = float(last_30_expenses) / 30
+            
+            # Předchozích 30 dní pro porovnání
+            prev_30_days_start = now - timedelta(days=60)
+            prev_30_days_end = now - timedelta(days=30)
+            prev_30_expenses = Transaction.objects.filter(
+                user=user,
+                type='EXPENSE',
+                date__gte=prev_30_days_start,
+                date__lt=prev_30_days_end
+            ).aggregate(total=Sum('amount'))['total'] or 0
+            prev_avg_daily = float(prev_30_expenses) / 30
+            
+            if prev_avg_daily > 0:
+                daily_spending_change = ((avg_daily_spending - prev_avg_daily) / prev_avg_daily) * 100
+            else:
+                daily_spending_change = 0.0
+            
+            # 2. Savings Rate (% z příjmů)
+            if current_month_income > 0:
+                savings_rate = (current_month_savings / float(current_month_income)) * 100
+            else:
+                savings_rate = 0.0
+            
+            if previous_month_income > 0:
+                prev_savings_rate = (previous_month_savings / float(previous_month_income)) * 100
+            else:
+                prev_savings_rate = 0.0
+            
+            savings_rate_change = savings_rate - prev_savings_rate
+            
+            # 3. Nejčastější kategorie (count transakcí)
+            most_frequent_category = Transaction.objects.filter(
+                user=user,
+                type='EXPENSE',
+                date__gte=current_month_start
+            ).values('category__name', 'category__icon', 'category__color').annotate(
+                count=Count('id')
+            ).order_by('-count').first()
+            
+            # 4. Nadcházející opakující se platby (7 dní)
+            from .models import RecurringTransaction
+            upcoming_recurring = RecurringTransaction.objects.filter(
+                user=user,
+                status='ACTIVE',
+                next_due_date__lte=now + timedelta(days=7)
+            ).count()
+            
+            # 5. Sparkline data - posledních 7 dní výdajů
+            sparkline_data = []
+            for i in range(6, -1, -1):
+                day_start = (now - timedelta(days=i)).replace(hour=0, minute=0, second=0, microsecond=0)
+                day_end = day_start + timedelta(days=1)
+                day_expenses = Transaction.objects.filter(
+                    user=user,
+                    type='EXPENSE',
+                    date__gte=day_start.date(),
+                    date__lt=day_end.date()
+                ).aggregate(total=Sum('amount'))['total'] or 0
+                sparkline_data.append(float(day_expenses))
+            
+            # 6. Dnešní výdaje
+            today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            today_expenses = Transaction.objects.filter(
+                user=user,
+                type='EXPENSE',
+                date=today_start.date()
+            ).aggregate(total=Sum('amount'))['total'] or 0
+            
+            yesterday_expenses = Transaction.objects.filter(
+                user=user,
+                type='EXPENSE',
+                date=(today_start - timedelta(days=1)).date()
+            ).aggregate(total=Sum('amount'))['total'] or 0
+            
+            if yesterday_expenses > 0:
+                today_change = ((float(today_expenses) - float(yesterday_expenses)) / float(yesterday_expenses)) * 100
+            else:
+                today_change = 0.0
+            
             serializer = self.get_serializer(recent_transactions, many=True)
             
             return Response({
@@ -232,7 +337,22 @@ class TransactionViewSet(viewsets.ModelViewSet):
                 'recent_transactions': serializer.data,
                 'top_expense_categories': top_expense_categories,
                 'current_month_savings': current_month_savings,
-                'savings_change': savings_change
+                'savings_change': savings_change,
+                # Rozšířené KPI
+                'avg_daily_spending': avg_daily_spending,
+                'daily_spending_change': daily_spending_change,
+                'savings_rate': savings_rate,
+                'savings_rate_change': savings_rate_change,
+                'most_frequent_category': {
+                    'name': most_frequent_category['category__name'] if most_frequent_category else 'Žádná',
+                    'icon': most_frequent_category['category__icon'] if most_frequent_category else 'money',
+                    'color': most_frequent_category['category__color'] if most_frequent_category else '#3B82F6',
+                    'count': most_frequent_category['count'] if most_frequent_category else 0
+                },
+                'upcoming_recurring_count': upcoming_recurring,
+                'sparkline_data': sparkline_data,
+                'today_expenses': float(today_expenses),
+                'today_change': today_change
             })
         except Exception as e:
             print(f"Error in dashboard_stats: {str(e)}")
@@ -355,6 +475,143 @@ class TransactionViewSet(viewsets.ModelViewSet):
         
         return response
     
+    @action(detail=False, methods=['post'])
+    def import_csv(self, request):
+        """
+        Import transakcí z CSV souboru
+        
+        Očekávaný formát CSV:
+        Datum,Popis,Kategorie,Typ,Částka
+        2024-01-15,Nákup v obchodě,Jídlo a nápoje,Výdaj,500
+        2024-01-16,Výplata,Mzda,Příjem,25000
+        """
+        if 'file' not in request.FILES:
+            return Response(
+                {'error': 'Nebyl nahrán žádný soubor'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        csv_file = request.FILES['file']
+        
+        # Kontrola formátu souboru
+        if not csv_file.name.endswith('.csv'):
+            return Response(
+                {'error': 'Soubor musí být ve formátu CSV'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            # Dekódování souboru (podpora různých encodings)
+            try:
+                decoded_file = csv_file.read().decode('utf-8')
+            except UnicodeDecodeError:
+                csv_file.seek(0)
+                decoded_file = csv_file.read().decode('cp1250')  # Windows Czech encoding
+            
+            # Odstranění BOM pokud existuje
+            if decoded_file.startswith('\ufeff'):
+                decoded_file = decoded_file[1:]
+            
+            io_string = decoded_file.splitlines()
+            reader = csv.DictReader(io_string)
+            
+            imported_count = 0
+            skipped_count = 0
+            errors = []
+            
+            for row_num, row in enumerate(reader, start=2):  # start=2 protože řádek 1 je hlavička
+                try:
+                    # Validace povinných polí
+                    if not all(key in row for key in ['Datum', 'Typ', 'Částka']):
+                        errors.append(f'Řádek {row_num}: Chybí povinná pole')
+                        skipped_count += 1
+                        continue
+                    
+                    # Parsování data
+                    date_str = row['Datum'].strip()
+                    try:
+                        date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                    except ValueError:
+                        try:
+                            date = datetime.strptime(date_str, '%d.%m.%Y').date()
+                        except ValueError:
+                            errors.append(f'Řádek {row_num}: Neplatný formát data "{date_str}"')
+                            skipped_count += 1
+                            continue
+                    
+                    # Určení typu transakce
+                    type_str = row['Typ'].strip().lower()
+                    if type_str in ['příjem', 'income', 'příjmy']:
+                        transaction_type = 'INCOME'
+                    elif type_str in ['výdaj', 'expense', 'výdaje']:
+                        transaction_type = 'EXPENSE'
+                    else:
+                        errors.append(f'Řádek {row_num}: Neplatný typ transakce "{row["Typ"]}"')
+                        skipped_count += 1
+                        continue
+                    
+                    # Parsování částky
+                    amount_str = row['Částka'].strip().replace(',', '.').replace(' ', '')
+                    try:
+                        amount = float(amount_str)
+                        if amount <= 0:
+                            raise ValueError('Částka musí být kladná')
+                    except ValueError as e:
+                        errors.append(f'Řádek {row_num}: Neplatná částka "{row["Částka"]}"')
+                        skipped_count += 1
+                        continue
+                    
+                    # Najít nebo vytvořit kategorii
+                    category = None
+                    if 'Kategorie' in row and row['Kategorie'].strip():
+                        category_name = row['Kategorie'].strip()
+                        category = Category.objects.filter(
+                            user=request.user,
+                            name__iexact=category_name
+                        ).first()
+                        
+                        # Pokud kategorie neexistuje, vytvoř ji
+                        if not category:
+                            category = Category.objects.create(
+                                user=request.user,
+                                name=category_name,
+                                category_type=transaction_type,
+                                icon='money' if transaction_type == 'INCOME' else 'money',
+                                color='#2ECC71' if transaction_type == 'INCOME' else '#E74C3C'
+                            )
+                    
+                    # Popis
+                    description = row.get('Popis', '').strip()
+                    
+                    # Vytvoření transakce
+                    Transaction.objects.create(
+                        user=request.user,
+                        date=date,
+                        type=transaction_type,
+                        amount=amount,
+                        category=category,
+                        description=description
+                    )
+                    
+                    imported_count += 1
+                    
+                except Exception as e:
+                    errors.append(f'Řádek {row_num}: {str(e)}')
+                    skipped_count += 1
+            
+            return Response({
+                'message': f'Import dokončen',
+                'imported': imported_count,
+                'skipped': skipped_count,
+                'errors': errors[:10]  # Vrátit max 10 chyb
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            return Response(
+                {'error': f'Chyba při zpracování souboru: {str(e)}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    
     @action(detail=False, methods=['get'])
     def export_json(self, request):
         """Export transakcí do JSON"""
@@ -471,3 +728,171 @@ class RecurringTransactionViewSet(viewsets.ModelViewSet):
         
         return Response(self.get_serializer(recurring).data)
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def generate_demo_data(request):
+    """Vygeneruje demo data pro uživatele včetně rozpočtů a cílů"""
+    from decimal import Decimal
+    from random import randint, choice
+    from budgets.models import Budget
+    from goals.models import FinancialGoal
+    
+    user = request.user
+    
+    # Kontrola, zda už uživatel nemá hodně transakcí
+    existing_count = Transaction.objects.filter(user=user).count()
+    if existing_count > 50:
+        return Response(
+            {'error': 'Již máte dostatek dat. Tato funkce je určena pro nové účty.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # Vytvoř výchozí kategorie, pokud neexistují
+    categories = Category.objects.filter(user=user)
+    if not categories.exists():
+        CategoryViewSet().create_defaults(request)
+        categories = Category.objects.filter(user=user)
+    
+    expense_categories = list(categories.filter(category_type='EXPENSE'))
+    income_categories = list(categories.filter(category_type='INCOME'))
+    
+    if not expense_categories or not income_categories:
+        return Response(
+            {'error': 'Nejsou k dispozici kategorie pro generování dat.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # Generuj transakce za poslední 3 měsíce
+    end_date = timezone.now().date()
+    start_date = end_date - timedelta(days=90)
+    
+    transactions_created = 0
+    current_date = start_date
+    
+    while current_date <= end_date:
+        # Přidej náhodné výdaje (2-5 denně)
+        num_expenses = randint(2, 5)
+        for _ in range(num_expenses):
+            category = choice(expense_categories)
+            amount = Decimal(randint(50, 2000))
+            
+            Transaction.objects.create(
+                user=user,
+                type='EXPENSE',
+                amount=amount,
+                category=category,
+                date=current_date,
+                description=f'Demo výdaj - {category.name}'
+            )
+            transactions_created += 1
+        
+        # Přidej příjem každý 15. a poslední den v měsíci
+        if current_date.day == 15 or current_date.day >= 28:
+            category = choice(income_categories)
+            amount = Decimal(randint(15000, 35000))
+            
+            Transaction.objects.create(
+                user=user,
+                type='INCOME',
+                amount=amount,
+                category=category,
+                date=current_date,
+                description=f'Demo příjem - {category.name}'
+            )
+            transactions_created += 1
+        
+        current_date += timedelta(days=1)
+    
+    # Vytvoř rozpočty pro některé výdajové kategorie
+    budgets_created = 0
+    budget_categories = expense_categories[:min(4, len(expense_categories))]  # Maximálně 4 rozpočty
+    
+    for category in budget_categories:
+        if not Budget.objects.filter(user=user, category=category, is_active=True).exists():
+            start = timezone.now().date()
+            end = start + relativedelta(months=1) - timedelta(days=1)
+            Budget.objects.create(
+                user=user,
+                category=category,
+                amount=Decimal(randint(5000, 15000)),
+                period='MONTHLY',
+                start_date=start,
+                end_date=end,
+                is_active=True
+            )
+            budgets_created += 1
+    
+    # Vytvoř finanční cíle
+    goals_created = 0
+    demo_goals = [
+        {
+            'name': 'Nový telefon',
+            'target_amount': Decimal('25000'),
+            'current_amount': Decimal(randint(5000, 15000)),
+            'icon': 'phone',
+            'color': '#3B82F6'
+        },
+        {
+            'name': 'Dovolená',
+            'target_amount': Decimal('50000'),
+            'current_amount': Decimal(randint(10000, 30000)),
+            'icon': 'plane',
+            'color': '#10B981'
+        },
+        {
+            'name': 'Nouzový fond',
+            'target_amount': Decimal('100000'),
+            'current_amount': Decimal(randint(20000, 60000)),
+            'icon': 'shield',
+            'color': '#F59E0B'
+        }
+    ]
+    
+    for goal_data in demo_goals:
+        target_date = timezone.now().date() + timedelta(days=randint(180, 365))
+        
+        FinancialGoal.objects.create(
+            user=user,
+            name=goal_data['name'],
+            target_amount=goal_data['target_amount'],
+            current_amount=goal_data['current_amount'],
+            target_date=target_date,
+            icon=goal_data['icon'],
+            color=goal_data['color']
+        )
+        goals_created += 1
+    
+    return Response({
+        'message': f'Úspěšně vytvořeno {transactions_created} transakcí, {budgets_created} rozpočtů a {goals_created} cílů!',
+        'transactions': transactions_created,
+        'budgets': budgets_created,
+        'goals': goals_created
+    })
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def delete_all_data(request):
+    """Smaže všechna data uživatele (transakce, rozpočty, cíle)"""
+    from budgets.models import Budget
+    from goals.models import FinancialGoal
+    
+    user = request.user
+    
+    # Smazání všech dat
+    transactions_deleted = Transaction.objects.filter(user=user).count()
+    Transaction.objects.filter(user=user).delete()
+    
+    budgets_deleted = Budget.objects.filter(user=user).count()
+    Budget.objects.filter(user=user).delete()
+    
+    goals_deleted = FinancialGoal.objects.filter(user=user).count()
+    FinancialGoal.objects.filter(user=user).delete()
+    
+    return Response({
+        'message': f'Úspěšně smazáno {transactions_deleted} transakcí, {budgets_deleted} rozpočtů a {goals_deleted} cílů!',
+        'transactions': transactions_deleted,
+        'budgets': budgets_deleted,
+        'goals': goals_deleted
+    })

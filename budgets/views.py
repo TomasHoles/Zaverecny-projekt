@@ -6,6 +6,7 @@ from django.db.models import Sum, Q
 from datetime import datetime, timedelta
 from .models import Budget, BudgetCategory
 from .serializers import BudgetSerializer, BudgetCategorySerializer
+from .services import BudgetAlertService
 
 class BudgetCategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -67,4 +68,60 @@ class BudgetViewSet(viewsets.ModelViewSet):
             'total_spent': float(total_spent),
             'total_remaining': float(total_budget - total_spent),
             'overall_percentage': (total_spent / total_budget * 100) if total_budget > 0 else 0
+        })
+    
+    @action(detail=True, methods=['get'])
+    def status(self, request, pk=None):
+        """Získá detailní status rozpočtu včetně alert informací"""
+        budget = self.get_object()
+        status_data = BudgetAlertService.get_budget_status(budget)
+        
+        return Response({
+            'budget_id': budget.id,
+            'name': budget.name,
+            'amount': float(budget.amount),
+            'category': budget.category.name if budget.category else None,
+            **status_data
+        })
+    
+    @action(detail=False, methods=['get'])
+    def alerts(self, request):
+        """Vrací všechny rozpočty s jejich alert statusy"""
+        user = request.user
+        budgets = Budget.objects.filter(user=user, is_active=True)
+        
+        alerts = []
+        for budget in budgets:
+            status_data = BudgetAlertService.get_budget_status(budget)
+            
+            # Přidej pouze rozpočty, které mají warning nebo horší
+            if status_data['status'] in ['warning', 'danger', 'exceeded']:
+                alerts.append({
+                    'budget_id': budget.id,
+                    'name': budget.name,
+                    'amount': float(budget.amount),
+                    'category': budget.category.name if budget.category else None,
+                    **status_data
+                })
+        
+        return Response({
+            'alerts': alerts,
+            'count': len(alerts)
+        })
+    
+    @action(detail=False, methods=['post'])
+    def check_all_budgets(self, request):
+        """Manuální kontrola všech rozpočtů a vytvoření notifikací"""
+        user = request.user
+        notifications = BudgetAlertService.check_budget_alerts(user)
+        
+        return Response({
+            'message': f'Vytvořeno {len(notifications)} nových notifikací',
+            'notifications': [
+                {
+                    'title': n.title,
+                    'message': n.message,
+                    'priority': n.priority
+                } for n in notifications
+            ]
         })

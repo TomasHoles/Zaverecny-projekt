@@ -4,7 +4,10 @@ import dashboardService, { Transaction } from '../services/dashboardService';
 import api from '../services/api';
 import CategoryIcon from './CategoryIcon';
 import ExportModal from './ExportModal';
+import ImportModal from './ImportModal';
 import Icon from './Icon';
+import { TransactionsSkeleton } from './SkeletonLoaders';
+import EmptyState from './EmptyState';
 import '../styles/Transactions.css';
 
 interface Category {
@@ -70,11 +73,28 @@ const Transactions: React.FC = () => {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
+
+  // Debug logging pro transactions state
+  useEffect(() => {
+    console.log('[Transactions] State změněn:', {
+      count: transactions.length,
+      transactions: transactions.slice(0, 3) // First 3 transactions
+    });
+  }, [transactions]);
+
+  // Debug logging pro categories state
+  useEffect(() => {
+    console.log('[Categories] State změněn:', {
+      count: categories.length,
+      categories: categories
+    });
+  }, [categories]);
   const [filterDateFrom, setFilterDateFrom] = useState('');
   const [filterDateTo, setFilterDateTo] = useState('');
   const [sortBy, setSortBy] = useState('-date');
   const [showModal, setShowModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
@@ -130,16 +150,25 @@ const Transactions: React.FC = () => {
         const queryString = params.toString();
         const endpoint = `/transactions/transactions/${queryString ? '?' + queryString : ''}`;
         
-        const [transactionsData, categoriesData, recurringData] = await Promise.all([
+        const [transactionsData, categoriesData] = await Promise.all([
           api.get<Transaction[]>(endpoint),
-          api.get<Category[]>('/transactions/categories/'),
-          api.get<RecurringTransaction[]>('/transactions/recurring-transactions/')
+          api.get<Category[]>('/transactions/categories/')
         ]);
+        
+        console.log('[API] Načtená data:', {
+          endpoint,
+          transactionsCount: transactionsData.data?.length || 0,
+          transactions: transactionsData.data,
+          categoriesCount: categoriesData.data?.length || 0,
+          categories: categoriesData.data
+        });
         
         setTransactions(transactionsData.data || []);
         
         // Pokud uživatel nemá žádné kategorie, vytvoř výchozí
         const loadedCategories = categoriesData.data || [];
+        console.log('[Categories] Načtené před zpracováním:', loadedCategories);
+        
         if (loadedCategories.length === 0) {
           try {
             await api.post('/transactions/categories/create_defaults/');
@@ -153,7 +182,14 @@ const Transactions: React.FC = () => {
           setCategories(loadedCategories);
         }
         
-        setRecurring(recurringData.data || []);
+        // Načtení recurring transactions (volitelné - endpoint nemusí existovat)
+        try {
+          const recurringData = await api.get<RecurringTransaction[]>('/transactions/recurring-transactions/');
+          setRecurring(recurringData.data || []);
+        } catch (err) {
+          // Endpoint neexistuje nebo jiná chyba - nevadí
+          setRecurring([]);
+        }
       } catch (err) {
         console.error('Chyba při načítání dat:', err);
       } finally {
@@ -190,9 +226,16 @@ const Transactions: React.FC = () => {
 
   // Filtruj kategorie podle typu transakce
   const getFilteredCategories = () => {
-    return categories.filter(cat => 
+    const filtered = categories.filter(cat => 
       cat.category_type === formData.type || cat.category_type === 'BOTH'
     );
+    console.log('[Categories] Filtrované kategorie:', {
+      type: formData.type,
+      allCategories: categories.length,
+      filteredCount: filtered.length,
+      filtered: filtered
+    });
+    return filtered;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -451,13 +494,7 @@ const Transactions: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <div className="transactions-page">
-        <div className="transactions-loading">
-          <div className="loading-spinner"></div>
-        </div>
-      </div>
-    );
+    return <TransactionsSkeleton />;
   }
 
   return (
@@ -520,7 +557,7 @@ const Transactions: React.FC = () => {
             <option value="all">Všechny kategorie</option>
             {categories.map(cat => (
               <option key={cat.id} value={cat.id}>
-                {cat.icon} {cat.name}
+                {cat.name}
               </option>
             ))}
           </select>
@@ -583,9 +620,18 @@ const Transactions: React.FC = () => {
             <span>Seznam transakcí ({transactions.length})</span>
             <div className="header-actions">
               <button 
+                className="import-btn"
+                onClick={() => setShowImportModal(true)}
+                title="Importovat transakce z CSV"
+              >
+                <Icon name="upload" size={16} />
+                Import
+              </button>
+              <button 
                 className="export-btn"
                 onClick={() => setShowExportModal(true)}
               >
+                <Icon name="download" size={16} />
                 Export
               </button>
               <button 
@@ -605,10 +651,10 @@ const Transactions: React.FC = () => {
                     <div className="transaction-info">
                       <div className="transaction-category-icon">
                         <CategoryIcon 
-                          iconName={transaction.category?.icon || 'wallet'} 
-                          color={transaction.category?.color || '#6B7280'}
-                          size={20}
-                        />
+  iconName={transaction.category?.icon && transaction.category?.icon !== '' ? transaction.category.icon : 'wallet'} 
+  color={transaction.category?.color || '#6B7280'}
+  size={20}
+/>
                       </div>
                       <div>
                         <p className="transaction-category">
@@ -676,20 +722,19 @@ const Transactions: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="empty-state">
-              <h3 className="empty-state-title">Žádné transakce</h3>
-              <p className="empty-state-text">
-                {searchTerm || filterType !== 'all' 
-                  ? 'Nebyla nalezena žádná transakce odpovídající vašim filtrům.'
-                  : 'Zatím jste nepřidali žádné transakce.'}
-              </p>
-              <button 
-                className="filter-button"
-                onClick={() => setShowModal(true)}
-              >
-                Přidat první transakci
-              </button>
-            </div>
+            <EmptyState
+              illustration="transactions"
+              title={searchTerm || filterType !== 'all' ? 'Žádné výsledky' : 'Žádné transakce'}
+              description={
+                searchTerm || filterType !== 'all'
+                  ? 'Nebyla nalezena žádná transakce odpovídající vašim filtrům. Zkuste změnit kritéria vyhledávání.'
+                  : 'Zatím jste nepřidali žádné transakce. Začněte sledovat své finance přidáním první transakce.'
+              }
+              actionText="Přidat transakci"
+              onAction={() => setShowModal(true)}
+              secondaryActionText={searchTerm || filterType !== 'all' ? 'Vymazat filtry' : undefined}
+              onSecondaryAction={searchTerm || filterType !== 'all' ? handleResetFilters : undefined}
+            />
           )}
         </div>
       </div>
@@ -704,7 +749,7 @@ const Transactions: React.FC = () => {
                 className="modal-close"
                 onClick={handleCloseModal}
               >
-                ✕
+                ×
               </button>
             </div>
 
@@ -753,13 +798,13 @@ const Transactions: React.FC = () => {
                   <option value="">Vyberte kategorii</option>
                   {getFilteredCategories().map((cat) => (
                     <option key={cat.id} value={cat.id}>
-                      {cat.icon} {cat.name}
+                      {cat.name}
                     </option>
                   ))}
                 </select>
                 {getFilteredCategories().length === 0 && (
                   <p className="form-hint" style={{ color: '#FF6B6B', fontSize: '0.875rem', marginTop: '0.5rem' }}>
-                    ⚠️ Pro tento typ transakce nejsou k dispozici žádné kategorie
+                    Pro tento typ transakce nejsou k dispozici žádné kategorie
                   </p>
                 )}
               </div>
@@ -877,7 +922,7 @@ const Transactions: React.FC = () => {
                         {item.auto_create && (
                           <div className="detail-item">
                             <span className="detail-label">Auto:</span>
-                            <span className="detail-value">✓ Automatické vytváření</span>
+                            <span className="detail-value">Automatické vytváření</span>
                           </div>
                         )}
                       </div>
@@ -1090,6 +1135,37 @@ const Transactions: React.FC = () => {
           )}
         </>
       )}
+
+      {/* Import Modal */}
+      <ImportModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        onImportSuccess={async () => {
+          // Refresh transactions after successful import
+          try {
+            const params = new URLSearchParams();
+            if (debouncedSearchTerm) params.append('search', debouncedSearchTerm);
+            if (filterType !== 'all') params.append('type', filterType);
+            if (filterCategory !== 'all') params.append('category', filterCategory);
+            if (filterDateFrom) params.append('date_from', filterDateFrom);
+            if (filterDateTo) params.append('date_to', filterDateTo);
+            if (sortBy) params.append('ordering', sortBy);
+            
+            const queryString = params.toString();
+            const endpoint = `/transactions/transactions/${queryString ? '?' + queryString : ''}`;
+            
+            const [transactionsData, categoriesData] = await Promise.all([
+              api.get<Transaction[]>(endpoint),
+              api.get<Category[]>('/transactions/categories/')
+            ]);
+            
+            setTransactions(transactionsData.data || []);
+            setCategories(categoriesData.data || []);
+          } catch (err) {
+            console.error('Chyba při načítání transakcí:', err);
+          }
+        }}
+      />
 
       {/* Export Modal */}
       <ExportModal

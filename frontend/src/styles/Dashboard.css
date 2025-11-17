@@ -1,11 +1,21 @@
 ﻿/* Dashboard Page Styles */
 .dashboard-page {
-  padding: 2.5rem;
+  padding: 1rem 2.5rem 2rem;
   max-width: 1500px;
   margin: 0 auto;
-  min-height: calc(100vh - 80px);
+  min-height: 100vh;
   position: relative;
+}
+
+.dashboard-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
   background: linear-gradient(135deg, #0A0A0B 0%, #1A0E0F 25%, #0D0506 50%, #1A1A1D 75%, #0A0A0B 100%);
+  z-index: -1;
 }
 
 /* Header */
@@ -13,8 +23,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2.5rem;
-  padding-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   z-index: 1;
@@ -54,58 +64,45 @@
 }
 
 .btn-add-transaction {
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  color: white;
-  padding: 0.9rem 1.75rem;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+  background-color: var(--accent-primary);
+  color: var(--text-primary);
   border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-add-transaction::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
-}
-
-.btn-add-transaction:hover::before {
-  left: 100%;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 4px 15px rgba(255, 71, 66, 0.3);
+  text-decoration: none;
+  display: inline-block;
 }
 
 .btn-add-transaction:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 30px rgba(255, 71, 66, 0.4);
+  background-color: #FF6B5A;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 71, 66, 0.4);
 }
 
 /* Stats Grid */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  margin-bottom: 5rem;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .stat-card {
   background: rgba(26, 26, 29, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
-  padding: 2rem 1.75rem;
+  padding: 1.5rem;
   display: flex;
-  align-items: center;
-  gap: 1.5rem;
+  flex-direction: column;
+  gap: 1rem;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
+  min-height: 140px;
 }
 
 .stat-card:hover {
@@ -115,14 +112,15 @@
 }
 
 .stat-icon {
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 14px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .stat-card:hover .stat-icon {
@@ -132,21 +130,26 @@
 
 .stat-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .stat-label {
-  font-size: 0.9rem;
+  font-size: 0.813rem;
   color: var(--text-secondary);
-  margin: 0 0 0.6rem 0;
+  margin: 0;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  line-height: 1.4;
 }
 
 .stat-value {
   font-size: 2rem;
   font-weight: 700;
   margin: 0;
+  line-height: 1.2;
 }
 
 .stat-value.income {
@@ -165,16 +168,16 @@
 .dashboard-content-grid {
   display: grid;
   grid-template-columns: 1.75fr 1fr;
-  gap: 2rem;
-  margin-bottom: 2.5rem;
-  margin-top: 3rem;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  margin-top: 1.5rem;
 }
 
 .dashboard-card {
   background: rgba(26, 26, 29, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
-  padding: 2rem;
+  padding: 1.5rem;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
 }
@@ -365,12 +368,23 @@
 .tips-card {
   background: linear-gradient(135deg, rgba(255, 71, 66, 0.1), rgba(139, 92, 246, 0.1));
   border: 1px solid rgba(255, 71, 66, 0.2);
+  display: flex;
+  flex-direction: column;
 }
 
 .tip-text {
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: 1.8;
   margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Budget and Tips Grid */
+.budget-tips-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 /* Loading State */
@@ -803,8 +817,8 @@
 
 /* Budget Overview Section */
 .budget-overview-card {
-  grid-column: 1 / -1;
-  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .budget-overview-content {
@@ -816,7 +830,7 @@
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 1.25rem;
   transition: all 0.3s ease;
 }
 
@@ -850,7 +864,7 @@
 }
 
 .budget-overview-percentage {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 700;
   margin: 0;
 }
@@ -891,9 +905,9 @@
 .budget-summary-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -910,7 +924,7 @@
 }
 
 .budget-summary-value {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
@@ -924,7 +938,18 @@
   color: #EF4444;
 }
 
+@media (max-width: 1024px) {
+  .budget-tips-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 768px) {
+  .budget-summary-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
   .modal-content {
     padding: 1.5rem;
     max-width: 95%;
@@ -946,5 +971,161 @@
   .budget-summary-row {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+}
+
+/* KPI Grid - nové rozšířené statistiky */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+/* Budget Alerts spacing */
+.budget-alerts-card {
+  margin-bottom: 3rem;
+}
+
+/* Insights Panel spacing */
+.insights-panel {
+  margin-bottom: 3rem;
+}
+
+/* Stat Card Component Styles */
+.stat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.stat-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.stat-card:hover .stat-card-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.stat-card-change {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.stat-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-card-title {
+  font-size: 0.813rem;
+  color: var(--text-secondary);
+  margin: 0;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
+}
+
+.stat-card-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.2;
+  animation: countUp 0.8s ease-out;
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stat-card-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* Sparkline Container */
+.sparkline-container {
+  margin: 1rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
+}
+
+.sparkline {
+  filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.3));
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover .sparkline {
+  filter: drop-shadow(0 4px 12px rgba(139, 92, 246, 0.5));
+  transform: scale(1.05);
+}
+
+/* Component Spacing */
+.budget-alerts-spacing {
+  margin-bottom: 2rem;
+}
+
+.insights-panel-spacing {
+  margin-bottom: 2rem;
+}
+
+/* Responsive KPI Grid */
+@media (max-width: 1400px) {
+  .kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-card-value,
+  .stat-value {
+    font-size: 1.5rem;
   }
 }

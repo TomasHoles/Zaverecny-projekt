@@ -358,3 +358,13 @@
     padding: 0.875rem;
   }
 }
+/* ======================================== PASSWORD STRENGTH INDICATOR ======================================== */
+
+.password-strength { margin-top: 0.75rem; display: flex; align-items: center; gap: 1rem; }
+.strength-bar { flex: 1; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden; }
+.strength-fill { height: 100%; transition: all 0.3s ease; border-radius: 3px; }
+.strength-label { font-size: 0.875rem; font-weight: 600; min-width: 60px; }
+.password-requirements { margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem; }
+.password-requirements small { color: var(--text-secondary); font-size: 0.8rem; }
+.toggle-password { background: none; border: none; cursor: pointer; font-size: 1.25rem; padding: 0.25rem; opacity: 0.7; transition: opacity 0.2s; }
+.toggle-password:hover { opacity: 1; }

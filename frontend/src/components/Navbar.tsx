@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import api from '../services/api';
 import Icon from './Icon';
 import '../styles/Navbar.css';
@@ -8,16 +9,71 @@ import logo from '../assets/logo.png';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [generatingData, setGeneratingData] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = () => {
     logout();
     navigate('/');
     setDropdownOpen(false);
+    setMobileMenuOpen(false);
+  };
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
+
+  const handleGenerateDemoData = async () => {
+    if (!user) return;
+    
+    console.log('[Demo Data] Generování demo dat...');
+    
+    try {
+      setGeneratingData(true);
+      console.log('[Demo Data] Volám API endpoint...');
+      const response = await api.post('/transactions/generate-demo-data/');
+      console.log('[Demo Data] Response:', response.data);
+      toast.success(response.data.message || 'Demo data byla úspěšně vytvořena!');
+      
+      // Refresh stránky po 2 sekundách, aby backend stihl vytvořit všechna data
+      console.log('[Demo Data] Refresh stránky za 2 sekundy...');
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (error: any) {
+      console.error('[Demo Data] Chyba při generování demo dat:', error);
+      console.error('Error response:', error.response?.data);
+      toast.error(error.response?.data?.error || 'Nepodařilo se vytvořit demo data');
+      setGeneratingData(false);
+    }
+  };
+
+  const handleDeleteAllData = async () => {
+    if (!user) return;
+    
+    if (!window.confirm('Opravdu chcete smazat VŠECHNA data? Tato akce je nevratná!')) {
+      return;
+    }
+    
+    try {
+      setGeneratingData(true);
+      const response = await api.post('/transactions/delete-all-data/');
+      toast.success(response.data.message || 'Všechna data byla smazána!');
+      
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error: any) {
+      console.error('Chyba při mazání dat:', error);
+      toast.error(error.response?.data?.error || 'Nepodařilo se smazat data');
+      setGeneratingData(false);
+    }
   };
 
   // Zavře dropdown při kliknutí mimo něj
@@ -62,14 +118,73 @@ const Navbar: React.FC = () => {
           <span className="logo-text">Plutoa</span>
         </Link>
       </div>
-      <div className="navbar-links">
-        <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>Home</Link>
-        <Link to="/dashboard" className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}>Přehled</Link>
-        <Link to="/transactions" className={`nav-link ${location.pathname === '/transactions' ? 'active' : ''}`}>Transakce</Link>
-        <Link to="/budgets" className={`nav-link ${location.pathname === '/budgets' ? 'active' : ''}`}>Rozpočty</Link>
-        <Link to="/analytics" className={`nav-link ${location.pathname === '/analytics' ? 'active' : ''}`}>Analytika</Link>
+
+      {/* Hamburger menu button */}
+      <button 
+        className={`hamburger ${mobileMenuOpen ? 'active' : ''}`}
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        aria-label="Toggle menu"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div className={`navbar-links ${mobileMenuOpen ? 'active' : ''}`}>
+        <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`} onClick={closeMobileMenu}>Home</Link>
+        <Link to="/dashboard" className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`} onClick={closeMobileMenu}>Přehled</Link>
+        <Link to="/transactions" className={`nav-link ${location.pathname === '/transactions' ? 'active' : ''}`} onClick={closeMobileMenu}>Transakce</Link>
+        <Link to="/budgets" className={`nav-link ${location.pathname === '/budgets' ? 'active' : ''}`} onClick={closeMobileMenu}>Rozpočty</Link>
+        <Link to="/goals" className={`nav-link ${location.pathname === '/goals' ? 'active' : ''}`} onClick={closeMobileMenu}>Cíle</Link>
+        <Link to="/analytics" className={`nav-link ${location.pathname === '/analytics' ? 'active' : ''}`} onClick={closeMobileMenu}>Analytika</Link>
+        
+        {/* Mobile user actions */}
+        {user && (
+          <div className="mobile-user-actions">
+            <Link to="/notifications" className="nav-link notification-link-mobile" onClick={closeMobileMenu}>
+              <Icon name="bell" size={20} color="currentColor" />
+              <span>Notifikace</span>
+              {unreadCount > 0 && (
+                <span className="notification-badge">{unreadCount}</span>
+              )}
+            </Link>
+            <Link to="/profile" className="nav-link" onClick={closeMobileMenu}>Profil</Link>
+            <button className="nav-link logout-button-mobile" onClick={handleLogout}>
+              Odhlásit se
+            </button>
+          </div>
+        )}
       </div>
+
       <div className="user-section" ref={dropdownRef}>
+        {/* Delete All Data Button */}
+        {user && (
+          <button 
+            className="delete-data-button" 
+            onClick={handleDeleteAllData}
+            disabled={generatingData}
+            title="Smazat všechna data"
+          >
+            <Icon name="trash" size={18} color="#ffffff" />
+          </button>
+        )}
+        
+        {/* Generate Demo Data Button */}
+        {user && (
+          <button 
+            className="demo-data-button" 
+            onClick={handleGenerateDemoData}
+            disabled={generatingData}
+            title="Vygenerovat demo data"
+          >
+            {generatingData ? (
+              <Icon name="clock" size={18} color="#ffffff" />
+            ) : (
+              <Icon name="plus" size={18} color="#ffffff" />
+            )}
+          </button>
+        )}
+        
         {user && (
           <Link to="/notifications" className="nav-link notification-link">
             <Icon name="bell" size={20} color="currentColor" />

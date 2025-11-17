@@ -1,10 +1,18 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import dashboardService, { DashboardStats, BudgetOverview, Budget } from '../services/dashboardService';
 import api from '../services/api';
 import Icon from './Icon';
+import StatCard from './StatCard';
+import Sparkline from './Sparkline';
+import BudgetAlerts from './BudgetAlerts';
+import PageHeader from './PageHeader';
+import Tooltip from './Tooltip';
+import { DashboardSkeleton } from './SkeletonLoaders';
 import '../styles/Dashboard.css';
+import CategoryIcon from './CategoryIcon';
 
 interface Category {
   id: number;
@@ -24,6 +32,7 @@ interface QuickTransactionData {
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
+  const toast = useToast();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [budgetData, setBudgetData] = useState<BudgetOverview | null>(null);
   const [loading, setLoading] = useState(true);
@@ -161,7 +170,7 @@ const Dashboard: React.FC = () => {
         description: quickFormData.description || ''
       };
       
-      const response = await api.post('/transactions/transactions/', transactionData);
+      await api.post('/transactions/transactions/', transactionData);
       
       // Reset form and close modal first
       setQuickFormData({
@@ -172,6 +181,9 @@ const Dashboard: React.FC = () => {
         description: ''
       });
       setShowQuickAddModal(false);
+      
+      // Show success toast
+      toast.success('Transakce byla úspěšně přidána!');
       
       // Refresh all dashboard data including stats and budgets
       const [updatedStats, updatedBudgets] = await Promise.all([
@@ -198,6 +210,7 @@ const Dashboard: React.FC = () => {
       }
       
       alert(errorMessage);
+      toast.error('Nepodařilo se vytvořit transakci');
     } finally {
       setSubmitting(false);
     }
@@ -226,21 +239,14 @@ const Dashboard: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <div className="dashboard-page">
-        <div className="dashboard-loading">
-          <div className="loading-spinner"></div>
-          <p>Načítám dashboard...</p>
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   if (error) {
     return (
       <div className="dashboard-page">
         <div className="empty-state">
-          <p className="empty-state-text">❌ {error}</p>
+          <p className="empty-state-text">{error}</p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1rem' }}>
             <button onClick={() => window.location.reload()} className="empty-state-action">
               Zkusit znovu
@@ -280,7 +286,7 @@ const Dashboard: React.FC = () => {
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-icon">
-            <Icon name="income" size={32} color="#10B981" />
+            <Icon name="trending-up" size={32} color="#10B981" />
           </div>
           <div className="stat-content">
             <p className="stat-label">Celkové příjmy</p>
@@ -292,7 +298,7 @@ const Dashboard: React.FC = () => {
 
         <div className="stat-card">
           <div className="stat-icon">
-            <Icon name="expense" size={32} color="#EF4444" />
+            <Icon name="trending-down" size={32} color="#EF4444" />
           </div>
           <div className="stat-content">
             <p className="stat-label">Celkové výdaje</p>
@@ -304,7 +310,7 @@ const Dashboard: React.FC = () => {
 
         <div className="stat-card">
           <div className="stat-icon">
-            <Icon name="balance" size={32} color="#3B82F6" />
+            <Icon name="wallet" size={32} color="#3B82F6" />
           </div>
           <div className="stat-content">
             <p className="stat-label">Zůstatek</p>
@@ -314,6 +320,88 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Spacing between sections */}
+      <div style={{ marginBottom: '3rem' }}></div>
+
+      {/* KPI Cards - nové rozšířené statistiky */}
+      <div className="kpi-grid">
+        <StatCard
+          title="Dnešní výdaje"
+          value={formatCurrency(stats?.today_expenses || 0)}
+          icon="calendar"
+          change={stats?.today_change ? stats.today_change / 100 : undefined}
+          changeLabel="vs. včera"
+          color="#3b82f6"
+          trend={stats?.today_change && stats.today_change > 0 ? 'down' : stats?.today_change && stats.today_change < 0 ? 'up' : 'neutral'}
+        />
+        
+        <StatCard
+          title="Průměr denně"
+          value={formatCurrency(stats?.avg_daily_spending || 0)}
+          icon="trending-down"
+          change={stats?.daily_spending_change ? stats.daily_spending_change / 100 : undefined}
+          changeLabel="posledních 30 dní"
+          color="#f59e0b"
+          trend={stats?.daily_spending_change && stats.daily_spending_change < 0 ? 'up' : stats?.daily_spending_change && stats.daily_spending_change > 0 ? 'down' : 'neutral'}
+        />
+        
+        <StatCard
+          title="Savings Rate"
+          value={Math.abs(stats?.savings_rate || 0).toFixed(1)}
+          icon="piggy-bank"
+          change={stats?.savings_rate_change ? stats.savings_rate_change / 100 : undefined}
+          changeLabel="z příjmů"
+          color="#10b981"
+          suffix="%"
+          trend={stats?.savings_rate_change && stats.savings_rate_change > 0 ? 'up' : stats?.savings_rate_change && stats.savings_rate_change < 0 ? 'down' : 'neutral'}
+        />
+        
+        <div className="stat-card">
+          <div className="stat-card-header">
+            <div className="stat-card-icon" style={{ backgroundColor: '#8b5cf615', color: '#8b5cf6' }}>
+              <Icon name="activity" size={24} />
+            </div>
+          </div>
+          <div className="stat-card-content">
+            <h3 className="stat-card-title">Výdaje týden</h3>
+            <div className="sparkline-container">
+              {stats?.sparkline_data && stats.sparkline_data.length > 0 && (
+                <Sparkline 
+                  data={stats.sparkline_data} 
+                  width={200} 
+                  height={60}
+                  color="#8b5cf6"
+                  fillColor="rgba(139, 92, 246, 0.1)"
+                  showArea={true}
+                />
+              )}
+            </div>
+            <p className="stat-card-label">Posledních 7 dní</p>
+          </div>
+        </div>
+        
+        {stats?.upcoming_recurring_count !== undefined && stats.upcoming_recurring_count > 0 && (
+          <StatCard
+            title="Nadcházející platby"
+            value={stats.upcoming_recurring_count}
+            icon="clock"
+            color="#ef4444"
+            changeLabel="příštích 7 dní"
+          />
+        )}
+      </div>
+
+      {/* Spacing */}
+      <div style={{ marginBottom: '3rem' }}></div>
+
+      {/* Budget Alerts */}
+      <div className="budget-alerts-spacing">
+        <BudgetAlerts />
+      </div>
+
+      {/* Spacing */}
+      <div style={{ marginBottom: '2.5rem' }}></div>
 
       {/* Content Grid */}
       <div className="dashboard-content-grid">
@@ -335,7 +423,11 @@ const Dashboard: React.FC = () => {
                       className="transaction-category-icon"
                       style={{ backgroundColor: (transaction.category?.color || '#666') + '20' }}
                     >
-                      {transaction.category?.icon || '$'}
+                      <CategoryIcon 
+                        iconName={transaction.category?.icon && transaction.category?.icon !== '' ? transaction.category.icon : 'wallet'} 
+                        color={transaction.category?.color || '#666'} 
+                        size={24} 
+                      />
                     </div>
                     <div className="transaction-details">
                       <p className="transaction-category-name">
@@ -431,7 +523,11 @@ const Dashboard: React.FC = () => {
                       className="expense-category-icon"
                       style={{ backgroundColor: (category.color || '#666') + '20' }}
                     >
-                      {category.icon || '$'}
+                      <CategoryIcon 
+                        iconName={category.icon || 'wallet'} 
+                        color={category.color || '#666'} 
+                        size={24} 
+                      />
                     </div>
                     <div className="expense-category-details">
                       <p className="expense-category-name">{category.name}</p>
@@ -497,8 +593,10 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Budget Overview Section */}
-      <div className="dashboard-card budget-overview-card">
+      {/* Budget and Tips Grid */}
+      <div className="budget-tips-grid">
+        {/* Budget Overview Section */}
+        <div className="dashboard-card budget-overview-card">
         <div className="card-header">
           <h3>Přehled rozpočtů</h3>
           <Link to="/budgets" className="view-all-link">
@@ -562,17 +660,7 @@ const Dashboard: React.FC = () => {
             </Link>
           </div>
         )}
-      </div>
-
-      {/* Financial Tips */}
-      <div className="dashboard-card tips-card">
-        <div className="card-header">
-          <h3>Tip dne</h3>
         </div>
-        <p className="tip-text">
-          Pravidlo 50/30/20: Rozdělte příjmy na 50% potřeby, 30% přání a 20% úspory.
-          Toto jednoduché pravidlo vám pomůže udržet finanční rovnováhu a budovat úspory.
-        </p>
       </div>
 
       {/* Quick Add Transaction Modal */}

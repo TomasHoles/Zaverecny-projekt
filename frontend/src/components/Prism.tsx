@@ -21,7 +21,7 @@ interface PrismProps {
 }
 
 const Prism = ({
-  height = 3.5,
+  height = 4,
   baseWidth = 5.5,
   animationType = 'rotate',
   glow = 1,

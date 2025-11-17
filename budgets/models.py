@@ -37,7 +37,7 @@ class Budget(models.Model):
         # Filtr transakcí podle kategorie a data
         transactions = Transaction.objects.filter(
             user=self.user,
-            transaction_type='expense',
+            type='EXPENSE',
             date__range=[start_date, end_date]
         )
         

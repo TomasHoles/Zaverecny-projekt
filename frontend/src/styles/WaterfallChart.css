@@ -1,0 +1,160 @@
+/* Waterfall Chart Component */
+.waterfall-chart-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--bg-tertiary);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.waterfall-header {
+  margin-bottom: 1.5rem;
+}
+
+.waterfall-header h3 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.waterfall-summary {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  border: 1px solid var(--bg-tertiary);
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.summary-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.summary-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.summary-value.start {
+  color: var(--text-secondary);
+}
+
+.summary-value.end {
+  color: var(--primary);
+}
+
+.summary-value.positive {
+  color: var(--success);
+}
+
+.summary-value.negative {
+  color: var(--danger);
+}
+
+.waterfall-legend {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--bg-tertiary);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1px solid var(--bg-tertiary);
+}
+
+/* Waterfall Tooltip */
+.waterfall-tooltip {
+  background: var(--bg-primary);
+  border: 1px solid var(--bg-tertiary);
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.waterfall-tooltip .label {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.waterfall-tooltip .value {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.waterfall-tooltip .cumulative {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--bg-tertiary);
+}
+
+/* Color Variables */
+:root {
+  --waterfall-income: rgba(16, 185, 129, 0.8);
+  --waterfall-expense: rgba(239, 68, 68, 0.8);
+  --waterfall-total: rgba(99, 102, 241, 0.8);
+}
+
+[data-theme="light"] {
+  --waterfall-income: rgba(16, 185, 129, 0.9);
+  --waterfall-expense: rgba(239, 68, 68, 0.9);
+  --waterfall-total: rgba(99, 102, 241, 0.9);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .waterfall-chart-container {
+    padding: 1.5rem;
+  }
+
+  .waterfall-summary {
+    gap: 1rem;
+  }
+
+  .summary-value {
+    font-size: 1.125rem;
+  }
+
+  .waterfall-legend {
+    gap: 1rem;
+  }
+}
+
+/* Light Mode */
+[data-theme="light"] .waterfall-chart-container {
+  background: var(--bg-secondary);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .waterfall-tooltip {
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}

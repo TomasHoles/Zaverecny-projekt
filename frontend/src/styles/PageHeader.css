@@ -1,0 +1,128 @@
+/* Page Header Component */
+.page-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(255, 71, 66, 0.1);
+  position: relative;
+}
+
+.page-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-primary), transparent);
+  border-radius: 2px;
+}
+
+.page-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.page-header-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex: 1;
+}
+
+.page-header-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, rgba(255, 71, 66, 0.1), rgba(155, 77, 202, 0.1));
+  border: 1px solid rgba(255, 71, 66, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-primary);
+  flex-shrink: 0;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.page-help-text {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.page-help-text svg {
+  color: rgba(59, 130, 246, 0.8);
+  flex-shrink: 0;
+}
+
+.page-header-action {
+  flex-shrink: 0;
+}
+
+/* Responzivní design */
+@media (max-width: 768px) {
+  .page-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+  }
+
+  .page-header-content {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .page-header-info {
+    gap: 1rem;
+  }
+
+  .page-header-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .page-help-text {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .page-header-action {
+    width: 100%;
+  }
+
+  .page-header-action .button-primary,
+  .page-header-action .btn-add-transaction {
+    width: 100%;
+    justify-content: center;
+  }
+}

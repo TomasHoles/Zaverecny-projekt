@@ -3,7 +3,10 @@ import { useAuth } from '../contexts/AuthContext';
 import dashboardService, { BudgetOverview, Budget } from '../services/dashboardService';
 import api from '../services/api';
 import Icon from './Icon';
+import { BudgetsSkeleton } from './SkeletonLoaders';
+import EmptyState from './EmptyState';
 import '../styles/Budgets.css';
+import '../styles/budgets-overrides.css';
 
 interface Category {
   id: number;
@@ -226,14 +229,15 @@ const Budgets: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <div className="budgets-page">
-        <div className="budgets-loading">
-          <div className="loading-spinner"></div>
-        </div>
-      </div>
-    );
+    return <BudgetsSkeleton />;
   }
+
+  // Zobrazí pouze lokalizovaný název kategorie za prvním spojovníkem (např. "food - Jídlo a nápoje" -> "Jídlo a nápoje")
+  const displayCategoryName = (rawName: string) => {
+    if (!rawName) return rawName;
+    const match = rawName.match(/^\s*[^-]+-\s*(.+)$/);
+    return match ? match[1].trim() : rawName.trim();
+  };
 
   return (
     <div className="budgets-page">
@@ -370,13 +374,13 @@ const Budgets: React.FC = () => {
               })}
             </div>
           ) : (
-            <div className="empty-state">
-              <h3 className="empty-state-title">Žádné rozpočty</h3>
-              <p className="empty-state-text">
-                Zatím jste nevytvořili žádný rozpočet. Začněte sledovat své výdaje vytvořením prvního rozpočtu.
-              </p>
-              <button className="empty-state-button" onClick={handleOpenNewBudgetModal}>Vytvořit první rozpočet</button>
-            </div>
+            <EmptyState
+              illustration="budgets"
+              title="Žádné rozpočty"
+              description="Zatím jste nevytvořili žádný rozpočet. Začněte sledovat své výdaje a kontrolovat finance vytvořením prvního rozpočtu."
+              actionText="Vytvořit první rozpočet"
+              onAction={handleOpenNewBudgetModal}
+            />
           )}
         </div>
       </div>
@@ -430,7 +434,7 @@ const Budgets: React.FC = () => {
                   <option value="">Všechny kategorie</option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
-                      {cat.icon} {cat.name}
+                      {displayCategoryName(cat.name)}
                     </option>
                   ))}
                 </select>

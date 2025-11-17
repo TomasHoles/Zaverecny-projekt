@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import Icon from './Icon';
 import '../styles/LoginForm.css';
 
 // Interface pro chybové stavy formuláře
@@ -45,6 +46,24 @@ const RegisterForm: React.FC = () => {
   
   // AuthContext hook pro registrační funkci
   const { register } = useAuth();
+
+  // Funkce pro kontrolu síly hesla
+  const getPasswordStrength = (password: string) => {
+    if (password.length === 0) return { strength: 0, label: '', color: '' };
+    
+    let strength = 0;
+    if (password.length >= 8) strength++;
+    if (password.length >= 12) strength++;
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^a-zA-Z0-9]/.test(password)) strength++;
+    
+    if (strength <= 1) return { strength: 1, label: 'Slabé', color: '#EF4444' };
+    if (strength <= 3) return { strength: 2, label: 'Střední', color: '#F59E0B' };
+    return { strength: 3, label: 'Silné', color: '#10B981' };
+  };
+
+  const passwordStrength = getPasswordStrength(formData.password);
 
   // Handler pro změnu hodnot ve formuláři
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,13 +152,20 @@ const RegisterForm: React.FC = () => {
       if (typeof responseData === 'object' && responseData !== null) {
         const newErrors: ErrorState = {};
         
-        Object.entries(responseData).forEach(([key, value]) => {
-          if (Array.isArray(value)) {
-            newErrors[key as keyof ErrorState] = value[0] as string;
-          } else if (typeof value === 'string') {
-            newErrors[key as keyof ErrorState] = value;
-          }
-        });
+        // Kontrola speciálních chyb hesla
+        if (responseData.error && responseData.details) {
+          // Chyba validace hesla s detaily
+          newErrors.password = responseData.error;
+          newErrors.general = responseData.details.join(' ');
+        } else {
+          Object.entries(responseData).forEach(([key, value]) => {
+            if (Array.isArray(value)) {
+              newErrors[key as keyof ErrorState] = value[0] as string;
+            } else if (typeof value === 'string') {
+              newErrors[key as keyof ErrorState] = value;
+            }
+          });
+        }
         
         if (Object.keys(newErrors).length === 0) {
           newErrors.general = 'Registrace selhala. Zkuste to prosím znovu.';
@@ -247,15 +273,36 @@ const RegisterForm: React.FC = () => {
                 onChange={handleChange}
                 className={errors.password ? 'error' : ''}
                 disabled={loading}
-                placeholder="Zadejte heslo"
+                placeholder="Zadejte heslo (min. 8 znaků)"
               />
               <button
                 type="button"
                 className="toggle-password"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? 'Skrýt' : 'Zobrazit'}
+                <Icon name={showPassword ? 'eye' : 'eye-off'} size={20} />
               </button>
+            </div>
+            {formData.password && (
+              <div className="password-strength">
+                <div className="strength-bar">
+                  <div 
+                    className="strength-fill"
+                    style={{ 
+                      width: `${(passwordStrength.strength / 3) * 100}%`,
+                      backgroundColor: passwordStrength.color
+                    }}
+                  ></div>
+                </div>
+                <span className="strength-label" style={{ color: passwordStrength.color }}>
+                  {passwordStrength.label}
+                </span>
+              </div>
+            )}
+            <div className="password-requirements">
+              <small>• Minimálně 8 znaků</small>
+              <small>• Kombinace velkých a malých písmen</small>
+              <small>• Alespoň jedno číslo</small>
             </div>
             {errors.password && <div className="field-error">{errors.password}</div>}
           </div>

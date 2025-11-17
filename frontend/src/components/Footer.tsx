@@ -69,7 +69,7 @@ const Footer: React.FC = () => {
             © {currentYear} Plutoa. Všechna práva vyhrazena.
           </p>
           <p className="footer-made-with">
-            Vytvořeno s <span className="heart">❤️</span> pro lepší správu financí
+            Vytvořeno pro lepší správu financí
           </p>
         </div>
       </div>

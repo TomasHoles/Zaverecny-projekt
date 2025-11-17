@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from django.utils import timezone
+import secrets
+from datetime import timedelta
 
 # Vlastní správce uživatelů pro naši custom User model
 class CustomUserManager(BaseUserManager):
@@ -87,3 +90,41 @@ class User(AbstractUser):
     def __str__(self):
         """String reprezentace uživatele pro admin rozhraní."""
         return self.username
+
+
+class PasswordResetToken(models.Model):
+    """
+    Model pro tokeny pro reset hesla
+    Token je platný 1 hodinu od vytvoření
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='password_reset_tokens'
+    )
+    token = models.CharField(max_length=100, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    used = models.BooleanField(default=False)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Reset token for {self.user.username}"
+    
+    def is_valid(self):
+        """Zkontroluje, zda je token stále platný (1 hodina)"""
+        if self.used:
+            return False
+        expiry_time = self.created_at + timedelta(hours=1)
+        return timezone.now() < expiry_time
+    
+    @classmethod
+    def create_token(cls, user):
+        """Vytvoří nový reset token pro uživatele"""
+        # Smaž staré nepoužité tokeny
+        cls.objects.filter(user=user, used=False).delete()
+        
+        # Vytvoř nový token
+        token = secrets.token_urlsafe(32)
+        return cls.objects.create(user=user, token=token)
