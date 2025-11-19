@@ -1,13 +1,7 @@
 # Plutoa - Personal Finance Manager
 
 > Moderní webová aplikace pro komplexní správu osobních financí s AI-powered insights a pokročilými vizualizacemi.
-
-![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)  
-![Django](https://img.shields.io/badge/django-5.2.8-green.svg)  
-![React](https://img.shields.io/badge/react-19.1.1-blue.svg)  
-![TypeScript](https://img.shields.io/badge/typescript-5.x-blue.svg)  
-![PWA](https://img.shields.io/badge/PWA-enabled-purple.svg)
-
+> 
 ---
 
 ## Popis Projektu
