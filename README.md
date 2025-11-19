@@ -91,10 +91,6 @@ Plutoa je moderní Progressive Web Application pro správu osobních financí. A
 ## Instalace a Spuštění
 
 ### 1. Stažení projektu
-```bhttps://github.com/TomasHoles/Zaverecny-projekt.git
-cd Zaverecny-projektash
-git clone 
-
 
 ```bash
 git clone https://github.com/TomasHoles/Zaverecny-projekt.git
