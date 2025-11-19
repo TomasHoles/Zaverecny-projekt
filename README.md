@@ -13,12 +13,8 @@ Plutoa je moderní Progressive Web Application pro správu osobních financí. A
 - Sledování příjmů a výdajů s kategorizací  
 - Vytváření a monitoring rozpočtů  
 - Pokročilé vizualizace (Heatmap, Waterfall, Pie Charts)  
-- AI-powered finanční doporučení  
 - Real-time budget alerts  
-- CSV Import/Export transakcí  
-- Dark/Light mode  
-- Offline funkčnost (PWA)  
-- Instalovatelná jako nativní aplikace  
+- CSV Import/Export transakcí   
 
 ---
 
