@@ -28,7 +28,7 @@ Plutoa je moderní Progressive Web Application pro správu osobních financí. A
 - Trend Analysis – automatická detekce trendů  
 - Financial Health Score – celkové hodnocení finančního zdraví (0–100)
 
-### AI-Powered Insights
+### Insights
 
 - Automatická detekce neobvyklých výdajů  
 - Personalizovaná doporučení na úspory  
@@ -42,14 +42,6 @@ Plutoa je moderní Progressive Web Application pro správu osobních financí. A
 - Automatické alerty při 80 %, 90 %, 100 % využití  
 - Toast notifications  
 - Barevné indikátory závažnosti
-
-### Progressive Web App
-
-- Instalovatelná jako nativní aplikace  
-- Offline podpora pomocí service workeru  
-- Cache-first strategie pro rychlé načítání  
-- Network-first pro API data
-
 
 ### Data Management
 
@@ -129,19 +121,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### Krok 3: Migrace databáze
-
-```bash
-python manage.py migrate
-```
-
-#### Krok 4: Vytvoření superusera (admin)
-
-```bash
-python manage.py createsuperuser
-```
-
-#### Krok 5: Spuštění Django serveru
+#### Krok 3: Spuštění Django serveru
 
 ```bash
 python manage.py runserver
