@@ -1,105 +1,113 @@
 /* ========================================
-   LOGIN/REGISTER FORM STYLES
+   LOGIN/REGISTER FORM STYLES - Dark Purple Theme
    ======================================== */
 
-/* Hlavní kontejner pro přihlašovací formulář */
+/* Hlavní kontejner - tmavé pozadí aplikace */
 .login-container {
   display: flex;
-  justify-content: center;  /* Horizontální centrování */
-  align-items: center;      /* Vertikální centrování */
-  min-height: auto;  /* Automatická výška podle obsahu */
-  padding: 3rem 1rem;  /* Menší vertikální padding shora a zdola */
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
   width: 100%;
-  background: linear-gradient(135deg, #0A0A0B 0%, #1A0E0F 25%, #0D0506 50%, #1A1A1D 75%, #0A0A0B 100%);
+  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.05) 0%, #0A0A0B 70%);
+  position: relative;
+  overflow: hidden;
+  padding: 2rem 1rem;
 }
 
-/* Karta s formulářem - glassmorphism design */
+/* Žádné další prvky na pozadí */
+.login-container::before,
+.login-container::after {
+  display: none;
+}
+
+/* Fialová karta v barvách aplikace */
 .login-card {
-  background: rgba(255, 255, 255, 0.02);  /* Vyšší průhlednost */
-  backdrop-filter: blur(15px);  /* Rozostření pro glassmorphism efekt */
-  border-radius: 20px;  /* Zaoblené rohy */
-  padding: 2rem 3rem;  /* Zmenšený vertikální padding */
-  width: 90%;  /* Zabere 90% šířky kontejneru */
-  max-width: 900px;  /* Maximální šířka 900px */
-  border: 1px solid rgba(255, 255, 255, 0.05);  /* Jemnější bílý okraj */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);  /* Stín pro hloubku */
+  background: rgba(26, 26, 29, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2.5rem 2.5rem 2rem;
+  width: 90%;
+  max-width: 420px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  position: relative;
+  z-index: 1;
 }
 
 /* Nadpis formuláře */
 .login-card h2 {
-  margin-bottom: 1rem;  /* Zmenšený spodní margin */
+  margin-bottom: 2rem;
   text-align: center;
-  color: var(--text-primary);
-  font-weight: 600;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 2rem;
+  text-shadow: none;
+}
+
+/* Login form container */
+.login-form {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  border: none;
 }
 
 /* ========================================
    FORM ELEMENTS
    ======================================== */
 
-/* Skupina formulářových polí */
-.login-form {
-  background-color: var(--bg-secondary);
-  border-radius: 8px;
-  padding: 2rem 2.5rem;  /* Zmenšený vertikální padding */
-  width: 90%;  /* Zabere 90% šířky */
-  max-width: 900px;  /* Maximální šířka 900px */
-  margin: 2rem auto;
-  border: 1px solid var(--bg-tertiary);
-}
-
 .form-group {
-  margin-bottom: 1rem;  /* Zmenšený rozestup mezi řádky */
-  width: 100%;  /* Zajistí, že všechny řádky mají stejnou šířku */
+  margin-bottom: 1.25rem;
+  width: 100%;
+  position: relative;
 }
 
 .form-label {
   display: block;
   margin-bottom: 0.5rem;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+  font-size: 0.9rem;
 }
 
-.form-input {
-  width: 100%;
-  padding: 0.875rem 1.25rem;  /* Zvětšený padding */
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--bg-tertiary);
-  border-radius: 4px;
-  color: var(--text-primary);
-  box-sizing: border-box;  /* Zahrnutí paddingu do šířky */
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--accent-primary);
-}
-
-/* Labely pro formulářová pole */
+/* Input pole s ikonou */
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  color: var(--text-secondary);
-  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+  font-size: 0.9rem;
 }
 
-/* Input pole s glassmorphism efektem */
+.form-input,
 .form-group input {
   width: 100%;
-  padding: 0.875rem 1.25rem;  /* Zvětšený padding pro větší input */
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);  /* Jemný bílý okraj */
-  background: rgba(255, 255, 255, 0.05);  /* Poloprůhledné pozadí */
-  color: var(--text-primary);
-  font-size: 1rem;
-  transition: all 0.3s ease;  /* Plynulé přechody */
-  box-sizing: border-box;  /* Zahrnutí paddingu do šířky */
+  padding: 0.875rem 1rem;
+  padding-right: 3rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
-/* Focus stav pro input pole */
+.form-input::placeholder,
+.form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.form-input:focus,
 .form-group input:focus {
   outline: none;
-  border-color: rgba(0, 212, 255, 0.5);  /* Meteora blue border on focus */
-  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);  /* Meteora blue shadow */
+  border-color: rgba(138, 92, 255, 0.5);
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 3px rgba(138, 92, 255, 0.1);
 }
 
 /* ========================================
@@ -109,129 +117,212 @@
 /* Hlavní tlačítko pro přihlášení/registraci */
 .login-button {
   width: 100%;
-  padding: 0.875rem;  /* Zvětšený padding */
-  background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));  /* Meteora blue gradient */
-  color: var(--text-primary);
+  padding: 0.875rem;
+  background: rgba(255, 255, 255, 0.95);
+  color: #6b46c1;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;  /* Plynulé přechody */
-  margin-top: 0.5rem;  /* Zmenšený horní margin */
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Hover efekt pro tlačítko */
 .login-button:hover {
-  transform: translateY(-2px);  /* Zvednutí nahoru */
-  box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);  /* Meteora blue shadow */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  background: #ffffff;
 }
 
-/* Disabled stav tlačítka */
 .login-button:disabled {
-  opacity: 0.7;  /* Snížená průhlednost */
-  cursor: not-allowed;  /* Kurzor "zakázáno" */
-  transform: none;  /* Bez animace */
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ========================================
+   CHECKBOX & ADDITIONAL LINKS
+   ======================================== */
+
+.remember-forgot-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.75rem 0 1rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.remember-me label {
+  display: inline !important;
+  margin: 0;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.remember-me input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 4px;
+  accent-color: #8a5cff;
+}
+
+.forgot-password {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.forgot-password:hover {
+  color: #ffffff;
+  text-decoration: underline;
 }
 
 /* ========================================
    MESSAGES & LINKS
    ======================================== */
 
-/* Chybové zprávy */
 .error-message {
-  background: rgba(255, 99, 71, 0.1);  /* Poloprůhledné červené pozadí */
-  color: #ff6347;  /* Červený text */
-  padding: 0.625rem 1rem;  /* Zmenšený padding */
-  border-radius: 10px;
-  margin-bottom: 1rem;  /* Zmenšený spodní margin */
-  border: 1px solid rgba(255, 99, 71, 0.2);  /* Červený okraj */
+  background: rgba(239, 68, 68, 0.15);
+  color: #fecaca;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  font-size: 0.9rem;
 }
 
-/* Odkaz na registraci */
 .register-link {
   text-align: center;
-  margin-top: 1rem;  /* Zmenšený horní margin */
-  color: rgba(255, 255, 255, 0.7);  /* Poloprůhledný bílý text */
+  margin-top: 1.25rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
 }
 
-/* Styl pro odkaz v registračním textu */
 .register-link a {
-  color: var(--accent-primary);  /* Meteora blue */
+  color: #ffffff;
   text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;  /* Plynulá změna barvy */
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
 .register-link a:hover {
-  color: var(--accent-secondary);
   text-decoration: underline;
+  color: #8a5cff;
 }
 
 /* ========================================
    PASSWORD FIELDS
    ======================================== */
 
-/* Skupina pro hesla s tlačítkem pro zobrazení/skrytí */
 .password-group {
   position: relative;
 }
 
-/* Kontejner pro input a tlačítko */
 .password-input-container {
   display: flex;
   align-items: center;
-  position: relative;  /* Pro absolutní pozicování tlačítka */
+  position: relative;
   width: 100%;
 }
 
-/* Input pole zabírá celou šířku */
 .password-input-container input {
   width: 100%;
-  padding-right: 80px;  /* Prostor pro tlačítko vpravo */
-  box-sizing: border-box;  /* Zahrnutí paddingu do šířky */
+  padding-right: 3.5rem;
+  box-sizing: border-box;
 }
 
-/* Tlačítko pro zobrazení/skrytí hesla */
 .toggle-password {
   position: absolute;
-  right: 10px;
+  right: 1rem;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: var(--accent-primary);  /* Meteora blue */
+  color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   padding: 0;
   margin: 0;
-  height: 100%;
+  height: auto;
   display: flex;
   align-items: center;
+  transition: color 0.2s;
+  font-weight: 500;
 }
 
-/* Hover efekt pro tlačítko hesla */
 .toggle-password:hover {
-  color: #ff6584;  /* Růžová barva při hover */
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* ========================================
-   ADDITIONAL MESSAGES
+   FIELD ERRORS
    ======================================== */
 
-/* Odkaz na ověření emailu */
-.verification-link {
-  margin-top: 10px;
-  font-size: 14px;
+.field-error {
+  color: #fecaca;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  display: block;
 }
 
-.verification-link a {
-  color: #6c63ff;  /* Fialová barva */
-  text-decoration: underline;
+.form-group input.error {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.08);
 }
 
-.verification-link a:hover {
-  color: #5a56e0;  /* Tmavší fialová při hover */
+/* ========================================
+   PASSWORD STRENGTH INDICATOR
+   ======================================== */
+
+.password-strength {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.strength-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  transition: all 0.3s ease;
+  border-radius: 3px;
+}
+
+.strength-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: 60px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.password-requirements {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.password-requirements small {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
 }
 
 /* ========================================
@@ -243,9 +334,9 @@
   gap: 1.5rem;
   align-items: flex-start;
   padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
-  border: 2px solid rgba(34, 197, 94, 0.3);
-  border-radius: 12px;
+  background: rgba(34, 197, 94, 0.15);
+  border: 2px solid rgba(34, 197, 94, 0.4);
+  border-radius: 16px;
   margin-bottom: 1.5rem;
   animation: slideInDown 0.4s ease;
 }
@@ -257,7 +348,7 @@
 .success-checkmark {
   width: 48px;
   height: 48px;
-  stroke: #22c55e;
+  stroke: #86efac;
   stroke-width: 2.5;
   animation: checkmarkPop 0.6s ease;
 }
@@ -267,21 +358,21 @@
 }
 
 .success-content h3 {
-  color: #22c55e;
+  color: #86efac;
   font-size: 1.25rem;
   font-weight: 700;
   margin: 0 0 0.5rem 0;
 }
 
 .success-content p {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
   margin: 0 0 0.5rem 0;
   font-size: 1rem;
   line-height: 1.5;
 }
 
 .redirect-info {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
   font-size: 0.875rem !important;
   font-style: italic;
   margin-top: 0.75rem !important;
@@ -292,6 +383,7 @@
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -303,9 +395,11 @@
     transform: scale(0);
     opacity: 0;
   }
+
   50% {
     transform: scale(1.1);
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -316,20 +410,14 @@
    RESPONSIVE DESIGN
    ======================================== */
 
-/* Tablet a menší obrazovky */
 @media (max-width: 768px) {
   .login-card {
-    max-width: 90%;
-    padding: 2rem;
+    max-width: 95%;
+    padding: 2rem 1.5rem;
   }
 
-  .login-form {
-    max-width: 90%;
-    padding: 1.5rem;
-  }
-  
-  .login-container {
-    padding: 1rem;
+  .login-card h2 {
+    font-size: 1.75rem;
   }
 
   .success-message-box {
@@ -340,31 +428,27 @@
   }
 }
 
-/* Mobilní telefony */
 @media (max-width: 480px) {
   .login-card {
-    padding: 1.5rem;
+    padding: 1.75rem 1.25rem;
   }
 
-  .login-form {
-    padding: 1rem;
+  .login-card h2 {
+    font-size: 1.5rem;
   }
-  
+
   .form-group {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
   }
-  
+
   .login-button {
-    padding: 0.875rem;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+  }
+
+  .remember-forgot-row {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
   }
 }
-/* ======================================== PASSWORD STRENGTH INDICATOR ======================================== */
-
-.password-strength { margin-top: 0.75rem; display: flex; align-items: center; gap: 1rem; }
-.strength-bar { flex: 1; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden; }
-.strength-fill { height: 100%; transition: all 0.3s ease; border-radius: 3px; }
-.strength-label { font-size: 0.875rem; font-weight: 600; min-width: 60px; }
-.password-requirements { margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem; }
-.password-requirements small { color: var(--text-secondary); font-size: 0.8rem; }
-.toggle-password { background: none; border: none; cursor: pointer; font-size: 1.25rem; padding: 0.25rem; opacity: 0.7; transition: opacity 0.2s; }
-.toggle-password:hover { opacity: 1; }

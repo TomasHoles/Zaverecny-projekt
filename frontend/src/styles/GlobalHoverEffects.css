@@ -1,0 +1,92 @@
+/* Global Hover Effects - Neon Yellow & Purple */
+
+/* Card Hover Effects */
+.card,
+.transactions-container,
+.budget-card,
+.goal-card,
+.analytics-card,
+.feature-card,
+.step,
+.why-item {
+    transition: all 0.3s ease !important;
+}
+
+.card:hover,
+.transactions-container:hover,
+.budget-card:hover,
+.goal-card:hover,
+.analytics-card:hover {
+    transform: translateY(-5px) !important;
+    border-color: var(--accent-yellow, #ccff00) !important;
+    box-shadow: 0 10px 30px rgba(204, 255, 0, 0.3) !important;
+}
+
+/* Button Hover Effects */
+button:not(.button-secondary):not(.logout-button):not(.delete-btn):hover,
+.add-transaction-btn:hover,
+.btn-submit:hover,
+.button-primary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(204, 255, 0, 0.5) !important;
+}
+
+/* Secondary Buttons - Purple Glow */
+.button-secondary:hover,
+.import-btn:hover,
+.export-btn:hover {
+    border-color: var(--accent-purple, #8b5cf6) !important;
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Transaction/List Item Hover */
+.transaction-item:hover,
+.budget-item:hover,
+.goal-item:hover {
+    background: rgba(204, 255, 0, 0.05) !important;
+    border-left: 3px solid var(--accent-yellow, #ccff00) !important;
+    box-shadow: 0 0 20px rgba(204, 255, 0, 0.15) !important;
+}
+
+/* Input Focus - Purple Glow */
+input:focus,
+select:focus,
+textarea:focus,
+.form-input:focus,
+.filter-input:focus,
+.filter-select:focus {
+    border-color: var(--accent-purple, #8b5cf6) !important;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.3) !important;
+}
+
+/* Link Hover - Yellow */
+a:hover,
+.nav-link:hover,
+.link-trigger:hover,
+.dropdown-trigger:hover {
+    color: var(--accent-yellow, #ccff00) !important;
+    text-shadow: 0 0 10px rgba(204, 255, 0, 0.5) !important;
+}
+
+/* Tab Active - Yellow Glow */
+.tab-btn.active,
+.nav-link.active {
+    box-shadow: 0 4px 15px rgba(204, 255, 0, 0.4) !important;
+}
+
+/* Modal Hover */
+.modal-content {
+    border-color: var(--accent-purple, #8b5cf6) !important;
+    box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3) !important;
+}
+
+/* Progress Bar Glow */
+.progress-fill {
+    box-shadow: 0 0 15px rgba(204, 255, 0, 0.5) !important;
+}
+
+/* Notification Badge Glow */
+.notification-badge {
+    box-shadow: 0 0 10px rgba(204, 255, 0, 0.6) !important;
+}

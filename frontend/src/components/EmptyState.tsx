@@ -13,7 +13,7 @@ interface EmptyStateProps {
   secondaryActionText?: string;
   secondaryActionLink?: string;
   onSecondaryAction?: () => void;
-  illustration?: 'transactions' | 'budgets' | 'goals' | 'analytics' | 'notifications' | 'search';
+  illustration?: 'transactions' | 'budgets' | 'goals' | 'analytics' | 'notifications' | 'search' | 'recurring';
 }
 
 const EmptyState: React.FC<EmptyStateProps> = ({
@@ -42,6 +42,8 @@ const EmptyState: React.FC<EmptyStateProps> = ({
         return 'notification';
       case 'search':
         return 'search';
+      case 'recurring':
+        return 'trending-up';
       default:
         return icon || 'info';
     }
@@ -55,10 +57,10 @@ const EmptyState: React.FC<EmptyStateProps> = ({
         </span>
         <div className="empty-state-glow"></div>
       </div>
-      
+
       <h2 className="empty-state-title">{title}</h2>
       <p className="empty-state-description">{description}</p>
-      
+
       {(actionText || secondaryActionText) && (
         <div className="empty-state-actions">
           {actionText && (
@@ -72,7 +74,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
               </button>
             )
           )}
-          
+
           {secondaryActionText && (
             secondaryActionLink ? (
               <Link to={secondaryActionLink} className="empty-state-action secondary">

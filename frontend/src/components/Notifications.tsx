@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
-import Icon from './Icon';
-import '../styles/Notifications.css';
+import { Bell, Check, Trash2, Target, TrendingUp, DollarSign, BarChart2, Lightbulb, AlertTriangle } from 'lucide-react';
 import '../styles/Notifications.css';
 
 interface Notification {
@@ -71,20 +70,21 @@ const Notifications: React.FC = () => {
     }
   };
 
-  const getNotificationIcon = (type: string) => {
+  const getNotificationIcon = (type: string, color: string) => {
+    const props = { size: 24, color };
     switch (type) {
       case 'BUDGET_EXCEEDED':
       case 'BUDGET_WARNING':
-        return 'target';
+        return <Target {...props} />;
       case 'GOAL_ACHIEVED':
       case 'GOAL_PROGRESS':
-        return 'trending-up';
+        return <TrendingUp {...props} />;
       case 'RECURRING_DUE':
-        return 'income';
+        return <DollarSign {...props} />;
       case 'MONTHLY_SUMMARY':
-        return 'analytics';
+        return <BarChart2 {...props} />;
       default:
-        return 'lightbulb';
+        return <Lightbulb {...props} />;
     }
   };
 
@@ -144,19 +144,19 @@ const Notifications: React.FC = () => {
       <div className="notifications-header">
         <div>
           <h1 className="notifications-title">
-            <Icon name="lightbulb" size={32} color="#F59E0B" /> Notifikace
+            <Bell size={32} color="#F59E0B" /> Notifikace
           </h1>
           <p className="notifications-subtitle">
-            {unreadCount > 0 
-              ? `Máte ${unreadCount} nepřečtených notifikací` 
+            {unreadCount > 0
+              ? `Máte ${unreadCount} nepřečtených notifikací`
               : 'Všechny notifikace přečteny'}
           </p>
         </div>
-        
+
         <div className="notifications-actions">
           {unreadCount > 0 && (
             <button onClick={markAllAsRead} className="btn-mark-all">
-              <Icon name="check" size={18} /> Označit vše jako přečtené
+              <Check size={18} /> Označit vše jako přečtené
             </button>
           )}
         </div>
@@ -189,13 +189,9 @@ const Notifications: React.FC = () => {
                 className="notification-icon"
                 style={{ backgroundColor: getNotificationColor(notification.type) + '20' }}
               >
-                <Icon
-                  name={getNotificationIcon(notification.type)}
-                  size={24}
-                  color={getNotificationColor(notification.type)}
-                />
+                {getNotificationIcon(notification.type, getNotificationColor(notification.type))}
               </div>
-              
+
               <div className="notification-content">
                 <div className="notification-header-row">
                   <h3 className="notification-title">{notification.title}</h3>
@@ -214,13 +210,13 @@ const Notifications: React.FC = () => {
                   deleteNotification(notification.id);
                 }}
               >
-                <Icon name="trash" size={18} color="#EF4444" />
+                <Trash2 size={18} color="#EF4444" />
               </button>
             </div>
           ))
         ) : (
           <div className="notifications-empty">
-            <Icon name="lightbulb" size={64} color="#6B7280" />
+            <Bell size={64} color="#6B7280" />
             <h3>Žádné {filter === 'unread' ? 'nepřečtené ' : ''}notifikace</h3>
             <p>Budeme vás informovat o důležitých událostech</p>
           </div>

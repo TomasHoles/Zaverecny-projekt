@@ -1,5 +1,6 @@
 import React from 'react';
-import Icon from './Icon';
+import { Info, LucideIcon } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import '../styles/PageHeader.css';
 
 interface PageHeaderProps {
@@ -10,20 +11,30 @@ interface PageHeaderProps {
   helpText?: string;
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({ 
-  title, 
-  subtitle, 
-  icon, 
+const PageHeader: React.FC<PageHeaderProps> = ({
+  title,
+  subtitle,
+  icon,
   action,
-  helpText 
+  helpText
 }) => {
+  // Dynamicky získat ikonu z lucide-react
+  const getIconComponent = (iconName: string) => {
+    const formattedName = iconName.split('-').map((word, index) =>
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join('');
+
+    const IconComponent = (LucideIcons as any)[formattedName] as LucideIcon;
+    return IconComponent ? <IconComponent size={32} /> : null;
+  };
+
   return (
     <div className="page-header">
       <div className="page-header-content">
         <div className="page-header-info">
           {icon && (
             <div className="page-header-icon">
-              <Icon name={icon} size={32} />
+              {getIconComponent(icon)}
             </div>
           )}
           <div>
@@ -31,7 +42,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
             {subtitle && <p className="page-subtitle">{subtitle}</p>}
             {helpText && (
               <div className="page-help-text">
-                <Icon name="info" size={14} />
+                <Info size={14} />
                 <span>{helpText}</span>
               </div>
             )}

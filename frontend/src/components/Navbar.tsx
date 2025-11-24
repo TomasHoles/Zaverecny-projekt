@@ -3,9 +3,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import api from '../services/api';
-import Icon from './Icon';
+import { Bell, Trash2, Plus, Clock, LogOut, User, Settings } from 'lucide-react';
 import '../styles/Navbar.css';
-import logo from '../assets/logo.png';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -31,16 +30,16 @@ const Navbar: React.FC = () => {
 
   const handleGenerateDemoData = async () => {
     if (!user) return;
-    
+
     console.log('[Demo Data] Generování demo dat...');
-    
+
     try {
       setGeneratingData(true);
       console.log('[Demo Data] Volám API endpoint...');
       const response = await api.post('/transactions/generate-demo-data/');
       console.log('[Demo Data] Response:', response.data);
       toast.success(response.data.message || 'Demo data byla úspěšně vytvořena!');
-      
+
       // Refresh stránky po 2 sekundách, aby backend stihl vytvořit všechna data
       console.log('[Demo Data] Refresh stránky za 2 sekundy...');
       setTimeout(() => {
@@ -56,16 +55,16 @@ const Navbar: React.FC = () => {
 
   const handleDeleteAllData = async () => {
     if (!user) return;
-    
+
     if (!window.confirm('Opravdu chcete smazat VŠECHNA data? Tato akce je nevratná!')) {
       return;
     }
-    
+
     try {
       setGeneratingData(true);
       const response = await api.post('/transactions/delete-all-data/');
       toast.success(response.data.message || 'Všechna data byla smazána!');
-      
+
       setTimeout(() => {
         window.location.reload();
       }, 1000);
@@ -114,13 +113,13 @@ const Navbar: React.FC = () => {
     <nav className="navbar">
       <div className="navbar-brand">
         <Link to="/" className="navbar-logo">
-          <img src={logo} alt="Plutoa Logo" className="logo-icon" />
+          <img src="/logo.png" alt="Plutoa Logo" className="logo-icon" />
           <span className="logo-text">Plutoa</span>
         </Link>
       </div>
 
       {/* Hamburger menu button */}
-      <button 
+      <button
         className={`hamburger ${mobileMenuOpen ? 'active' : ''}`}
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         aria-label="Toggle menu"
@@ -132,17 +131,17 @@ const Navbar: React.FC = () => {
 
       <div className={`navbar-links ${mobileMenuOpen ? 'active' : ''}`}>
         <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`} onClick={closeMobileMenu}>Home</Link>
-        <Link to="/dashboard" className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`} onClick={closeMobileMenu}>Přehled</Link>
+        <Link to="/overview" className={`nav-link ${location.pathname === '/overview' ? 'active' : ''}`} onClick={closeMobileMenu}>Přehled</Link>
         <Link to="/transactions" className={`nav-link ${location.pathname === '/transactions' ? 'active' : ''}`} onClick={closeMobileMenu}>Transakce</Link>
         <Link to="/budgets" className={`nav-link ${location.pathname === '/budgets' ? 'active' : ''}`} onClick={closeMobileMenu}>Rozpočty</Link>
         <Link to="/goals" className={`nav-link ${location.pathname === '/goals' ? 'active' : ''}`} onClick={closeMobileMenu}>Cíle</Link>
         <Link to="/analytics" className={`nav-link ${location.pathname === '/analytics' ? 'active' : ''}`} onClick={closeMobileMenu}>Analytika</Link>
-        
+
         {/* Mobile user actions */}
         {user && (
           <div className="mobile-user-actions">
             <Link to="/notifications" className="nav-link notification-link-mobile" onClick={closeMobileMenu}>
-              <Icon name="bell" size={20} color="currentColor" />
+              <Bell size={20} color="currentColor" />
               <span>Notifikace</span>
               {unreadCount > 0 && (
                 <span className="notification-badge">{unreadCount}</span>
@@ -159,35 +158,35 @@ const Navbar: React.FC = () => {
       <div className="user-section" ref={dropdownRef}>
         {/* Delete All Data Button */}
         {user && (
-          <button 
-            className="delete-data-button" 
+          <button
+            className="delete-data-button"
             onClick={handleDeleteAllData}
             disabled={generatingData}
             title="Smazat všechna data"
           >
-            <Icon name="trash" size={18} color="#ffffff" />
+            <Trash2 size={18} color="#ffffff" />
           </button>
         )}
-        
+
         {/* Generate Demo Data Button */}
         {user && (
-          <button 
-            className="demo-data-button" 
+          <button
+            className="demo-data-button"
             onClick={handleGenerateDemoData}
             disabled={generatingData}
             title="Vygenerovat demo data"
           >
             {generatingData ? (
-              <Icon name="clock" size={18} color="#ffffff" />
+              <Clock size={18} color="#ffffff" />
             ) : (
-              <Icon name="plus" size={18} color="#ffffff" />
+              <Plus size={18} color="#ffffff" />
             )}
           </button>
         )}
-        
+
         {user && (
           <Link to="/notifications" className="nav-link notification-link">
-            <Icon name="bell" size={20} color="currentColor" />
+            <Bell size={20} color="currentColor" />
             {unreadCount > 0 && (
               <span className="notification-badge">{unreadCount}</span>
             )}
@@ -195,15 +194,15 @@ const Navbar: React.FC = () => {
         )}
         {user ? (
           <>
-            <div 
-              className="user-avatar" 
+            <div
+              className="user-avatar"
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
               {user.avatar ? (
                 <img src={user.avatar} alt={`${user.first_name || user.username}'s avatar`} />
               ) : (
                 <div className="avatar-placeholder">
-                  {(user.first_name && user.last_name) 
+                  {(user.first_name && user.last_name)
                     ? `${user.first_name.charAt(0)}${user.last_name.charAt(0)}`
                     : user.username.charAt(0).toUpperCase()
                   }
@@ -219,12 +218,16 @@ const Navbar: React.FC = () => {
                 </div>
                 <div className="dropdown-divider"></div>
                 <div className="dropdown-links">
-                  <Link to="/profile" className="dropdown-link">Profil</Link>
-                  <Link to="/settings" className="dropdown-link">Nastavení</Link>
+                  <Link to="/profile" className="dropdown-link">
+                    <User size={16} /> Profil
+                  </Link>
+                  <Link to="/settings" className="dropdown-link">
+                    <Settings size={16} /> Nastavení
+                  </Link>
                 </div>
                 <div className="dropdown-divider"></div>
                 <button className="logout-button" onClick={handleLogout}>
-                  Odhlásit se
+                  <LogOut size={16} /> Odhlásit se
                 </button>
               </div>
             )}

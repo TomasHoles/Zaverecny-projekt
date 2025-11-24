@@ -26,9 +26,10 @@ interface AuthContextType {
         first_name: string;
         last_name: string;
         email?: string;
-    }) => Promise<{message: string}>;
-    verifyEmail: (token: string) => Promise<{message: string}>;
-    resendVerification: (email: string) => Promise<{message: string}>;
+        currency_preference?: string;
+    }) => Promise<{ message: string }>;
+    verifyEmail: (token: string) => Promise<{ message: string }>;
+    resendVerification: (email: string) => Promise<{ message: string }>;
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
@@ -74,6 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         first_name: string;
         last_name: string;
         email?: string;
+        currency_preference?: string;
     }) => {
         const response = await api.post<AuthResponse>('/accounts/register/', data);
         localStorage.setItem('token', response.data.token);
@@ -82,12 +84,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const verifyEmail = async (token: string) => {
-        const response = await api.post<{message: string}>('/accounts/verify-email/', { token });
+        const response = await api.post<{ message: string }>('/accounts/verify-email/', { token });
         return { message: response.data.message || 'Email byl úspěšně ověřen!' };
     };
 
     const resendVerification = async (email: string) => {
-        const response = await api.post<{message: string}>('/accounts/resend-verification/', { email });
+        const response = await api.post<{ message: string }>('/accounts/resend-verification/', { email });
         return { message: response.data.message || 'Ověřovací email byl odeslán!' };
     };
 

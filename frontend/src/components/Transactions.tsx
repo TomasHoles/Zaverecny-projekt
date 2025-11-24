@@ -500,12 +500,12 @@ const Transactions: React.FC = () => {
   return (
     <div className="transactions-page">
       {/* Hero Section */}
-      <section className="transactions-hero">
-        <div className="transactions-hero-content">
+      <div className="transactions-hero">
+        <div>
           <h1 className="transactions-title">Transakce</h1>
           <p className="transactions-subtitle">Přehled všech vašich finančních transakcí</p>
         </div>
-      </section>
+      </div>
 
       {/* Tab Navigation */}
       <div className="transactions-tabs">

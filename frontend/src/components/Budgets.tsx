@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import dashboardService, { BudgetOverview, Budget } from '../services/dashboardService';
 import api from '../services/api';
-import Icon from './Icon';
+import { Plus, Trash2, Edit2, Wallet, PieChart, TrendingUp, AlertCircle, CheckCircle } from 'lucide-react';
 import { BudgetsSkeleton } from './SkeletonLoaders';
 import EmptyState from './EmptyState';
 import '../styles/Budgets.css';
-import '../styles/budgets-overrides.css';
 
 interface Category {
   id: number;
@@ -86,7 +85,7 @@ const Budgets: React.FC = () => {
         amount: budget.amount.toString(),
         category: budget.category || '',
         period: budget.period || 'MONTHLY',
-        start_date: '', // Budget nemá start_date v interface, nastavíme prázdné
+        start_date: '', // Budget nemá start_date v interface, nastavíme prázdné nebo bychom museli upravit interface
         end_date: ''
       });
     } else {
@@ -95,7 +94,7 @@ const Budgets: React.FC = () => {
       const today = new Date();
       const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
       const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-      
+
       setFormData({
         name: '',
         amount: '',
@@ -135,7 +134,7 @@ const Budgets: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validace
     if (!formData.name || !formData.amount || !formData.start_date || !formData.end_date) {
       alert('Vyplňte prosím všechna povinná pole');
@@ -151,7 +150,7 @@ const Budgets: React.FC = () => {
       alert('Datum konce musí být později než datum začátku');
       return;
     }
-    
+
     try {
       const budgetPayload: any = {
         name: formData.name,
@@ -167,33 +166,25 @@ const Budgets: React.FC = () => {
         budgetPayload.category = parseInt(formData.category);
       }
 
-      console.log('Odesílám rozpočet:', budgetPayload);
-      
       if (editingBudget) {
         // Editace existujícího rozpočtu
         await api.put(`/budgets/budgets/${editingBudget.id}/`, budgetPayload);
-        console.log('Rozpočet aktualizován');
         alert('Rozpočet byl úspěšně aktualizován!');
       } else {
         // Vytvoření nového rozpočtu
         await api.post('/budgets/budgets/', budgetPayload);
-        console.log('Rozpočet vytvořen');
         alert('Rozpočet byl úspěšně vytvořen!');
       }
-      
+
       // Obnovit data rozpočtů
       const data = await dashboardService.getBudgetOverview();
       setBudgetData(data);
-      
+
       handleCloseModal();
     } catch (err: any) {
       console.error('Chyba při ukládání rozpočtu:', err);
-      console.error('Response data:', err.response?.data);
-      console.error('Response status:', err.response?.status);
-      
       let errorMessage = 'Nepodařilo se uložit rozpočet.\n\n';
       if (err.response?.data) {
-        // Zobrazit všechny chyby z backendu
         const errors = err.response.data;
         if (typeof errors === 'object') {
           errorMessage += Object.entries(errors)
@@ -207,7 +198,6 @@ const Budgets: React.FC = () => {
       } else {
         errorMessage += 'Zkuste to znovu.';
       }
-      
       alert(errorMessage);
     }
   };
@@ -215,11 +205,11 @@ const Budgets: React.FC = () => {
   const handleDeleteBudget = async (id: number) => {
     try {
       await api.delete(`/budgets/budgets/${id}/`);
-      
+
       // Obnovit data rozpočtů
       const data = await dashboardService.getBudgetOverview();
       setBudgetData(data);
-      
+
       setShowDeleteConfirm(null);
       alert('Rozpočet byl úspěšně smazán!');
     } catch (err: any) {
@@ -229,7 +219,11 @@ const Budgets: React.FC = () => {
   };
 
   if (loading) {
-    return <BudgetsSkeleton />;
+    return (
+      <div className="budgets-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <BudgetsSkeleton />
+      </div>
+    );
   }
 
   // Zobrazí pouze lokalizovaný název kategorie za prvním spojovníkem (např. "food - Jídlo a nápoje" -> "Jídlo a nápoje")
@@ -242,12 +236,12 @@ const Budgets: React.FC = () => {
   return (
     <div className="budgets-page">
       {/* Hero Section */}
-      <section className="budgets-hero">
-        <div className="budgets-hero-content">
+      <div className="budgets-hero">
+        <div>
           <h1 className="budgets-title">Rozpočty</h1>
           <p className="budgets-subtitle">Správa a sledování vašich rozpočtů</p>
         </div>
-      </section>
+      </div>
 
       {/* Summary Cards */}
       <div className="budgets-summary">
@@ -265,7 +259,7 @@ const Budgets: React.FC = () => {
             {formatCurrency(budgetData?.total_spent || 0)}
           </p>
           <p className="summary-description">
-            {budgetData?.total_budget 
+            {budgetData?.total_budget
               ? `${((budgetData.total_spent / budgetData.total_budget) * 100).toFixed(1)}% celkového rozpočtu`
               : 'Z celkového rozpočtu'}
           </p>
@@ -273,10 +267,10 @@ const Budgets: React.FC = () => {
 
         <div className="summary-card">
           <h3 className="summary-label">Zbývající rozpočet</h3>
-          <p className="summary-value" style={{ 
-            color: (budgetData?.total_budget || 0) - (budgetData?.total_spent || 0) >= 0 
-              ? '#4ADE80' 
-              : '#FF4742' 
+          <p className="summary-value" style={{
+            color: (budgetData?.total_budget || 0) - (budgetData?.total_spent || 0) >= 0
+              ? '#4ADE80'
+              : '#FF4742'
           }}>
             {formatCurrency((budgetData?.total_budget || 0) - (budgetData?.total_spent || 0))}
           </p>
@@ -286,103 +280,104 @@ const Budgets: React.FC = () => {
 
       {/* Budgets List */}
       <div className="budgets-container">
-        <div className="budgets-section-card">
-          <div className="section-header">
-            <span>Vaše rozpočty ({budgetData?.budgets?.length || 0})</span>
-            <button className="add-budget-btn" onClick={handleOpenNewBudgetModal}>+ Přidat rozpočet</button>
-          </div>
-
-          {budgetData?.budgets && budgetData.budgets.length > 0 ? (
-            <div className="budgets-grid">
-              {budgetData.budgets.map((budget: Budget) => {
-                const status = getBudgetStatus(budget.percentage_used);
-                
-                return (
-                  <div key={budget.id} className="budget-card">
-                    <div className="budget-header">
-                      <div className="budget-info">
-                        <h3>{budget.name}</h3>
-                        <p className="budget-category">{budget.category || 'Obecný rozpočet'}</p>
-                      </div>
-                      <div className="budget-stats">
-                        <p className={`budget-percentage ${status}`}>
-                          {budget.percentage_used.toFixed(0)}%
-                        </p>
-                        <p className="budget-status">{getStatusText(budget.percentage_used)}</p>
-                      </div>
-                    </div>
-
-                    <div className="budget-amounts">
-                      <p className="amount-spent">
-                        Utraceno: <strong>{formatCurrency(budget.spent)}</strong>
-                      </p>
-                      <p className="amount-limit">
-                        Limit: <strong>{formatCurrency(budget.amount)}</strong>
-                      </p>
-                    </div>
-
-                    <div className="budget-progress">
-                      <div className="progress-bar-container">
-                        <div 
-                          className={`progress-bar-fill ${status}`}
-                          style={{ width: `${Math.min(budget.percentage_used, 100)}%` }}
-                        ></div>
-                      </div>
-                    </div>
-
-                    <p className="budget-remaining">
-                      Zbývá: <strong>{formatCurrency(budget.remaining)}</strong>
-                    </p>
-
-                    <div className="budget-actions">
-                      <button 
-                        className="budget-action-btn edit"
-                        onClick={() => handleOpenModal(budget)}
-                      >
-                        <Icon name="plus" size={16} /> Upravit
-                      </button>
-                      <button 
-                        className="budget-action-btn delete"
-                        onClick={() => setShowDeleteConfirm(budget.id)}
-                      >
-                        <Icon name="trash" size={16} /> Smazat
-                      </button>
-                    </div>
-
-                    {/* Potvrzovací dialog pro mazání */}
-                    {showDeleteConfirm === budget.id && (
-                      <div className="delete-confirm-budget">
-                        <p>Opravdu chcete smazat tento rozpočet?</p>
-                        <div className="delete-confirm-actions">
-                          <button 
-                            className="btn-confirm-delete"
-                            onClick={() => handleDeleteBudget(budget.id)}
-                          >
-                            Ano, smazat
-                          </button>
-                          <button 
-                            className="btn-cancel-delete"
-                            onClick={() => setShowDeleteConfirm(null)}
-                          >
-                            Zrušit
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <EmptyState
-              illustration="budgets"
-              title="Žádné rozpočty"
-              description="Zatím jste nevytvořili žádný rozpočet. Začněte sledovat své výdaje a kontrolovat finance vytvořením prvního rozpočtu."
-              actionText="Vytvořit první rozpočet"
-              onAction={handleOpenNewBudgetModal}
-            />
-          )}
+        <div className="section-header">
+          <span>Vaše rozpočty ({budgetData?.budgets?.length || 0})</span>
+          <button className="add-budget-btn" onClick={handleOpenNewBudgetModal}>
+            <Plus size={18} />
+            Přidat rozpočet
+          </button>
         </div>
+
+        {budgetData?.budgets && budgetData.budgets.length > 0 ? (
+          <div className="budgets-grid">
+            {budgetData.budgets.map((budget: Budget) => {
+              const status = getBudgetStatus(budget.percentage_used);
+
+              return (
+                <div key={budget.id} className="budget-card">
+                  <div className="budget-header">
+                    <div className="budget-info">
+                      <h3>{budget.name}</h3>
+                      <p className="budget-category">{budget.category || 'Obecný rozpočet'}</p>
+                    </div>
+                    <div className="budget-stats">
+                      <p className={`budget-percentage ${status}`}>
+                        {budget.percentage_used.toFixed(0)}%
+                      </p>
+                      <p className="budget-status">{getStatusText(budget.percentage_used)}</p>
+                    </div>
+                  </div>
+
+                  <div className="budget-amounts">
+                    <p className="amount-spent">
+                      Utraceno: <strong>{formatCurrency(budget.spent)}</strong>
+                    </p>
+                    <p className="amount-limit">
+                      Limit: <strong>{formatCurrency(budget.amount)}</strong>
+                    </p>
+                  </div>
+
+                  <div className="budget-progress">
+                    <div className="progress-bar-container">
+                      <div
+                        className={`progress-bar-fill ${status}`}
+                        style={{ width: `${Math.min(budget.percentage_used, 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  <p className="budget-remaining">
+                    Zbývá: <strong>{formatCurrency(budget.remaining)}</strong>
+                  </p>
+
+                  <div className="budget-actions">
+                    <button
+                      className="budget-action-btn edit"
+                      onClick={() => handleOpenModal(budget)}
+                    >
+                      <Edit2 size={14} /> Upravit
+                    </button>
+                    <button
+                      className="budget-action-btn delete"
+                      onClick={() => setShowDeleteConfirm(budget.id)}
+                    >
+                      <Trash2 size={14} /> Smazat
+                    </button>
+                  </div>
+
+                  {/* Potvrzovací dialog pro mazání */}
+                  {showDeleteConfirm === budget.id && (
+                    <div className="delete-confirm-budget">
+                      <p>Opravdu chcete smazat tento rozpočet?</p>
+                      <div className="delete-confirm-actions">
+                        <button
+                          className="btn-confirm-delete"
+                          onClick={() => handleDeleteBudget(budget.id)}
+                        >
+                          Ano, smazat
+                        </button>
+                        <button
+                          className="btn-cancel-delete"
+                          onClick={() => setShowDeleteConfirm(null)}
+                        >
+                          Zrušit
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <EmptyState
+            illustration="budgets"
+            title="Žádné rozpočty"
+            description="Zatím jste nevytvořili žádný rozpočet. Začněte sledovat své výdaje a kontrolovat finance vytvořením prvního rozpočtu."
+            actionText="Vytvořit první rozpočet"
+            onAction={handleOpenNewBudgetModal}
+          />
+        )}
       </div>
 
       {/* Modal pro přidání rozpočtu */}

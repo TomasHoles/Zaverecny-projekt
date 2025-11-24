@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
-import Icon from './Icon';
+import { Target, Home, Car, Plane, Gift, Laptop, Smartphone, Heart, Star, Trophy, Umbrella, Book, CheckCircle, TrendingUp, DollarSign, Edit2, Trash2, Plus } from 'lucide-react';
 import { GoalsSkeleton } from './SkeletonLoaders';
 import EmptyState from './EmptyState';
 import '../styles/Goals.css';
@@ -51,7 +51,7 @@ const Goals: React.FC = () => {
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('active');
-  
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -69,12 +69,12 @@ const Goals: React.FC = () => {
   });
 
   const goalTypes = [
-    { value: 'SAVINGS', label: 'Úspory', icon: 'savings' },
-    { value: 'PURCHASE', label: 'Nákup', icon: 'shopping-cart' },
-    { value: 'EMERGENCY_FUND', label: 'Nouzový fond', icon: 'shield' },
-    { value: 'INVESTMENT', label: 'Investice', icon: 'trending-up' },
-    { value: 'DEBT_PAYMENT', label: 'Splacení dluhu', icon: 'credit-card' },
-    { value: 'OTHER', label: 'Jiné', icon: 'more-horizontal' }
+    { value: 'SAVINGS', label: 'Úspory' },
+    { value: 'PURCHASE', label: 'Nákup' },
+    { value: 'EMERGENCY_FUND', label: 'Nouzový fond' },
+    { value: 'INVESTMENT', label: 'Investice' },
+    { value: 'DEBT_PAYMENT', label: 'Splacení dluhu' },
+    { value: 'OTHER', label: 'Jiné' }
   ];
 
   const iconOptions = [
@@ -94,15 +94,15 @@ const Goals: React.FC = () => {
   const fetchGoals = async () => {
     try {
       setLoading(true);
-      
+
       // Načíst souhrn
       const summaryResponse = await api.get('/goals/goals/summary/');
       setSummary(summaryResponse.data);
-      
+
       // Načíst všechny cíle
       const allGoalsResponse = await api.get('/goals/goals/');
       setAllGoals(allGoalsResponse.data);
-      
+
     } catch (error) {
       console.error('Chyba při načítání cílů:', error);
     } finally {
@@ -158,7 +158,7 @@ const Goals: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.target_amount) {
       alert('Vyplňte název a cílovou částku');
       return;
@@ -209,7 +209,7 @@ const Goals: React.FC = () => {
 
   const handleContributionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedGoal || !contributionData.amount) {
       alert('Vyplňte částku příspěvku');
       return;
@@ -240,8 +240,31 @@ const Goals: React.FC = () => {
     return allGoals;
   };
 
+  const getIconComponent = (iconName: string, size: number = 24, color?: string) => {
+    const props = { size, color };
+    switch (iconName) {
+      case 'target': return <Target {...props} />;
+      case 'home': return <Home {...props} />;
+      case 'car': return <Car {...props} />;
+      case 'plane': return <Plane {...props} />;
+      case 'gift': return <Gift {...props} />;
+      case 'laptop': return <Laptop {...props} />;
+      case 'smartphone': return <Smartphone {...props} />;
+      case 'heart': return <Heart {...props} />;
+      case 'star': return <Star {...props} />;
+      case 'trophy': return <Trophy {...props} />;
+      case 'umbrella': return <Umbrella {...props} />;
+      case 'book': return <Book {...props} />;
+      default: return <Target {...props} />;
+    }
+  };
+
   if (loading) {
-    return <GoalsSkeleton />;
+    return (
+      <div className="goals-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <GoalsSkeleton />
+      </div>
+    );
   }
 
   const filteredGoals = getFilteredGoals();
@@ -264,7 +287,7 @@ const Goals: React.FC = () => {
         <div className="goals-summary">
           <div className="summary-card">
             <div className="summary-icon" style={{ backgroundColor: '#3B82F620' }}>
-              <Icon name="target" size={24} color="#3B82F6" />
+              <Target size={24} color="#3B82F6" />
             </div>
             <div className="summary-content">
               <p className="summary-label">Aktivní cíle</p>
@@ -274,7 +297,7 @@ const Goals: React.FC = () => {
 
           <div className="summary-card">
             <div className="summary-icon" style={{ backgroundColor: '#10B98120' }}>
-              <Icon name="check-circle" size={24} color="#10B981" />
+              <CheckCircle size={24} color="#10B981" />
             </div>
             <div className="summary-content">
               <p className="summary-label">Dokončené</p>
@@ -284,7 +307,7 @@ const Goals: React.FC = () => {
 
           <div className="summary-card">
             <div className="summary-icon" style={{ backgroundColor: '#F59E0B20' }}>
-              <Icon name="dollar-sign" size={24} color="#F59E0B" />
+              <DollarSign size={24} color="#F59E0B" />
             </div>
             <div className="summary-content">
               <p className="summary-label">Celková cílová částka</p>
@@ -294,7 +317,7 @@ const Goals: React.FC = () => {
 
           <div className="summary-card">
             <div className="summary-icon" style={{ backgroundColor: '#10B98120' }}>
-              <Icon name="trending-up" size={24} color="#10B981" />
+              <TrendingUp size={24} color="#10B981" />
             </div>
             <div className="summary-content">
               <p className="summary-label">Celkový pokrok</p>
@@ -306,19 +329,19 @@ const Goals: React.FC = () => {
 
       {/* Filters */}
       <div className="goals-filters">
-        <button 
+        <button
           className={`filter-btn ${filter === 'active' ? 'active' : ''}`}
           onClick={() => setFilter('active')}
         >
           Aktivní
         </button>
-        <button 
+        <button
           className={`filter-btn ${filter === 'completed' ? 'active' : ''}`}
           onClick={() => setFilter('completed')}
         >
           Dokončené
         </button>
-        <button 
+        <button
           className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
           onClick={() => setFilter('all')}
         >
@@ -341,31 +364,31 @@ const Goals: React.FC = () => {
             <div key={goal.id} className="goal-card" style={{ borderColor: goal.color }}>
               <div className="goal-card-header">
                 <div className="goal-icon" style={{ backgroundColor: `${goal.color}20`, color: goal.color }}>
-                  <Icon name={goal.icon} size={24} />
+                  {getIconComponent(goal.icon, 24, goal.color)}
                 </div>
                 <div className="goal-actions">
                   {goal.status === 'ACTIVE' && (
-                    <button 
+                    <button
                       className="icon-btn"
                       onClick={() => handleOpenContribution(goal)}
                       title="Přidat příspěvek"
                     >
-                      +
+                      <Plus size={16} />
                     </button>
                   )}
-                  <button 
+                  <button
                     className="icon-btn"
                     onClick={() => handleOpenModal(goal)}
                     title="Upravit"
                   >
-                    <Icon name="edit" size={16} />
+                    <Edit2 size={16} />
                   </button>
-                  <button 
+                  <button
                     className="icon-btn"
                     onClick={() => handleDelete(goal.id)}
                     title="Smazat"
                   >
-                    <Icon name="trash" size={16} />
+                    <Trash2 size={16} />
                   </button>
                 </div>
               </div>
@@ -387,9 +410,9 @@ const Goals: React.FC = () => {
               </div>
 
               <div className="progress-bar-container">
-                <div 
+                <div
                   className="progress-bar-fill"
-                  style={{ 
+                  style={{
                     width: `${Math.min(goal.progress_percentage, 100)}%`,
                     backgroundColor: goal.color
                   }}
@@ -494,7 +517,7 @@ const Goals: React.FC = () => {
                       className={`icon-option ${formData.icon === icon ? 'selected' : ''}`}
                       onClick={() => setFormData({ ...formData, icon })}
                     >
-                      <Icon name={icon} size={20} />
+                      {getIconComponent(icon, 20)}
                     </button>
                   ))}
                 </div>

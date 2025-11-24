@@ -4,339 +4,288 @@ import { useAuth } from '../contexts/AuthContext';
 import Icon from './Icon';
 import '../styles/LoginForm.css';
 
-// Interface pro chybové stavy formuláře
-interface ErrorState {
-  username?: string;
-  password?: string;
-  password2?: string;
-  first_name?: string;
-  last_name?: string;
-  general?: string;
-}
-
-/**
- * RegisterForm komponenta - formulář pro registraci nového uživatele
- * Umožňuje registraci pouze s username a heslem (bez emailu)
- */
 const RegisterForm: React.FC = () => {
-  // Stav formuláře - data zadaná uživatelem
   const [formData, setFormData] = useState({
     username: '',
+    email: '',
     password: '',
-    password2: '',
+    confirmPassword: '',
     first_name: '',
-    last_name: ''
+    last_name: '',
+    currency_preference: 'CZK'
   });
-  
-  // Stav pro chybové zprávy
-  const [errors, setErrors] = useState<ErrorState>({});
-  
-  // Loading stav během odesílání formuláře
+  const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({});
   const [loading, setLoading] = useState(false);
-  
-  // Stavy pro zobrazení/skrytí hesel
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
-  // Zpráva o úspěšné registraci
-  const [successMessage, setSuccessMessage] = useState('');
-  
-  // React Router hook pro navigaci
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
-  
-  // AuthContext hook pro registrační funkci
   const { register } = useAuth();
 
-  // Funkce pro kontrolu síly hesla
-  const getPasswordStrength = (password: string) => {
-    if (password.length === 0) return { strength: 0, label: '', color: '' };
-    
-    let strength = 0;
-    if (password.length >= 8) strength++;
-    if (password.length >= 12) strength++;
-    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
-    if (/[0-9]/.test(password)) strength++;
-    if (/[^a-zA-Z0-9]/.test(password)) strength++;
-    
-    if (strength <= 1) return { strength: 1, label: 'Slabé', color: '#EF4444' };
-    if (strength <= 3) return { strength: 2, label: 'Střední', color: '#F59E0B' };
-    return { strength: 3, label: 'Silné', color: '#10B981' };
-  };
-
-  const passwordStrength = getPasswordStrength(formData.password);
-
-  // Handler pro změnu hodnot ve formuláři
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    
-    // Vymaže chybu když uživatel začne psát
-    if (errors[name as keyof ErrorState]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: undefined
-      }));
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
-  // Validace formuláře před odesláním
   const validateForm = () => {
-    const newErrors: ErrorState = {};
-    let isValid = true;
+    const errors: {[key: string]: string} = {};
     
-    // Validace username - povinné pole
-    if (!formData.username) {
-      newErrors.username = 'Uživatelské jméno je povinné';
-      isValid = false;
+    if (!formData.username) errors.username = 'Username is required';
+    if (!formData.email) errors.email = 'Email is required';
+    if (!formData.password) errors.password = 'Password is required';
+    if (formData.password.length < 8) errors.password = 'Password must be at least 8 characters';
+    if (formData.password !== formData.confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match';
     }
-    
-    // Validace hesla - povinné pole, minimálně 8 znaků
-    if (!formData.password) {
-      newErrors.password = 'Heslo je povinné';
-      isValid = false;
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Heslo musí mít alespoň 8 znaků';
-      isValid = false;
-    }
-    
-    // Validace potvrzení hesla - musí se shodovat s heslem
-    if (!formData.password2) {
-      newErrors.password2 = 'Potvrzení hesla je povinné';
-      isValid = false;
-    } else if (formData.password !== formData.password2) {
-      newErrors.password2 = 'Hesla se neshodují';
-      isValid = false;
-    }
-    
-    // Jméno a příjmení jsou volitelné, takže nevalidujeme
-    
-    setErrors(newErrors);
-    return isValid;
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
-  // Handler pro odeslání formuláře
+  const calculatePasswordStrength = (password: string) => {
+    let strength = 0;
+    if (password.length >= 8) strength += 25;
+    if (password.length >= 12) strength += 25;
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
+    if (/\d/.test(password)) strength += 15;
+    if (/[^a-zA-Z0-9]/.test(password)) strength += 10;
+    return Math.min(strength, 100);
+  };
+
+  const getStrengthLabel = (strength: number) => {
+    if (strength < 40) return { label: 'Weak', color: '#ef4444' };
+    if (strength < 70) return { label: 'Fair', color: '#f59e0b' };
+    if (strength < 90) return { label: 'Good', color: '#10b981' };
+    return { label: 'Strong', color: '#22c55e' };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();  // Zabráníme výchozímu odeslání formuláře
+    e.preventDefault();
+    setError('');
     
-    // Nejdříve validujeme formulář
     if (!validateForm()) {
       return;
     }
-    
-    setLoading(true);  // Nastavíme loading stav
-    
+
+    setLoading(true);
+
     try {
-      // Zavoláme registrační funkci z AuthContext
-      const result = await register({
+      await register({
         username: formData.username,
+        email: formData.email,
         password: formData.password,
-        password2: formData.password2,
+        password2: formData.confirmPassword,
         first_name: formData.first_name,
-        last_name: formData.last_name
+        last_name: formData.last_name,
+        currency_preference: formData.currency_preference
       });
       
-      setSuccessMessage(result.message);
-      // Přesměrování na úvodní stránku po úspěšné registraci
+      setSuccess(true);
       setTimeout(() => {
-        navigate('/');
-      }, 4000);
+        navigate('/login');
+      }, 3000);
     } catch (err: any) {
-      console.error('Registration error:', err);
-      
-      const responseData = err.response?.data;
-      
-      // Zpracování strukturovaných validačních chyb z API
-      if (typeof responseData === 'object' && responseData !== null) {
-        const newErrors: ErrorState = {};
-        
-        // Kontrola speciálních chyb hesla
-        if (responseData.error && responseData.details) {
-          // Chyba validace hesla s detaily
-          newErrors.password = responseData.error;
-          newErrors.general = responseData.details.join(' ');
-        } else {
-          Object.entries(responseData).forEach(([key, value]) => {
-            if (Array.isArray(value)) {
-              newErrors[key as keyof ErrorState] = value[0] as string;
-            } else if (typeof value === 'string') {
-              newErrors[key as keyof ErrorState] = value;
+      const errorData = err.response?.data;
+      if (errorData) {
+        if (typeof errorData === 'object') {
+          const newFieldErrors: {[key: string]: string} = {};
+          Object.keys(errorData).forEach(key => {
+            if (Array.isArray(errorData[key])) {
+              newFieldErrors[key] = errorData[key][0];
+            } else {
+              newFieldErrors[key] = errorData[key];
             }
           });
+          setFieldErrors(newFieldErrors);
+          setError('Please fix the errors above');
+        } else {
+          setError(errorData.error || 'Registration failed. Please try again.');
         }
-        
-        if (Object.keys(newErrors).length === 0) {
-          newErrors.general = 'Registrace selhala. Zkuste to prosím znovu.';
-        }
-        
-        setErrors(newErrors);
       } else {
-        // Zpracování obecných chyb
-        setErrors({
-          general: err.response?.data?.message || err.message || 'Registrace selhala. Zkuste to prosím znovu.'
-        });
+        setError('Registration failed. Please try again.');
       }
     } finally {
-      setLoading(false);  // Vypneme loading stav
+      setLoading(false);
     }
   };
+
+  const passwordStrength = calculatePasswordStrength(formData.password);
+  const strengthInfo = getStrengthLabel(passwordStrength);
+
+  if (success) {
+    return (
+      <div className="login-container">
+        <div className="login-card">
+          <div className="success-message-box">
+            <div className="success-icon-wrapper">
+              <svg className="success-checkmark" viewBox="0 0 52 52">
+                <circle cx="26" cy="26" r="25" fill="none"/>
+                <path fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+              </svg>
+            </div>
+            <div className="success-content">
+              <h3>Registration Successful!</h3>
+              <p>Your account has been created successfully.</p>
+              <p className="redirect-info">Redirecting to login page...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2>Vytvořit účet</h2>
-        
-        {/* Zobrazení zprávy o úspěšné registraci */}
-        {successMessage && (
-          <div className="success-message-box">
-            <div className="success-icon-wrapper">
-              <svg className="success-checkmark" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div className="success-content">
-              <h3>Registrace úspěšná!</h3>
-              <p>{successMessage}</p>
-              <p className="redirect-info">Za chvíli budete přesměrováni na přihlašovací stránku...</p>
-            </div>
-          </div>
-        )}
-        
-        {/* Zobrazení obecných chyb */}
-        {errors.general && (
+        <h2>Register</h2>
+
+        {error && (
           <div className="error-message">
-            {errors.general}
+            {error}
           </div>
         )}
-        
-        {/* Registrační formulář */}
-        <form onSubmit={handleSubmit}>
-          {/* Pole pro uživatelské jméno - povinné */}
+
+        <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="username">Uživatelské jméno *</label>
+            <label htmlFor="username">Username</label>
             <input
               type="text"
               id="username"
               name="username"
               value={formData.username}
               onChange={handleChange}
-              className={errors.username ? 'error' : ''}
-              disabled={loading}
-              placeholder="Zadejte uživatelské jméno"
+              required
+              placeholder="Choose a username"
+              className={`form-input ${fieldErrors.username ? 'error' : ''}`}
             />
-            {errors.username && <div className="field-error">{errors.username}</div>}
+            {fieldErrors.username && <span className="field-error">{fieldErrors.username}</span>}
           </div>
-          
-          {/* Pole pro jméno - volitelné */}
+
           <div className="form-group">
-            <label htmlFor="first_name">Jméno (volitelné)</label>
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              placeholder="your.email@example.com"
+              className={`form-input ${fieldErrors.email ? 'error' : ''}`}
+            />
+            {fieldErrors.email && <span className="field-error">{fieldErrors.email}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="first_name">First Name (Optional)</label>
             <input
               type="text"
               id="first_name"
               name="first_name"
               value={formData.first_name}
               onChange={handleChange}
-              className={errors.first_name ? 'error' : ''}
-              disabled={loading}
-              placeholder="Zadejte jméno"
+              placeholder="Your first name"
+              className="form-input"
             />
-            {errors.first_name && <div className="field-error">{errors.first_name}</div>}
           </div>
-          
-          {/* Pole pro příjmení - volitelné */}
+
           <div className="form-group">
-            <label htmlFor="last_name">Příjmení (volitelné)</label>
+            <label htmlFor="last_name">Last Name (Optional)</label>
             <input
               type="text"
               id="last_name"
               name="last_name"
               value={formData.last_name}
               onChange={handleChange}
-              className={errors.last_name ? 'error' : ''}
-              disabled={loading}
-              placeholder="Zadejte příjmení"
+              placeholder="Your last name"
+              className="form-input"
             />
-            {errors.last_name && <div className="field-error">{errors.last_name}</div>}
           </div>
-          
-          {/* Pole pro heslo - povinné s možností zobrazení/skrytí */}
-          <div className="form-group password-group">
-            <label htmlFor="password">Heslo *</label>
+
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
             <div className="password-input-container">
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className={errors.password ? 'error' : ''}
-                disabled={loading}
-                placeholder="Zadejte heslo (min. 8 znaků)"
+                required
+                placeholder="Create a strong password"
+                className={`form-input ${fieldErrors.password ? 'error' : ''}`}
               />
               <button
                 type="button"
                 className="toggle-password"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                <Icon name={showPassword ? 'eye' : 'eye-off'} size={20} />
+                {showPassword ? "Hide" : "Show"}
               </button>
             </div>
+            {fieldErrors.password && <span className="field-error">{fieldErrors.password}</span>}
+            
             {formData.password && (
               <div className="password-strength">
                 <div className="strength-bar">
                   <div 
-                    className="strength-fill"
+                    className="strength-fill" 
                     style={{ 
-                      width: `${(passwordStrength.strength / 3) * 100}%`,
-                      backgroundColor: passwordStrength.color
+                      width: `${passwordStrength}%`,
+                      backgroundColor: strengthInfo.color 
                     }}
-                  ></div>
+                  />
                 </div>
-                <span className="strength-label" style={{ color: passwordStrength.color }}>
-                  {passwordStrength.label}
+                <span className="strength-label" style={{ color: strengthInfo.color }}>
+                  {strengthInfo.label}
                 </span>
               </div>
             )}
-            <div className="password-requirements">
-              <small>• Minimálně 8 znaků</small>
-              <small>• Kombinace velkých a malých písmen</small>
-              <small>• Alespoň jedno číslo</small>
-            </div>
-            {errors.password && <div className="field-error">{errors.password}</div>}
           </div>
-          
-          {/* Pole pro potvrzení hesla - povinné s možností zobrazení/skrytí */}
-          <div className="form-group password-group">
-            <label htmlFor="password2">Potvrzení hesla *</label>
+
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirm Password</label>
             <div className="password-input-container">
               <input
-                type={showConfirmPassword ? 'text' : 'password'}
-                id="password2"
-                name="password2"
-                value={formData.password2}
+                type={showConfirmPassword ? "text" : "password"}
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
                 onChange={handleChange}
-                className={errors.password2 ? 'error' : ''}
-                disabled={loading}
-                placeholder="Potvrďte heslo"
+                required
+                placeholder="Confirm your password"
+                className={`form-input ${fieldErrors.confirmPassword ? 'error' : ''}`}
               />
               <button
                 type="button"
                 className="toggle-password"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
-                {showConfirmPassword ? 'Skrýt' : 'Zobrazit'}
+                {showConfirmPassword ? "Hide" : "Show"}
               </button>
             </div>
-            {errors.password2 && <div className="field-error">{errors.password2}</div>}
+            {fieldErrors.confirmPassword && <span className="field-error">{fieldErrors.confirmPassword}</span>}
           </div>
-          
-          {/* Tlačítko pro odeslání formuláře */}
-          <button type="submit" className="login-button" disabled={loading}>
-            {loading ? 'Registrace...' : 'Registrovat se'}
+
+          <button
+            type="submit"
+            className="login-button"
+            disabled={loading}
+          >
+            {loading ? 'Creating Account...' : 'Register'}
           </button>
         </form>
+
+        <div className="register-link">
+          Already have an account? <a href="/login">Login</a>
+        </div>
       </div>
     </div>
   );

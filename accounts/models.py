@@ -70,7 +70,7 @@ class User(AbstractUser):
     
     # Volitelná pole pro personalizaci
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
-    currency_preference = models.CharField(max_length=3, default='USD')
+    currency_preference = models.CharField(max_length=3, default='CZK')
     
     # Konfigurace modelu
     objects = CustomUserManager()

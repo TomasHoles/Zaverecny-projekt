@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import Icon from './Icon';
+import { Home, ChevronRight } from 'lucide-react';
 import '../styles/Breadcrumbs.css';
 
 const Breadcrumbs: React.FC = () => {
@@ -9,6 +9,7 @@ const Breadcrumbs: React.FC = () => {
 
   const breadcrumbNameMap: { [key: string]: string } = {
     'dashboard': 'Přehled',
+    'overview': 'Přehled',
     'transactions': 'Transakce',
     'budgets': 'Rozpočty',
     'goals': 'Cíle',
@@ -27,7 +28,7 @@ const Breadcrumbs: React.FC = () => {
       <ol className="breadcrumbs-list">
         <li className="breadcrumb-item">
           <Link to="/" className="breadcrumb-link">
-            <Icon name="home" size={16} />
+            <Home size={16} />
             <span>Domů</span>
           </Link>
         </li>
@@ -38,7 +39,7 @@ const Breadcrumbs: React.FC = () => {
 
           return (
             <li key={to} className="breadcrumb-item">
-              <Icon name="chevron-right" size={14} className="breadcrumb-separator" />
+              <ChevronRight size={14} className="breadcrumb-separator" />
               {last ? (
                 <span className="breadcrumb-current">{name}</span>
               ) : (

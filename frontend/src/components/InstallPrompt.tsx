@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { usePWA } from '../hooks/usePWA';
-import Icon from './Icon';
+import { Download } from 'lucide-react';
 import '../styles/InstallPrompt.css';
 
 const InstallPrompt: React.FC = () => {
@@ -48,16 +48,16 @@ const InstallPrompt: React.FC = () => {
         <button className="install-prompt-close" onClick={handleDismiss}>
           ×
         </button>
-        
+
         <div className="install-prompt-icon">
-          <Icon name="download" size={24} />
+          <Download size={24} />
         </div>
-        
+
         <div className="install-prompt-text">
           <h3>Nainstalovat Plutoa</h3>
           <p>Přidejte si Plutoa na plochu pro rychlý přístup a offline režim</p>
         </div>
-        
+
         <div className="install-prompt-actions">
           <button className="install-prompt-btn primary" onClick={handleInstall}>
             Nainstalovat

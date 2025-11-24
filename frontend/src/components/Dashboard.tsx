@@ -53,14 +53,14 @@ const Dashboard: React.FC = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const token = localStorage.getItem('token');
         if (!token) {
           setError('Nejste přihlášeni. Přihlaste se prosím.');
           setLoading(false);
           return;
         }
-        
+
         // Načteme data postupně, aby chyba v jednom neovlivnila ostatní
         let dashboardData = null;
         let categoriesData = null;
@@ -76,7 +76,7 @@ const Dashboard: React.FC = () => {
         try {
           categoriesData = await api.get<Category[]>('/transactions/categories/');
           const loadedCategories = categoriesData.data || [];
-          
+
           // Pokud uživatel nemá žádné kategorie, vytvoř výchozí
           if (loadedCategories.length === 0) {
             try {
@@ -111,9 +111,9 @@ const Dashboard: React.FC = () => {
 
       } catch (err: any) {
         console.error('Error fetching dashboard stats:', err);
-        
+
         let errorMessage = 'Nepodařilo se načíst data';
-        
+
         if (err.response?.status === 401) {
           errorMessage = 'Nejste přihlášeni. Přihlaste se prosím.';
           localStorage.removeItem('token');
@@ -122,7 +122,7 @@ const Dashboard: React.FC = () => {
         } else if (err.message) {
           errorMessage = err.message;
         }
-        
+
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -142,26 +142,26 @@ const Dashboard: React.FC = () => {
 
   const handleQuickAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     if (!quickFormData.amount || parseFloat(quickFormData.amount) <= 0) {
       alert('Zadejte platnou částku');
       return;
     }
-    
+
     if (!quickFormData.type) {
       alert('Vyberte typ transakce');
       return;
     }
-    
+
     if (!quickFormData.category) {
       alert('Vyberte kategorii');
       return;
     }
-    
+
     try {
       setSubmitting(true);
-      
+
       const transactionData = {
         amount: parseFloat(quickFormData.amount),
         type: quickFormData.type,
@@ -169,9 +169,9 @@ const Dashboard: React.FC = () => {
         date: quickFormData.date,
         description: quickFormData.description || ''
       };
-      
+
       await api.post('/transactions/transactions/', transactionData);
-      
+
       // Reset form and close modal first
       setQuickFormData({
         amount: '',
@@ -181,10 +181,10 @@ const Dashboard: React.FC = () => {
         description: ''
       });
       setShowQuickAddModal(false);
-      
+
       // Show success toast
       toast.success('Transakce byla úspěšně přidána!');
-      
+
       // Refresh all dashboard data including stats and budgets
       const [updatedStats, updatedBudgets] = await Promise.all([
         dashboardService.getDashboardStats(),
@@ -192,12 +192,12 @@ const Dashboard: React.FC = () => {
       ]);
       setStats(updatedStats);
       setBudgetData(updatedBudgets);
-      
+
     } catch (err: any) {
       console.error('Error creating transaction:', err);
-      
+
       let errorMessage = 'Nepodařilo se vytvořit transakci';
-      
+
       if (err.response?.data) {
         const errors = err.response.data;
         if (typeof errors === 'object') {
@@ -208,7 +208,7 @@ const Dashboard: React.FC = () => {
           errorMessage = errors.detail;
         }
       }
-      
+
       alert(errorMessage);
       toast.error('Nepodařilo se vytvořit transakci');
     } finally {
@@ -274,8 +274,8 @@ const Dashboard: React.FC = () => {
             Kompletní přehled vašich financí
           </p>
         </div>
-        <button 
-          onClick={() => setShowQuickAddModal(true)} 
+        <button
+          onClick={() => setShowQuickAddModal(true)}
           className="btn-add-transaction"
         >
           + Rychlá transakce
@@ -335,7 +335,7 @@ const Dashboard: React.FC = () => {
           color="#3b82f6"
           trend={stats?.today_change && stats.today_change > 0 ? 'down' : stats?.today_change && stats.today_change < 0 ? 'up' : 'neutral'}
         />
-        
+
         <StatCard
           title="Průměr denně"
           value={formatCurrency(stats?.avg_daily_spending || 0)}
@@ -345,7 +345,7 @@ const Dashboard: React.FC = () => {
           color="#f59e0b"
           trend={stats?.daily_spending_change && stats.daily_spending_change < 0 ? 'up' : stats?.daily_spending_change && stats.daily_spending_change > 0 ? 'down' : 'neutral'}
         />
-        
+
         <StatCard
           title="Savings Rate"
           value={Math.abs(stats?.savings_rate || 0).toFixed(1)}
@@ -356,7 +356,7 @@ const Dashboard: React.FC = () => {
           suffix="%"
           trend={stats?.savings_rate_change && stats.savings_rate_change > 0 ? 'up' : stats?.savings_rate_change && stats.savings_rate_change < 0 ? 'down' : 'neutral'}
         />
-        
+
         <div className="stat-card">
           <div className="stat-card-header">
             <div className="stat-card-icon" style={{ backgroundColor: '#8b5cf615', color: '#8b5cf6' }}>
@@ -367,9 +367,9 @@ const Dashboard: React.FC = () => {
             <h3 className="stat-card-title">Výdaje týden</h3>
             <div className="sparkline-container">
               {stats?.sparkline_data && stats.sparkline_data.length > 0 && (
-                <Sparkline 
-                  data={stats.sparkline_data} 
-                  width={200} 
+                <Sparkline
+                  data={stats.sparkline_data}
+                  width={200}
                   height={60}
                   color="#8b5cf6"
                   fillColor="rgba(139, 92, 246, 0.1)"
@@ -380,7 +380,7 @@ const Dashboard: React.FC = () => {
             <p className="stat-card-label">Posledních 7 dní</p>
           </div>
         </div>
-        
+
         {stats?.upcoming_recurring_count !== undefined && stats.upcoming_recurring_count > 0 && (
           <StatCard
             title="Nadcházející platby"
@@ -413,20 +413,20 @@ const Dashboard: React.FC = () => {
               Zobrazit vše →
             </Link>
           </div>
-          
+
           {stats?.recent_transactions && stats.recent_transactions.length > 0 ? (
             <div className="transactions-list">
               {stats.recent_transactions.slice(0, 5).map((transaction) => (
                 <div key={transaction.id} className="transaction-item">
                   <div className="transaction-info">
-                    <div 
+                    <div
                       className="transaction-category-icon"
                       style={{ backgroundColor: (transaction.category?.color || '#666') + '20' }}
                     >
-                      <CategoryIcon 
-                        iconName={transaction.category?.icon && transaction.category?.icon !== '' ? transaction.category.icon : 'wallet'} 
-                        color={transaction.category?.color || '#666'} 
-                        size={24} 
+                      <CategoryIcon
+                        iconName={transaction.category?.icon && transaction.category?.icon !== '' ? transaction.category.icon : 'wallet'}
+                        color={transaction.category?.color || '#666'}
+                        size={24}
                       />
                     </div>
                     <div className="transaction-details">
@@ -438,10 +438,9 @@ const Dashboard: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  <p 
-                    className={`transaction-amount ${
-                      transaction.type === 'INCOME' ? 'income' : 'expense'
-                    }`}
+                  <p
+                    className={`transaction-amount ${transaction.type === 'INCOME' ? 'income' : 'expense'
+                      }`}
                   >
                     {transaction.type === 'INCOME' ? '+' : '-'}
                     {formatCurrency(Math.abs(transaction.amount))}
@@ -519,14 +518,14 @@ const Dashboard: React.FC = () => {
               {stats.top_expense_categories.slice(0, 3).map((category, index) => (
                 <div key={index} className="expense-category-item">
                   <div className="expense-category-info">
-                    <div 
+                    <div
                       className="expense-category-icon"
                       style={{ backgroundColor: (category.color || '#666') + '20' }}
                     >
-                      <CategoryIcon 
-                        iconName={category.icon || 'wallet'} 
-                        color={category.color || '#666'} 
-                        size={24} 
+                      <CategoryIcon
+                        iconName={category.icon || 'wallet'}
+                        color={category.color || '#666'}
+                        size={24}
                       />
                     </div>
                     <div className="expense-category-details">
@@ -535,9 +534,9 @@ const Dashboard: React.FC = () => {
                     </div>
                   </div>
                   <div className="expense-percentage-bar">
-                    <div 
+                    <div
                       className="expense-percentage-fill"
-                      style={{ 
+                      style={{
                         width: `${category.percentage}%`,
                         backgroundColor: category.color || '#3B82F6'
                       }}
@@ -597,69 +596,68 @@ const Dashboard: React.FC = () => {
       <div className="budget-tips-grid">
         {/* Budget Overview Section */}
         <div className="dashboard-card budget-overview-card">
-        <div className="card-header">
-          <h3>Přehled rozpočtů</h3>
-          <Link to="/budgets" className="view-all-link">
-            Spravovat rozpočty →
-          </Link>
-        </div>
-        {budgetData?.budgets && budgetData.budgets.length > 0 ? (
-          <div className="budget-overview-content">
-            {budgetData.budgets.slice(0, 3).map((budget: Budget) => (
-              <div key={budget.id} className="budget-overview-item">
-                <div className="budget-overview-header">
-                  <div>
-                    <p className="budget-overview-name">{budget.name}</p>
-                    <p className="budget-overview-amount">
-                      {formatCurrency(budget.spent)} / {formatCurrency(budget.amount)}
-                    </p>
-                  </div>
-                  <div className="budget-overview-stats">
-                    <p className="budget-overview-percentage" style={{
-                      color: budget.percentage_used > 100 ? '#EF4444' :
-                             budget.percentage_used > 80 ? '#F59E0B' : '#10B981'
-                    }}>
-                      {budget.percentage_used.toFixed(0)}%
-                    </p>
-                  </div>
-                </div>
-                <div className="budget-progress-bar">
-                  <div 
-                    className={`budget-progress-fill ${
-                      budget.percentage_used > 100 ? 'danger' :
-                      budget.percentage_used > 80 ? 'warning' : 'success'
-                    }`}
-                    style={{ width: `${Math.min(budget.percentage_used, 100)}%` }}
-                  ></div>
-                </div>
-                <p className="budget-remaining">
-                  Zbývá {formatCurrency(budget.remaining)}
-                </p>
-              </div>
-            ))}
-            <div className="budget-summary-row">
-              <div className="budget-summary-item">
-                <p className="budget-summary-label">Celkem rozpočtů</p>
-                <p className="budget-summary-value">{formatCurrency(budgetData.total_budget)}</p>
-              </div>
-              <div className="budget-summary-item">
-                <p className="budget-summary-label">Celkem utraceno</p>
-                <p className="budget-summary-value expense">{formatCurrency(budgetData.total_spent)}</p>
-              </div>
-              <div className="budget-summary-item">
-                <p className="budget-summary-label">Zbývá</p>
-                <p className="budget-summary-value income">{formatCurrency(budgetData.total_remaining)}</p>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="empty-state">
-            <p className="empty-state-text">Zatím nemáte žádné rozpočty</p>
-            <Link to="/budgets" className="empty-state-action">
-              Vytvořit první rozpočet
+          <div className="card-header">
+            <h3>Přehled rozpočtů</h3>
+            <Link to="/budgets" className="view-all-link">
+              Spravovat rozpočty →
             </Link>
           </div>
-        )}
+          {budgetData?.budgets && budgetData.budgets.length > 0 ? (
+            <div className="budget-overview-content">
+              {budgetData.budgets.slice(0, 3).map((budget: Budget) => (
+                <div key={budget.id} className="budget-overview-item">
+                  <div className="budget-overview-header">
+                    <div>
+                      <p className="budget-overview-name">{budget.name}</p>
+                      <p className="budget-overview-amount">
+                        {formatCurrency(budget.spent)} / {formatCurrency(budget.amount)}
+                      </p>
+                    </div>
+                    <div className="budget-overview-stats">
+                      <p className="budget-overview-percentage" style={{
+                        color: budget.percentage_used > 100 ? '#EF4444' :
+                          budget.percentage_used > 80 ? '#F59E0B' : '#10B981'
+                      }}>
+                        {budget.percentage_used.toFixed(0)}%
+                      </p>
+                    </div>
+                  </div>
+                  <div className="budget-progress-bar">
+                    <div
+                      className={`budget-progress-fill ${budget.percentage_used > 100 ? 'danger' :
+                        budget.percentage_used > 80 ? 'warning' : 'success'
+                        }`}
+                      style={{ width: `${Math.min(budget.percentage_used, 100)}%` }}
+                    ></div>
+                  </div>
+                  <p className="budget-remaining">
+                    Zbývá {formatCurrency(budget.remaining)}
+                  </p>
+                </div>
+              ))}
+              <div className="budget-summary-row">
+                <div className="budget-summary-item">
+                  <p className="budget-summary-label">Celkem rozpočtů</p>
+                  <p className="budget-summary-value">{formatCurrency(budgetData.total_budget)}</p>
+                </div>
+                <div className="budget-summary-item">
+                  <p className="budget-summary-label">Celkem utraceno</p>
+                  <p className="budget-summary-value expense">{formatCurrency(budgetData.total_spent)}</p>
+                </div>
+                <div className="budget-summary-item">
+                  <p className="budget-summary-label">Zbývá</p>
+                  <p className="budget-summary-value income">{formatCurrency(budgetData.total_remaining)}</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="empty-state">
+              <p className="empty-state-text">Zatím nemáte žádné rozpočty</p>
+              <Link to="/budgets" className="empty-state-action">
+                Vytvořit první rozpočet
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
