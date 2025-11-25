@@ -27,7 +27,7 @@ const BudgetAlerts: React.FC = () => {
         }
       });
     } catch (error) {
-      console.error('Chyba při načítání budget alerts:', error);
+      // Chyba při načítání budget alerts
     } finally {
       setLoading(false);
     }

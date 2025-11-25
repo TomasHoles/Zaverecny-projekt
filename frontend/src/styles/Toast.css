@@ -40,7 +40,7 @@
 }
 
 .toast-error {
-  border-left: 4px solid #ef4444;
+  border-left: 4px solid #8b5cf6;
 }
 
 .toast-warning {
@@ -68,7 +68,7 @@
 }
 
 .toast-error .toast-icon {
-  color: #ef4444;
+  color: #8b5cf6;
   background: rgba(239, 68, 68, 0.1);
 }
 

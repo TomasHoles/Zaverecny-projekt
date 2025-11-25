@@ -51,12 +51,12 @@ const EmptyState: React.FC<EmptyStateProps> = ({
 
   return (
     <div className="empty-state-container">
-      <div className="empty-state-illustration">
+      {/* <div className="empty-state-illustration">
         <span className="empty-state-emoji">
           <Icon name={getIllustration()} size={80} />
         </span>
         <div className="empty-state-glow"></div>
-      </div>
+      </div> */}
 
       <h2 className="empty-state-title">{title}</h2>
       <p className="empty-state-description">{description}</p>

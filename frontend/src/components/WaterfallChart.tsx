@@ -24,22 +24,71 @@ interface WaterfallData {
 
 const WaterfallChart: React.FC<WaterfallChartProps> = ({ transactions, startBalance = 0 }) => {
   const chartData = useMemo(() => {
-    const monthlyData: { [key: string]: { income: number; expense: number } } = {};
+    if (!transactions || transactions.length === 0) return [];
     
-    transactions.forEach((transaction) => {
-      const date = new Date(transaction.date);
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      
-      if (!monthlyData[monthKey]) {
-        monthlyData[monthKey] = { income: 0, expense: 0 };
-      }
-      
-      if (transaction.type === 'INCOME') {
-        monthlyData[monthKey].income += transaction.amount;
-      } else {
-        monthlyData[monthKey].expense += transaction.amount;
-      }
-    });
+    // Zjisti časové období
+    const dates = transactions.map(t => new Date(t.date));
+    const minDate = new Date(Math.min(...dates.map(d => d.getTime())));
+    const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
+    const daysDiff = Math.ceil((maxDate.getTime() - minDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    
+    let groupedData: { [key: string]: { income: number; expense: number; label: string } } = {};
+    
+    if (daysDiff <= 60) {
+      // Denní granularita pro krátké období (do 2 měsíců) - 30-60 sloupců
+      transactions.forEach((transaction) => {
+        const date = new Date(transaction.date);
+        const dayKey = date.toISOString().split('T')[0];
+        const dayLabel = date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'short' });
+        
+        if (!groupedData[dayKey]) {
+          groupedData[dayKey] = { income: 0, expense: 0, label: dayLabel };
+        }
+        
+        if (transaction.type === 'INCOME') {
+          groupedData[dayKey].income += transaction.amount;
+        } else {
+          groupedData[dayKey].expense += transaction.amount;
+        }
+      });
+    } else if (daysDiff <= 180) {
+      // Týdenní granularita pro střední období (3-6 měsíců) - 12-25 týdnů
+      transactions.forEach((transaction) => {
+        const date = new Date(transaction.date);
+        const weekStart = new Date(date);
+        weekStart.setDate(date.getDate() - date.getDay() + 1); // Monday
+        const weekKey = weekStart.toISOString().split('T')[0];
+        const weekNum = Math.ceil((date.getTime() - minDate.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
+        const weekLabel = `T${weekNum}`;
+        
+        if (!groupedData[weekKey]) {
+          groupedData[weekKey] = { income: 0, expense: 0, label: weekLabel };
+        }
+        
+        if (transaction.type === 'INCOME') {
+          groupedData[weekKey].income += transaction.amount;
+        } else {
+          groupedData[weekKey].expense += transaction.amount;
+        }
+      });
+    } else {
+      // Měsíční granularita pro dlouhé období (více než 6 měsíců) - 12+ měsíců
+      transactions.forEach((transaction) => {
+        const date = new Date(transaction.date);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        const monthLabel = date.toLocaleDateString('cs-CZ', { month: 'short', year: '2-digit' });
+        
+        if (!groupedData[monthKey]) {
+          groupedData[monthKey] = { income: 0, expense: 0, label: monthLabel };
+        }
+        
+        if (transaction.type === 'INCOME') {
+          groupedData[monthKey].income += transaction.amount;
+        } else {
+          groupedData[monthKey].expense += transaction.amount;
+        }
+      });
+    }
     
     const data: WaterfallData[] = [];
     let cumulative = startBalance;
@@ -53,23 +102,15 @@ const WaterfallChart: React.FC<WaterfallChartProps> = ({ transactions, startBala
       base: 0
     });
     
-    // Sort months
-    const sortedMonths = Object.keys(monthlyData).sort();
+    // Sort periods
+    const sortedKeys = Object.keys(groupedData).sort();
     
-    sortedMonths.forEach((monthKey) => {
-      const { income, expense } = monthlyData[monthKey];
-      const net = income - expense;
-      
-      // Format month name
-      const [year, month] = monthKey.split('-');
-      const monthName = new Date(parseInt(year), parseInt(month) - 1).toLocaleDateString('cs-CZ', { 
-        month: 'short',
-        year: '2-digit'
-      });
+    sortedKeys.forEach((key) => {
+      const { income, expense, label } = groupedData[key];
       
       if (income > 0) {
         data.push({
-          name: `${monthName} Příjmy`,
+          name: `${label} Příjmy`,
           value: income,
           cumulative: cumulative + income,
           type: 'income',
@@ -80,7 +121,7 @@ const WaterfallChart: React.FC<WaterfallChartProps> = ({ transactions, startBala
       
       if (expense > 0) {
         data.push({
-          name: `${monthName} Výdaje`,
+          name: `${label} Výdaje`,
           value: -expense,
           cumulative: cumulative - expense,
           type: 'expense',

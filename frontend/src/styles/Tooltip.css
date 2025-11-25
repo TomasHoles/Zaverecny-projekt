@@ -15,7 +15,7 @@
   white-space: nowrap;
   z-index: 10000;
   pointer-events: none;
-  border: 1px solid rgba(255, 71, 66, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.2);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   animation: tooltipFadeIn 0.2s ease;
 }

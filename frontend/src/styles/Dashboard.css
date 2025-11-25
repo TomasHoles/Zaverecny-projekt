@@ -52,11 +52,11 @@
 
     0%,
     100% {
-        filter: drop-shadow(0 0 0px rgba(255, 71, 66, 0));
+        filter: drop-shadow(0 0 0px rgba(139, 92, 246, 0));
     }
 
     50% {
-        filter: drop-shadow(0 0 8px rgba(255, 71, 66, 0.3));
+        filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.3));
     }
 }
 
@@ -76,7 +76,7 @@
     transition: all 0.3s ease;
     font-weight: 600;
     font-size: 16px;
-    box-shadow: 0 4px 15px rgba(255, 71, 66, 0.3);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
     text-decoration: none;
     display: inline-block;
 }
@@ -84,7 +84,7 @@
 .btn-add-transaction:hover {
     background-color: #FF6B5A;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 71, 66, 0.4);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
 }
 
 /* Stats Grid */
@@ -162,7 +162,7 @@
 }
 
 .stat-value.expense {
-    color: #EF4444;
+    color: #8b5cf6;
 }
 
 .stat-value.balance {
@@ -190,7 +190,7 @@
 }
 
 .dashboard-card:hover {
-    border-color: rgba(255, 71, 66, 0.25);
+    border-color: rgba(139, 92, 246, 0.25);
     box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
 }
 
@@ -240,11 +240,10 @@
     transition: all 0.3s ease;
 }
 
-.transaction-item:hover {
+/* .transaction-item:hover {
     background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 71, 66, 0.25);
-    transform: translateX(5px);
-}
+    border-color: rgba(139, 92, 246, 0.25);
+} */
 
 .transaction-info {
     display: flex;
@@ -498,7 +497,7 @@
 }
 
 .budget-progress-fill.danger {
-    background: #EF4444;
+    background: #8b5cf6;
 }
 
 .budget-remaining {
@@ -539,7 +538,7 @@
 }
 
 .budget-summary-value.expense {
-    color: #EF4444;
+    color: #8b5cf6;
 }
 
 /* Top Expenses */
@@ -598,7 +597,7 @@
 .expense-category-amount {
     margin: 0;
     font-weight: 700;
-    color: #EF4444;
+    color: #8b5cf6;
     font-size: 1rem;
 }
 
@@ -656,7 +655,7 @@
 }
 
 .savings-amount.negative {
-    color: #EF4444;
+    color: #8b5cf6;
 }
 
 .savings-change {
@@ -676,7 +675,7 @@
 
 .savings-change.negative {
     background: rgba(239, 68, 68, 0.1);
-    color: #EF4444;
+    color: #8b5cf6;
 }
 
 .change-icon {
@@ -725,7 +724,7 @@
 }
 
 .savings-row-value.expense {
-    color: #EF4444;
+    color: #8b5cf6;
 }
 
 /* Modal Styles */

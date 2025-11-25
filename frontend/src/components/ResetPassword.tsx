@@ -55,10 +55,10 @@ const ResetPassword: React.FC = () => {
   };
 
   const getStrengthLabel = (strength: number) => {
-    if (strength < 40) return { label: 'Weak', color: '#ef4444' };
-    if (strength < 70) return { label: 'Fair', color: '#f59e0b' };
+    if (strength < 40) return { label: 'Weak', color: '#8b5cf6' };
+    if (strength < 70) return { label: 'Fair', color: '#ccff00' };
     if (strength < 90) return { label: 'Good', color: '#10b981' };
-    return { label: 'Strong', color: '#22c55e' };
+    return { label: 'Strong', color: '#10b981' };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

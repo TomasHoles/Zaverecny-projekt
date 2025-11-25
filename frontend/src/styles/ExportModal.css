@@ -120,7 +120,7 @@
 }
 
 .quick-dates button:hover {
-  background: rgba(255, 71, 66, 0.1);
+  background: rgba(139, 92, 246, 0.1);
   border-color: var(--accent-primary);
   transform: translateY(-1px);
 }
@@ -157,7 +157,7 @@
 .form-group input:focus {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(255, 71, 66, 0.1);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
 .format-options {
@@ -193,15 +193,15 @@
 }
 
 .format-btn:hover {
-  border-color: rgba(255, 71, 66, 0.5);
-  background: rgba(255, 71, 66, 0.05);
+  border-color: rgba(139, 92, 246, 0.5);
+  background: rgba(139, 92, 246, 0.05);
   transform: translateY(-2px);
 }
 
 .format-btn.active {
   border-color: var(--accent-primary);
-  background: rgba(255, 71, 66, 0.1);
-  box-shadow: 0 0 0 3px rgba(255, 71, 66, 0.1);
+  background: rgba(139, 92, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
 .export-modal-footer {
@@ -239,13 +239,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: 0 4px 15px rgba(255, 71, 66, 0.3);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 }
 
 .btn-export:hover:not(:disabled) {
   background: var(--accent-secondary);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 71, 66, 0.4);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
 }
 
 .btn-export:disabled {

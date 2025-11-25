@@ -1,36 +1,300 @@
 /* ========================================
-   LOGIN/REGISTER FORM STYLES - Dark Purple Theme
+   MODERN AUTH FORM - Purple Dark Theme
    ======================================== */
 
-/* Hlavní kontejner - tmavé pozadí aplikace */
+/* Main container with subtle gradient background */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  width: 100%;
+  background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.08) 0%, #0A0A0B 60%);
+  background-color: #0A0A0B;
+  position: relative;
+  overflow: hidden;
+  padding: 8rem 1rem 2rem;
+}
+
+/* Background decorative elements */
+.auth-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: float 20s ease-in-out infinite;
+}
+
+.auth-container::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(204, 255, 0, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: float 25s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+}
+
+/* Auth card */
+.auth-card {
+  background: rgba(26, 26, 29, 0.7);
+  backdrop-filter: blur(30px);
+  border-radius: 24px;
+  padding: 3rem 3rem 2.5rem;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  z-index: 1;
+}
+
+/* Auth title */
+.auth-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #ffffff;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Form styles */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.auth-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.auth-form-group label {
+  display: none;
+}
+
+.auth-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-input-icon {
+  position: absolute;
+  right: 1.25rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.auth-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: rgba(139, 92, 246, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+/* Checkbox row */
+.auth-remember-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -0.5rem;
+}
+
+.auth-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+}
+
+.auth-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #8b5cf6;
+}
+
+/* Submit button */
+.auth-button {
+  width: 100%;
+  padding: 1rem;
+  background: #ffffff;
+  color: #1A1A1D;
+  border: none;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.3px;
+}
+
+.auth-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  background: #f5f5f5;
+}
+
+.auth-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Forgot password link in remember row */
+.auth-forgot-link {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.auth-forgot-link:hover {
+  color: #ffffff;
+}
+
+/* Register link below form */
+.auth-register-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.auth-register-link a {
+  color: #8b5cf6;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.auth-register-link a:hover {
+  color: #9d71f7;
+}
+
+/* Error message */
+.auth-error-message {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fecaca;
+  padding: 0.875rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  font-size: 0.9rem;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+  .auth-card {
+    max-width: 95%;
+    padding: 2.5rem 2rem;
+  }
+
+  .auth-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .auth-title {
+    font-size: 1.35rem;
+  }
+
+  .auth-form {
+    gap: 1.25rem;
+  }
+
+  .auth-input {
+    padding: 0.875rem 3rem 0.875rem 1rem;
+  }
+
+  .auth-button {
+    padding: 0.875rem;
+  }
+
+  .auth-remember-row {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+}
+
+/* ========================================
+   OLD REGISTER FORM COMPATIBILITY
+   Keep for RegisterForm.tsx if still used
+   ======================================== */
+
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   width: 100%;
-  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.05) 0%, #0A0A0B 70%);
+  background: #0A0A0B;
   position: relative;
   overflow: hidden;
   padding: 2rem 1rem;
 }
 
-/* Žádné další prvky na pozadí */
-.login-container::before,
-.login-container::after {
-  display: none;
-}
-
-/* Fialová karta v barvách aplikace */
 .login-card {
-  background: rgba(26, 26, 29, 0.95);
-  backdrop-filter: blur(10px);
+  background: #1A1A1D;
+  backdrop-filter: blur(20px);
   border-radius: 20px;
   padding: 2.5rem 2.5rem 2rem;
   width: 90%;
   max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(139, 92, 246, 0.2);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
   position: relative;
   z-index: 1;
 }
@@ -174,7 +438,7 @@
   cursor: pointer;
   padding: 0;
   border-radius: 4px;
-  accent-color: #8a5cff;
+  accent-color: #8b5cf6;
 }
 
 .forgot-password {
@@ -218,7 +482,7 @@
 
 .register-link a:hover {
   text-decoration: underline;
-  color: #8a5cff;
+  color: #8b5cf6;
 }
 
 /* ========================================

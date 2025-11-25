@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+﻿import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/LoginForm.css';
 
@@ -9,11 +9,10 @@ const LoginForm: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -30,76 +29,68 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h2>Login</h2>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2 className="auth-title">Přihlášení</h2>
 
         {error && (
-          <div className="error-message">
+          <div className="auth-error-message">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
+        <form onSubmit={handleSignIn} className="auth-form">
+          <div className="auth-form-group">
+            <label htmlFor="username">UŽIVATELSKÉ JMÉNO</label>
             <input
               type="text"
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              placeholder="Enter your username"
-              className="form-input"
+              placeholder="Uživatelské jméno"
+              className="auth-input"
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <div className="password-input-container">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="Enter your password"
-                className="form-input"
-              />
-              <button
-                type="button"
-                className="toggle-password"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? "Hide" : "Show"}
-              </button>
-            </div>
+          <div className="auth-form-group">
+            <label htmlFor="password">HESLO</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="Heslo"
+              className="auth-input"
+            />
           </div>
 
-          <div className="remember-forgot-row">
-            <label className="remember-me">
+          <div className="auth-remember-row">
+            <label className="auth-checkbox-label">
               <input
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
+                className="auth-checkbox"
               />
-              Remember me
+              <span>Zůstat přihlášen</span>
             </label>
-            <a href="/forgot-password" className="forgot-password">Forgot password?</a>
+            <Link to="/forgot-password" className="auth-forgot-link">Zapomenuté heslo?</Link>
           </div>
 
           <button
             type="submit"
-            className="login-button"
+            className="auth-button"
             disabled={loading}
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Přihlašuji...' : 'Přihlásit se'}
           </button>
-        </form>
 
-        <div className="register-link">
-          Don't have an account? <a href="/register">Register</a>
-        </div>
+          <div className="auth-register-link">
+            Nemáte účet? <Link to="/register">Zaregistrujte se</Link>
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -293,6 +293,40 @@ export const Icon: React.FC<IconProps> = ({ name, size = 24, className = '', col
             <path d="M13.73 21a2 2 0 01-3.46 0" />
           </>
         );
+      case 'user':
+        return (
+          <>
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </>
+        );
+      case 'activity':
+        return (
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+        );
+      case 'analytics':
+        return (
+          <>
+            <path d="M21.21 15.89A10 10 0 118 2.83" />
+            <path d="M22 12A10 10 0 0012 2v10z" />
+          </>
+        );
+      case 'chart':
+        return (
+          <path d="M3 3v18h18M7 16l4-4 4 4 6-6" />
+        );
+      case 'close':
+        return (
+          <path d="M18 6L6 18M6 6l12 12" />
+        );
+      case 'warning':
+        return (
+          <>
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </>
+        );
       default:
         return (
           <circle cx="12" cy="12" r="10" />

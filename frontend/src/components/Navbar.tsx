@@ -31,23 +31,16 @@ const Navbar: React.FC = () => {
   const handleGenerateDemoData = async () => {
     if (!user) return;
 
-    console.log('[Demo Data] Generování demo dat...');
-
     try {
       setGeneratingData(true);
-      console.log('[Demo Data] Volám API endpoint...');
       const response = await api.post('/transactions/generate-demo-data/');
-      console.log('[Demo Data] Response:', response.data);
-      toast.success(response.data.message || 'Demo data byla úspěšně vytvořena!');
+      toast.success(response.data.message || 'Demo data byla úspěšně vytvořena! (včetně opakujících se transakcí)');
 
       // Refresh stránky po 2 sekundách, aby backend stihl vytvořit všechna data
-      console.log('[Demo Data] Refresh stránky za 2 sekundy...');
       setTimeout(() => {
         window.location.reload();
       }, 2000);
     } catch (error: any) {
-      console.error('[Demo Data] Chyba při generování demo dat:', error);
-      console.error('Error response:', error.response?.data);
       toast.error(error.response?.data?.error || 'Nepodařilo se vytvořit demo data');
       setGeneratingData(false);
     }
@@ -69,7 +62,6 @@ const Navbar: React.FC = () => {
         window.location.reload();
       }, 1000);
     } catch (error: any) {
-      console.error('Chyba při mazání dat:', error);
       toast.error(error.response?.data?.error || 'Nepodařilo se smazat data');
       setGeneratingData(false);
     }
@@ -98,7 +90,7 @@ const Navbar: React.FC = () => {
           const unread = response.data.filter((n: any) => !n.is_read).length;
           setUnreadCount(unread);
         } catch (error) {
-          console.error('Chyba při načítání notifikací:', error);
+          // Tiché selhání - notifikace nejsou kritické
         }
       }
     };

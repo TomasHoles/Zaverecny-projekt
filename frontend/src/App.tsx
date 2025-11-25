@@ -23,6 +23,7 @@ import Profile from './components/Profile';
 import InstallPrompt from './components/InstallPrompt';
 import Notifications from './components/Notifications';
 import Goals from './components/Goals';
+import RecurringTransactions from './components/RecurringTransactions';
 import EmailVerification from './components/EmailVerification';
 import './styles/App.css';
 import './styles/GlobalHoverEffects.css';
@@ -124,6 +125,14 @@ function App() {
                     <ProtectedRoute>
                       <div className="page-container">
                         <Notifications />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+
+                  <Route path="/recurring" element={
+                    <ProtectedRoute>
+                      <div className="page-container">
+                        <RecurringTransactions />
                       </div>
                     </ProtectedRoute>
                   } />

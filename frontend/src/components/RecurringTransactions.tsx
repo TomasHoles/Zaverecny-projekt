@@ -61,7 +61,7 @@ const RecurringTransactions: React.FC = () => {
   const fetchRecurring = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/transactions/recurring-transactions/');
+      const response = await api.get('/transactions/recurring/');
       setRecurring(response.data);
     } catch (error) {
       console.error('Chyba při načítání opakujících se transakcí:', error);
@@ -88,9 +88,9 @@ const RecurringTransactions: React.FC = () => {
       };
 
       if (editingId) {
-        await api.put(`/transactions/recurring-transactions/${editingId}/`, payload);
+        await api.put(`/transactions/recurring/${editingId}/`, payload);
       } else {
-        await api.post('/transactions/recurring-transactions/', payload);
+        await api.post('/transactions/recurring/', payload);
       }
 
       fetchRecurring();
@@ -103,7 +103,7 @@ const RecurringTransactions: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Opravdu chcete smazat tuto opakující se transakci?')) {
       try {
-        await api.delete(`/transactions/recurring-transactions/${id}/`);
+        await api.delete(`/transactions/recurring/${id}/`);
         fetchRecurring();
       } catch (error) {
         console.error('Chyba při mazání:', error);
@@ -130,7 +130,7 @@ const RecurringTransactions: React.FC = () => {
 
   const toggleStatus = async (id: number) => {
     try {
-      await api.post(`/transactions/recurring-transactions/${id}/toggle_status/`);
+      await api.post(`/transactions/recurring/${id}/toggle_status/`);
       fetchRecurring();
     } catch (error) {
       console.error('Chyba při změně statusu:', error);
@@ -139,7 +139,7 @@ const RecurringTransactions: React.FC = () => {
 
   const createTransactionNow = async (id: number) => {
     try {
-      await api.post(`/transactions/recurring-transactions/${id}/create_transaction/`);
+      await api.post(`/transactions/recurring/${id}/create_transaction/`);
       alert('Transakce vytvořena!');
       fetchRecurring();
     } catch (error) {
@@ -279,7 +279,7 @@ const RecurringTransactions: React.FC = () => {
                 >
                   <option value="">Vyberte kategorii</option>
                   {categories
-                    .filter(cat => 
+                    .filter(cat =>
                       (formData.type === 'EXPENSE' && cat.name !== 'Mzda' && cat.name !== 'Ostatní příjmy') ||
                       (formData.type === 'INCOME' && (cat.name === 'Mzda' || cat.name === 'Ostatní příjmy'))
                     )
@@ -389,7 +389,7 @@ const RecurringTransactions: React.FC = () => {
                 <div className="recurring-item-amount" style={{
                   color: item.type === 'INCOME' ? '#10B981' : '#EF4444'
                 }}>
-                  {item.type === 'INCOME' ? '+' : '-'}{parseFloat(item.amount).toFixed(2)} {user?.currency_preference}
+                  {item.type === 'INCOME' ? '+' : '-'}{parseFloat(item.amount).toFixed(1)} {user?.currency_preference}
                 </div>
               </div>
 
@@ -403,8 +403,8 @@ const RecurringTransactions: React.FC = () => {
                   <span className="detail-value">
                     {new Date(item.next_due_date).toLocaleDateString('cs-CZ')}
                     <span className="days-until">
-                      ({getDaysUntil(item.next_due_date) >= 0 
-                        ? `za ${getDaysUntil(item.next_due_date)} dní` 
+                      ({getDaysUntil(item.next_due_date) >= 0
+                        ? `za ${getDaysUntil(item.next_due_date)} dní`
                         : `${Math.abs(getDaysUntil(item.next_due_date))} dní zpožděno`})
                     </span>
                   </span>

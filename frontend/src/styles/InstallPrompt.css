@@ -108,12 +108,12 @@
 .install-prompt-btn.primary {
   background: linear-gradient(135deg, var(--primary-color), #d63031);
   color: white;
-  box-shadow: 0 4px 15px rgba(255, 71, 66, 0.3);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 }
 
 .install-prompt-btn.primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 71, 66, 0.4);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
 }
 
 .install-prompt-btn.secondary {

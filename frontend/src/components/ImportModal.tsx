@@ -33,7 +33,7 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImportSucc
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const droppedFile = e.dataTransfer.files[0];
       if (droppedFile.name.endsWith('.csv')) {
@@ -83,12 +83,8 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImportSucc
         onClose();
       } else if (skipped > 0) {
         toast.error(`Všechny transakce byly přeskočeny (${skipped})`);
-        if (errors && errors.length > 0) {
-          console.error('Import errors:', errors);
-        }
       }
     } catch (error: any) {
-      console.error('Import error:', error);
       const errorMsg = error.response?.data?.error || 'Chyba při importu dat';
       toast.error(errorMsg);
     } finally {
@@ -101,7 +97,7 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImportSucc
       '2024-01-15,Nákup v obchodě,Jídlo a nápoje,Výdaj,500\n' +
       '2024-01-16,Výplata,Mzda,Příjem,25000\n' +
       '2024-01-17,Oběd v restauraci,Jídlo a nápoje,Výdaj,350';
-    
+
     const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -111,7 +107,7 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImportSucc
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
-    
+
     toast.success('Šablona stažena');
   };
 
@@ -145,7 +141,7 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImportSucc
             </button>
           </div>
 
-          <div 
+          <div
             className={`file-upload-area ${dragActive ? 'drag-active' : ''}`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -164,8 +160,8 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImportSucc
               <div className="file-selected">
                 <Icon name="file" size={48} />
                 <p className="file-name">{file.name}</p>
-                <p className="file-size">{(file.size / 1024).toFixed(2)} KB</p>
-                <button 
+                <p className="file-size">{(file.size / 1024).toFixed(1)} KB</p>
+                <button
                   className="change-file-btn"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -192,8 +188,8 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImportSucc
           <button className="button-secondary" onClick={onClose} disabled={importing}>
             Zrušit
           </button>
-          <button 
-            className="button-primary" 
+          <button
+            className="button-primary"
             onClick={handleImport}
             disabled={!file || importing}
           >

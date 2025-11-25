@@ -49,7 +49,7 @@ const Analytics: React.FC = () => {
   const [categoryBreakdown, setCategoryBreakdown] = useState<CategoryBreakdown[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [timeRange, setTimeRange] = useState<string>('6m');
+  const [timeRange, setTimeRange] = useState<string>('1m');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
@@ -242,13 +242,6 @@ const Analytics: React.FC = () => {
           <p className="analytics-subtitle">Podrobný přehled vašich financí</p>
         </div>
         <div className="analytics-header-actions">
-          <button
-            className="refresh-button"
-            onClick={() => setRefreshTrigger(prev => prev + 1)}
-            title="Obnovit data"
-          >
-            <RefreshCw size={20} />
-          </button>
           <div className="time-range-selector">
             <button
               className={`time-range-btn ${timeRange === '1m' ? 'active' : ''}`}
@@ -492,7 +485,15 @@ const Analytics: React.FC = () => {
             {/* Monthly Comparison Chart - Recharts */}
             <div className="chart-card chart-card-full">
               <div className="chart-header">
-                <h3>Měsíční přehled - Příjmy vs Výdaje</h3>
+                <h3>
+                  {analytics?.monthly_data && analytics.monthly_data.length > 0 
+                    ? analytics.monthly_data[0].month.includes('.') 
+                      ? 'Denní přehled - Příjmy vs Výdaje'
+                      : analytics.monthly_data[0].month.startsWith('T')
+                      ? 'Týdenní přehled - Příjmy vs Výdaje'
+                      : 'Měsíční přehled - Příjmy vs Výdaje'
+                    : 'Přehled - Příjmy vs Výdaje'}
+                </h3>
               </div>
               <div className="recharts-container">
                 {analytics?.monthly_data && analytics.monthly_data.length > 0 ? (
@@ -503,6 +504,9 @@ const Analytics: React.FC = () => {
                         dataKey="month"
                         stroke="var(--text-secondary)"
                         style={{ fontSize: '0.875rem' }}
+                        angle={analytics.monthly_data.length > 20 ? -45 : 0}
+                        textAnchor={analytics.monthly_data.length > 20 ? 'end' : 'middle'}
+                        height={analytics.monthly_data.length > 20 ? 80 : 30}
                       />
                       <YAxis
                         stroke="var(--text-secondary)"

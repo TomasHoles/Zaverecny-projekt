@@ -13,7 +13,6 @@
 }
 
 .card:hover,
-.transactions-container:hover,
 .budget-card:hover,
 .goal-card:hover,
 .analytics-card:hover {
@@ -40,14 +39,14 @@ button:not(.button-secondary):not(.logout-button):not(.delete-btn):hover,
     transform: translateY(-2px) !important;
 }
 
-/* Transaction/List Item Hover */
-.transaction-item:hover,
+/* Transaction/List Item Hover - DISABLED */
+/* .transaction-item:hover,
 .budget-item:hover,
 .goal-item:hover {
     background: rgba(204, 255, 0, 0.05) !important;
     border-left: 3px solid var(--accent-yellow, #ccff00) !important;
     box-shadow: 0 0 20px rgba(204, 255, 0, 0.15) !important;
-}
+} */
 
 /* Input Focus - Purple Glow */
 input:focus,
@@ -61,7 +60,7 @@ textarea:focus,
 }
 
 /* Link Hover - Yellow */
-a:hover,
+a:not(.button-primary):not(.button-secondary):hover,
 .nav-link:hover,
 .link-trigger:hover,
 .dropdown-trigger:hover {

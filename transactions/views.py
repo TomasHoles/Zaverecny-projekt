@@ -863,11 +863,59 @@ def generate_demo_data(request):
         )
         goals_created += 1
     
+    # Vytvoř opakující se transakce
+    recurring_created = 0
+    today = timezone.now().date()
+    demo_recurring = [
+        {
+            'name': 'Nájem',
+            'amount': Decimal('12000'),
+            'type': 'EXPENSE',
+            'frequency': 'MONTHLY',
+            'start_date': today.replace(day=1),
+            'category': next((c for c in expense_categories if 'Bydlení' in c.name), expense_categories[0])
+        },
+        {
+            'name': 'Internet a telefon',
+            'amount': Decimal('800'),
+            'type': 'EXPENSE',
+            'frequency': 'MONTHLY',
+            'start_date': today.replace(day=15) if today.day < 15 else today.replace(day=15) + relativedelta(months=1),
+            'category': next((c for c in expense_categories if 'Ostatní' in c.name), expense_categories[0])
+        },
+        {
+            'name': 'Měsíční příjem',
+            'amount': Decimal('25000'),
+            'type': 'INCOME',
+            'frequency': 'MONTHLY',
+            'start_date': today.replace(day=15) if today.day < 15 else today.replace(day=15) + relativedelta(months=1),
+            'category': income_categories[0]
+        },
+    ]
+    
+    for recurring_data in demo_recurring:
+        RecurringTransaction.objects.create(
+            user=user,
+            name=recurring_data['name'],
+            amount=recurring_data['amount'],
+            type=recurring_data['type'],
+            category=recurring_data['category'],
+            frequency=recurring_data['frequency'],
+            start_date=recurring_data['start_date'],
+            next_due_date=recurring_data['start_date'],
+            status='ACTIVE',
+            auto_create=False,
+            notify_before_days=3,
+            description=f'Demo opakující se transakce - {recurring_data["name"]}'
+        )
+        recurring_created += 1
+    
     return Response({
-        'message': f'Úspěšně vytvořeno {transactions_created} transakcí, {budgets_created} rozpočtů a {goals_created} cílů!',
+        'message': f'Úspěšně vytvořeno {transactions_created} transakcí, {budgets_created} rozpočtů, {goals_created} cílů a {recurring_created} opakujících se transakcí!',
         'transactions': transactions_created,
         'budgets': budgets_created,
-        'goals': goals_created
+        'goals': goals_created,
+        'recurring': recurring_created
     })
 
 
@@ -884,6 +932,9 @@ def delete_all_data(request):
     transactions_deleted = Transaction.objects.filter(user=user).count()
     Transaction.objects.filter(user=user).delete()
     
+    recurring_deleted = RecurringTransaction.objects.filter(user=user).count()
+    RecurringTransaction.objects.filter(user=user).delete()
+    
     budgets_deleted = Budget.objects.filter(user=user).count()
     Budget.objects.filter(user=user).delete()
     
@@ -891,8 +942,9 @@ def delete_all_data(request):
     FinancialGoal.objects.filter(user=user).delete()
     
     return Response({
-        'message': f'Úspěšně smazáno {transactions_deleted} transakcí, {budgets_deleted} rozpočtů a {goals_deleted} cílů!',
+        'message': f'Úspěšně smazáno {transactions_deleted} transakcí, {recurring_deleted} opakujících se transakcí, {budgets_deleted} rozpočtů a {goals_deleted} cílů!',
         'transactions': transactions_deleted,
+        'recurring': recurring_deleted,
         'budgets': budgets_deleted,
         'goals': goals_deleted
     })

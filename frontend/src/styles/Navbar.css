@@ -109,15 +109,32 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid rgba(139, 92, 246, 0.1);
+  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   color: var(--text-secondary);
 }
 
 .notification-link:hover {
-  background: rgba(245, 158, 11, 0.1);
-  color: var(--accent-yellow);
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.3);
+  transform: scale(1.05);
+  color: #8b5cf6;
+}
+
+.notification-link svg {
+  transition: all 0.3s ease;
+}
+
+.notification-link:hover svg {
+  stroke: #8b5cf6;
+}
+
+.notification-link:active {
+  transform: scale(0.95);
 }
 
 .notification-link::after {
@@ -162,8 +179,8 @@
 
 /* Delete Data Button */
 .delete-data-button {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid rgba(139, 92, 246, 0.1);
   border-radius: 10px;
   width: 40px;
   height: 40px;
@@ -177,10 +194,18 @@
 }
 
 .delete-data-button:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.3);
   transform: scale(1.05);
-  color: #EF4444;
+  color: #8b5cf6;
+}
+
+.delete-data-button svg {
+  transition: all 0.3s ease;
+}
+
+.delete-data-button:hover:not(:disabled) svg {
+  stroke: #8b5cf6;
 }
 
 .delete-data-button:active:not(:disabled) {
@@ -194,8 +219,8 @@
 
 /* Demo Data Button */
 .demo-data-button {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid rgba(139, 92, 246, 0.1);
   border-radius: 10px;
   width: 40px;
   height: 40px;
@@ -209,14 +234,22 @@
 }
 
 .demo-data-button:hover:not(:disabled) {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: rgba(245, 158, 11, 0.3);
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.3);
   transform: scale(1.05);
-  color: var(--accent-yellow);
+  color: #8b5cf6;
+}
+
+.demo-data-button svg {
+  transition: all 0.3s ease;
+}
+
+.demo-data-button:hover:not(:disabled) svg {
+  stroke: #8b5cf6;
 }
 
 .demo-data-button:active:not(:disabled) {
-  transform: scale(0.95) rotate(15deg);
+  transform: scale(0.95);
 }
 
 .demo-data-button:disabled {
@@ -235,7 +268,7 @@
   overflow: hidden;
   border: 2px solid transparent;
   transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(139, 92, 246, 0.1);
 }
 
 .user-avatar:hover {
@@ -308,7 +341,7 @@
 
 .dropdown-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(139, 92, 246, 0.1);
   margin: 1rem 0;
 }
 
@@ -332,7 +365,7 @@
 .logout-button {
   width: 100%;
   padding: 0.75rem;
-  background: linear-gradient(135deg, var(--accent-yellow), var(--accent-purple));
+  background: #8b5cf6;
   color: white;
   border: none;
   border-radius: 8px;
@@ -343,8 +376,9 @@
 }
 
 .logout-button:hover {
+  background: #9d71f7;
   transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
 }
 
 /* Logo Zoom Modal */

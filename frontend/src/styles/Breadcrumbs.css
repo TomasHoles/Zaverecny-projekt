@@ -39,7 +39,7 @@
 
 .breadcrumb-link:hover {
   color: var(--accent-primary);
-  background: rgba(255, 71, 66, 0.1);
+  background: rgba(139, 92, 246, 0.1);
 }
 
 .breadcrumb-current {

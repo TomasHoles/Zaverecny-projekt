@@ -2,7 +2,7 @@
 .page-header {
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 2px solid rgba(255, 71, 66, 0.1);
+  border-bottom: 2px solid rgba(139, 92, 246, 0.1);
   position: relative;
 }
 
@@ -35,8 +35,8 @@
 .page-header-icon {
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, rgba(255, 71, 66, 0.1), rgba(155, 77, 202, 0.1));
-  border: 1px solid rgba(255, 71, 66, 0.2);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(155, 77, 202, 0.1));
+  border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 12px;
   display: flex;
   align-items: center;

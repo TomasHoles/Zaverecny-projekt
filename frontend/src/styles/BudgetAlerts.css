@@ -48,7 +48,7 @@
   border-radius: 12px;
   font-weight: 600;
   font-size: 0.9rem;
-  box-shadow: 0 2px 8px rgba(255, 71, 66, 0.3);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
 }
 
 .budget-alerts-list {
@@ -73,7 +73,7 @@
 }
 
 .budget-alert-item.exceeded {
-  border-left: 4px solid #EF4444;
+  border-left: 4px solid #8b5cf6;
   background: rgba(239, 68, 68, 0.05);
 }
 
@@ -177,7 +177,7 @@
 }
 
 .alert-message.exceeded {
-  color: #EF4444;
+  color: #8b5cf6;
   font-weight: 600;
 }
 

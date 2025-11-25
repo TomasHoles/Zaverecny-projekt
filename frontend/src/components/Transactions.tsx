@@ -73,6 +73,7 @@ const Transactions: React.FC = () => {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
+  const [visibleCount, setVisibleCount] = useState(5);
 
   // Debug logging pro transactions state
   useEffect(() => {
@@ -136,25 +137,25 @@ const Transactions: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        
+
         // Sestavení query parametrů pro API
         const params = new URLSearchParams();
-        
+
         if (debouncedSearchTerm) params.append('search', debouncedSearchTerm);
         if (filterType !== 'all') params.append('type', filterType);
         if (filterCategory !== 'all') params.append('category', filterCategory);
         if (filterDateFrom) params.append('date_from', filterDateFrom);
         if (filterDateTo) params.append('date_to', filterDateTo);
         if (sortBy) params.append('ordering', sortBy);
-        
+
         const queryString = params.toString();
         const endpoint = `/transactions/transactions/${queryString ? '?' + queryString : ''}`;
-        
+
         const [transactionsData, categoriesData] = await Promise.all([
           api.get<Transaction[]>(endpoint),
           api.get<Category[]>('/transactions/categories/')
         ]);
-        
+
         console.log('[API] Načtená data:', {
           endpoint,
           transactionsCount: transactionsData.data?.length || 0,
@@ -162,13 +163,13 @@ const Transactions: React.FC = () => {
           categoriesCount: categoriesData.data?.length || 0,
           categories: categoriesData.data
         });
-        
+
         setTransactions(transactionsData.data || []);
-        
+
         // Pokud uživatel nemá žádné kategorie, vytvoř výchozí
         const loadedCategories = categoriesData.data || [];
         console.log('[Categories] Načtené před zpracováním:', loadedCategories);
-        
+
         if (loadedCategories.length === 0) {
           try {
             await api.post('/transactions/categories/create_defaults/');
@@ -181,10 +182,10 @@ const Transactions: React.FC = () => {
         } else {
           setCategories(loadedCategories);
         }
-        
+
         // Načtení recurring transactions (volitelné - endpoint nemusí existovat)
         try {
-          const recurringData = await api.get<RecurringTransaction[]>('/transactions/recurring-transactions/');
+          const recurringData = await api.get<RecurringTransaction[]>('/transactions/recurring/');
           setRecurring(recurringData.data || []);
         } catch (err) {
           // Endpoint neexistuje nebo jiná chyba - nevadí
@@ -202,7 +203,7 @@ const Transactions: React.FC = () => {
 
   const fetchRecurring = async () => {
     try {
-      const response = await api.get('/transactions/recurring-transactions/');
+      const response = await api.get('/transactions/recurring/');
       setRecurring(response.data);
     } catch (error) {
       console.error('Chyba při načítání opakujících se transakcí:', error);
@@ -226,7 +227,7 @@ const Transactions: React.FC = () => {
 
   // Filtruj kategorie podle typu transakce
   const getFilteredCategories = () => {
-    const filtered = categories.filter(cat => 
+    const filtered = categories.filter(cat =>
       cat.category_type === formData.type || cat.category_type === 'BOTH'
     );
     console.log('[Categories] Filtrované kategorie:', {
@@ -240,7 +241,7 @@ const Transactions: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    
+
     // Pokud měníme typ transakce, resetujeme vybranou kategorii
     if (name === 'type') {
       setFormData(prev => ({
@@ -258,7 +259,7 @@ const Transactions: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.amount || !formData.category || !formData.date) {
       alert('Vyplňte prosím všechna povinná pole');
       return;
@@ -278,23 +279,23 @@ const Transactions: React.FC = () => {
       if (editingTransaction) {
         // Editace existující transakce
         response = await api.put(`/transactions/transactions/${editingTransaction.id}/`, payload);
-        
+
         // Aktualizujeme transakci v seznamu
-        setTransactions(prev => prev.map(t => 
+        setTransactions(prev => prev.map(t =>
           t.id === editingTransaction.id ? response.data : t
         ));
-        
+
         alert('Transakce byla úspěšně aktualizována!');
       } else {
         // Vytvoření nové transakce
         response = await api.post('/transactions/transactions/', payload);
-        
+
         // Přidáme novou transakci do seznamu
         setTransactions(prev => [response.data, ...prev]);
-        
+
         alert('Transakce byla úspěšně přidána!');
       }
-      
+
       // Resetujeme formulář
       setFormData({
         amount: '',
@@ -303,15 +304,15 @@ const Transactions: React.FC = () => {
         date: new Date().toISOString().split('T')[0],
         description: '',
       });
-      
+
       setShowModal(false);
       setEditingTransaction(null);
     } catch (err: any) {
       console.error('Chyba při ukládání transakce:', err);
-      const errorMessage = err.response?.data?.detail || 
-                          err.response?.data?.category_id?.[0] ||
-                          err.response?.data?.message ||
-                          'Nepodařilo se uložit transakci';
+      const errorMessage = err.response?.data?.detail ||
+        err.response?.data?.category_id?.[0] ||
+        err.response?.data?.message ||
+        'Nepodařilo se uložit transakci';
       alert(errorMessage);
     } finally {
       setSubmitting(false);
@@ -333,10 +334,10 @@ const Transactions: React.FC = () => {
   const handleDelete = async (id: number) => {
     try {
       await api.delete(`/transactions/transactions/${id}/`);
-      
+
       // Odebereme transakci ze seznamu
       setTransactions(prev => prev.filter(t => t.id !== id));
-      
+
       setShowDeleteConfirm(null);
       alert('Transakce byla úspěšně smazána!');
     } catch (err: any) {
@@ -377,9 +378,9 @@ const Transactions: React.FC = () => {
       };
 
       if (editingRecurring) {
-        await api.put(`/transactions/recurring-transactions/${editingRecurring.id}/`, payload);
+        await api.put(`/transactions/recurring/${editingRecurring.id}/`, payload);
       } else {
-        await api.post('/transactions/recurring-transactions/', payload);
+        await api.post('/transactions/recurring/', payload);
       }
 
       await fetchRecurring();
@@ -395,7 +396,7 @@ const Transactions: React.FC = () => {
   const handleDeleteRecurring = async (id: number) => {
     if (window.confirm('Opravdu chcete smazat tuto opakující se transakci?')) {
       try {
-        await api.delete(`/transactions/recurring-transactions/${id}/`);
+        await api.delete(`/transactions/recurring/${id}/`);
         await fetchRecurring();
       } catch (error) {
         console.error('Chyba při mazání:', error);
@@ -422,7 +423,7 @@ const Transactions: React.FC = () => {
 
   const toggleRecurringStatus = async (id: number) => {
     try {
-      await api.post(`/transactions/recurring-transactions/${id}/toggle_status/`);
+      await api.post(`/transactions/recurring/${id}/toggle_status/`);
       await fetchRecurring();
     } catch (error) {
       console.error('Chyba při změně statusu:', error);
@@ -431,7 +432,7 @@ const Transactions: React.FC = () => {
 
   const createTransactionNow = async (id: number) => {
     try {
-      await api.post(`/transactions/recurring-transactions/${id}/create_transaction/`);
+      await api.post(`/transactions/recurring/${id}/create_transaction/`);
       alert('Transakce vytvořena!');
       await fetchRecurring();
       // Refresh transactions list
@@ -529,333 +530,343 @@ const Transactions: React.FC = () => {
         <>
           {/* Filters */}
           <div className="transactions-filters">
-        <div className="filter-row">
-          <input
-            type="text"
-            className="filter-input search-input"
-            placeholder="Hledat v popisu nebo kategorii..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          
-          <select
-            className="filter-select"
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-          >
-            <option value="all">Všechny typy</option>
-            <option value="INCOME">Příjmy</option>
-            <option value="EXPENSE">Výdaje</option>
-            <option value="TRANSFER">Převody</option>
-          </select>
+            <div className="filter-row">
+              <input
+                type="text"
+                className="filter-input search-input"
+                placeholder="Hledat v popisu nebo kategorii..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
 
-          <select
-            className="filter-select"
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-          >
-            <option value="all">Všechny kategorie</option>
-            {categories.map(cat => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="filter-row">
-          <div className="date-filter-group">
-            <label htmlFor="date-from">Od:</label>
-            <input
-              type="date"
-              id="date-from"
-              className="filter-input date-input"
-              value={filterDateFrom}
-              onChange={(e) => setFilterDateFrom(e.target.value)}
-            />
-          </div>
-
-          <div className="date-filter-group">
-            <label htmlFor="date-to">Do:</label>
-            <input
-              type="date"
-              id="date-to"
-              className="filter-input date-input"
-              value={filterDateTo}
-              onChange={(e) => setFilterDateTo(e.target.value)}
-            />
-          </div>
-
-          <select
-            className="filter-select sort-select"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-          >
-            <option value="-date">Nejnovější</option>
-            <option value="date">Nejstarší</option>
-            <option value="-amount">Nejvyšší částka</option>
-            <option value="amount">Nejnižší částka</option>
-          </select>
-
-          <button 
-            className="reset-filters-btn"
-            onClick={handleResetFilters}
-            title="Vymazat všechny filtry"
-          >
-            Reset
-          </button>
-        </div>
-
-        {(searchTerm || filterType !== 'all' || filterCategory !== 'all' || filterDateFrom || filterDateTo) && (
-          <div className="active-filters-info">
-            Nalezeno: <strong>{transactions.length}</strong> transakcí
-          </div>
-        )}
-      </div>
-
-      {/* Transactions List */}
-      <div className="transactions-container">
-        <div className="transactions-section-card">
-          <div className="section-header">
-            <span>Seznam transakcí ({transactions.length})</span>
-            <div className="header-actions">
-              <button 
-                className="import-btn"
-                onClick={() => setShowImportModal(true)}
-                title="Importovat transakce z CSV"
+              <select
+                className="filter-select"
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
               >
-                <Icon name="upload" size={16} />
-                Import
-              </button>
-              <button 
-                className="export-btn"
-                onClick={() => setShowExportModal(true)}
+                <option value="all">Všechny typy</option>
+                <option value="INCOME">Příjmy</option>
+                <option value="EXPENSE">Výdaje</option>
+                <option value="TRANSFER">Převody</option>
+              </select>
+
+              <select
+                className="filter-select"
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
               >
-                <Icon name="download" size={16} />
-                Export
-              </button>
-              <button 
-                className="add-transaction-btn"
-                onClick={() => setShowModal(true)}
+                <option value="all">Všechny kategorie</option>
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-row">
+              <div className="date-filter-group">
+                <label htmlFor="date-from">Od:</label>
+                <input
+                  type="date"
+                  id="date-from"
+                  className="filter-input date-input"
+                  value={filterDateFrom}
+                  onChange={(e) => setFilterDateFrom(e.target.value)}
+                />
+              </div>
+
+              <div className="date-filter-group">
+                <label htmlFor="date-to">Do:</label>
+                <input
+                  type="date"
+                  id="date-to"
+                  className="filter-input date-input"
+                  value={filterDateTo}
+                  onChange={(e) => setFilterDateTo(e.target.value)}
+                />
+              </div>
+
+              <select
+                className="filter-select sort-select"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
               >
-                + Přidat transakci
+                <option value="-date">Nejnovější</option>
+                <option value="date">Nejstarší</option>
+                <option value="-amount">Nejvyšší částka</option>
+                <option value="amount">Nejnižší částka</option>
+              </select>
+
+              <button
+                className="reset-filters-btn"
+                onClick={handleResetFilters}
+                title="Vymazat všechny filtry"
+              >
+                Reset
               </button>
             </div>
+
+            {(searchTerm || filterType !== 'all' || filterCategory !== 'all' || filterDateFrom || filterDateTo) && (
+              <div className="active-filters-info">
+                Nalezeno: <strong>{transactions.length}</strong> transakcí
+              </div>
+            )}
           </div>
 
-          {transactions.length > 0 ? (
-            <div className="transactions-list">
-              {transactions.map((transaction) => (
-                <div key={transaction.id} className="transaction-item">
-                  <div className="transaction-header">
-                    <div className="transaction-info">
-                      <div className="transaction-category-icon">
-                        <CategoryIcon 
-  iconName={transaction.category?.icon && transaction.category?.icon !== '' ? transaction.category.icon : 'wallet'} 
-  color={transaction.category?.color || '#6B7280'}
-  size={20}
-/>
-                      </div>
-                      <div>
-                        <p className="transaction-category">
-                          {transaction.category?.name || 'Bez kategorie'}
-                        </p>
-                        <p className="transaction-date">{formatDate(transaction.date)}</p>
-                      </div>
-                    </div>
-                    <p className={`transaction-amount ${
-                      transaction.type === 'INCOME' ? 'income' : 'expense'
-                    }`}>
-                      {transaction.type === 'INCOME' ? '+' : '-'}{formatCurrency(transaction.amount)}
-                    </p>
-                  </div>
-                  {transaction.description && (
-                    <p className="transaction-description">{transaction.description}</p>
-                  )}
-                  <div className="transaction-footer">
-                    <div className="transaction-tags">
-                      <span className={`transaction-badge ${
-                        transaction.type === 'INCOME' ? 'income' : 'expense'
-                      }`}>
-                        {transaction.type === 'INCOME' ? 'Příjem' : 'Výdaj'}
-                      </span>
-                    </div>
-                    <div className="transaction-actions">
-                      <button 
-                        className="action-btn edit-btn"
-                        onClick={() => handleEdit(transaction)}
-                        title="Upravit transakci"
-                      >
-                        Upravit
-                      </button>
-                      <button 
-                        className="action-btn delete-btn"
-                        onClick={() => setShowDeleteConfirm(transaction.id)}
-                        title="Smazat transakci"
-                      >
-                        Smazat
-                      </button>
-                    </div>
-                  </div>
+          {/* Transactions List */}
+          <div className="transactions-container">
+            <div className="transactions-section-card">
+              <div className="section-header">
+                <span>Seznam transakcí ({transactions.length})</span>
+                <div className="header-actions">
+                  <button
+                    className="import-btn"
+                    onClick={() => setShowImportModal(true)}
+                    title="Importovat transakce z CSV"
+                  >
+                    <Icon name="upload" size={16} />
+                    Import
+                  </button>
+                  <button
+                    className="export-btn"
+                    onClick={() => setShowExportModal(true)}
+                  >
+                    <Icon name="download" size={16} />
+                    Export
+                  </button>
+                  <button
+                    className="add-transaction-btn"
+                    onClick={() => setShowModal(true)}
+                  >
+                    + Přidat transakci
+                  </button>
+                </div>
+              </div>
 
-                  {/* Potvrzovací dialog pro mazání */}
-                  {showDeleteConfirm === transaction.id && (
-                    <div className="delete-confirm">
-                      <p>Opravdu chcete smazat tuto transakci?</p>
-                      <div className="delete-confirm-actions">
-                        <button 
-                          className="btn-confirm-delete"
-                          onClick={() => handleDelete(transaction.id)}
-                        >
-                          Ano, smazat
-                        </button>
-                        <button 
-                          className="btn-cancel-delete"
-                          onClick={() => setShowDeleteConfirm(null)}
-                        >
-                          Zrušit
-                        </button>
+              {transactions.length > 0 ? (
+                <div className="transactions-list">
+                  {transactions.slice(0, visibleCount).map((transaction) => (
+                    <div key={transaction.id} className="transaction-item">
+                      <div className="transaction-header">
+                        <div className="transaction-info">
+                          <div className="transaction-category-icon">
+                            <CategoryIcon
+                              iconName={transaction.category?.icon && transaction.category?.icon !== '' ? transaction.category.icon : 'wallet'}
+                              color={transaction.category?.color || '#6B7280'}
+                              size={20}
+                            />
+                          </div>
+                          <div>
+                            <p className="transaction-category">
+                              {transaction.category?.name || 'Bez kategorie'}
+                            </p>
+                            <p className="transaction-date">{formatDate(transaction.date)}</p>
+                          </div>
+                        </div>
+                        <p className={`transaction-amount ${transaction.type === 'INCOME' ? 'income' : 'expense'
+                          }`}>
+                          {transaction.type === 'INCOME' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                        </p>
                       </div>
+                      {transaction.description && (
+                        <p className="transaction-description">{transaction.description}</p>
+                      )}
+                      <div className="transaction-footer">
+                        <div className="transaction-tags">
+                          <span className={`transaction-badge ${transaction.type === 'INCOME' ? 'income' : 'expense'
+                            }`}>
+                            {transaction.type === 'INCOME' ? 'Příjem' : 'Výdaj'}
+                          </span>
+                        </div>
+                        <div className="transaction-actions">
+                          <button
+                            className="action-btn edit-btn"
+                            onClick={() => handleEdit(transaction)}
+                            title="Upravit transakci"
+                          >
+                            Upravit
+                          </button>
+                          <button
+                            className="action-btn delete-btn"
+                            onClick={() => setShowDeleteConfirm(transaction.id)}
+                            title="Smazat transakci"
+                          >
+                            Smazat
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Potvrzovací dialog pro mazání */}
+                      {showDeleteConfirm === transaction.id && (
+                        <div className="delete-confirm">
+                          <p>Opravdu chcete smazat tuto transakci?</p>
+                          <div className="delete-confirm-actions">
+                            <button
+                              className="btn-confirm-delete"
+                              onClick={() => handleDelete(transaction.id)}
+                            >
+                              Ano, smazat
+                            </button>
+                            <button
+                              className="btn-cancel-delete"
+                              onClick={() => setShowDeleteConfirm(null)}
+                            >
+                              Zrušit
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  
+                  {/* Tlačítko pro zobrazení dalších transakcí */}
+                  {visibleCount < transactions.length && (
+                    <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+                      <button
+                        className="load-more-btn"
+                        onClick={() => setVisibleCount(prev => prev + 5)}
+                      >
+                        Zobrazit dalších 5 transakcí ({transactions.length - visibleCount} zbývá)
+                      </button>
                     </div>
                   )}
                 </div>
-              ))}
+              ) : (
+                <EmptyState
+                  illustration="transactions"
+                  title={searchTerm || filterType !== 'all' ? 'Žádné výsledky' : 'Žádné transakce'}
+                  description={
+                    searchTerm || filterType !== 'all'
+                      ? 'Nebyla nalezena žádná transakce odpovídající vašim filtrům. Zkuste změnit kritéria vyhledávání.'
+                      : 'Zatím jste nepřidali žádné transakce. Začněte sledovat své finance přidáním první transakce.'
+                  }
+                  actionText="Přidat transakci"
+                  onAction={() => setShowModal(true)}
+                  secondaryActionText={searchTerm || filterType !== 'all' ? 'Vymazat filtry' : undefined}
+                  onSecondaryAction={searchTerm || filterType !== 'all' ? handleResetFilters : undefined}
+                />
+              )}
             </div>
-          ) : (
-            <EmptyState
-              illustration="transactions"
-              title={searchTerm || filterType !== 'all' ? 'Žádné výsledky' : 'Žádné transakce'}
-              description={
-                searchTerm || filterType !== 'all'
-                  ? 'Nebyla nalezena žádná transakce odpovídající vašim filtrům. Zkuste změnit kritéria vyhledávání.'
-                  : 'Zatím jste nepřidali žádné transakce. Začněte sledovat své finance přidáním první transakce.'
-              }
-              actionText="Přidat transakci"
-              onAction={() => setShowModal(true)}
-              secondaryActionText={searchTerm || filterType !== 'all' ? 'Vymazat filtry' : undefined}
-              onSecondaryAction={searchTerm || filterType !== 'all' ? handleResetFilters : undefined}
-            />
-          )}
-        </div>
-      </div>
-
-      {/* Modal pro přidání/editaci transakce */}
-      {showModal && (
-        <div className="modal-overlay" onClick={handleCloseModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>{editingTransaction ? 'Upravit transakci' : 'Nová transakce'}</h2>
-              <button 
-                className="modal-close"
-                onClick={handleCloseModal}
-              >
-                ×
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="transaction-form">
-              <div className="form-group">
-                <label htmlFor="type">Typ transakce *</label>
-                <select
-                  id="type"
-                  name="type"
-                  value={formData.type}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  required
-                >
-                  <option value="EXPENSE">Výdaj</option>
-                  <option value="INCOME">Příjem</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="amount">Částka (Kč) *</label>
-                <input
-                  type="number"
-                  id="amount"
-                  name="amount"
-                  value={formData.amount}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  placeholder="0.00"
-                  step="0.01"
-                  min="0"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="category">Kategorie *</label>
-                <select
-                  id="category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  required
-                >
-                  <option value="">Vyberte kategorii</option>
-                  {getFilteredCategories().map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-                {getFilteredCategories().length === 0 && (
-                  <p className="form-hint" style={{ color: '#FF6B6B', fontSize: '0.875rem', marginTop: '0.5rem' }}>
-                    Pro tento typ transakce nejsou k dispozici žádné kategorie
-                  </p>
-                )}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="date">Datum *</label>
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="description">Popis</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  placeholder="Nepovinný popis transakce..."
-                  rows={3}
-                />
-              </div>
-
-              <div className="form-actions">
-                <button
-                  type="button"
-                  className="btn-cancel"
-                  onClick={handleCloseModal}
-                  disabled={submitting}
-                >
-                  Zrušit
-                </button>
-                <button
-                  type="submit"
-                  className="btn-submit"
-                  disabled={submitting}
-                >
-                  {submitting ? 'Ukládám...' : editingTransaction ? 'Uložit změny' : 'Přidat transakci'}
-                </button>
-              </div>
-            </form>
           </div>
-        </div>
-      )}
+
+          {/* Modal pro přidání/editaci transakce */}
+          {showModal && (
+            <div className="modal-overlay" onClick={handleCloseModal}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h2>{editingTransaction ? 'Upravit transakci' : 'Nová transakce'}</h2>
+                  <button
+                    className="modal-close"
+                    onClick={handleCloseModal}
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="transaction-form">
+                  <div className="form-group">
+                    <label htmlFor="type">Typ transakce *</label>
+                    <select
+                      id="type"
+                      name="type"
+                      value={formData.type}
+                      onChange={handleInputChange}
+                      className="form-input"
+                      required
+                    >
+                      <option value="EXPENSE">Výdaj</option>
+                      <option value="INCOME">Příjem</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="amount">Částka (Kč) *</label>
+                    <input
+                      type="number"
+                      id="amount"
+                      name="amount"
+                      value={formData.amount}
+                      onChange={handleInputChange}
+                      className="form-input"
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="category">Kategorie *</label>
+                    <select
+                      id="category"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleInputChange}
+                      className="form-input"
+                      required
+                    >
+                      <option value="">Vyberte kategorii</option>
+                      {getFilteredCategories().map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                    {getFilteredCategories().length === 0 && (
+                      <p className="form-hint" style={{ color: '#FF6B6B', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                        Pro tento typ transakce nejsou k dispozici žádné kategorie
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="date">Datum *</label>
+                    <input
+                      type="date"
+                      id="date"
+                      name="date"
+                      value={formData.date}
+                      onChange={handleInputChange}
+                      className="form-input"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="description">Popis</label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      className="form-input"
+                      placeholder="Nepovinný popis transakce..."
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="form-actions">
+                    <button
+                      type="button"
+                      className="btn-cancel"
+                      onClick={handleCloseModal}
+                      disabled={submitting}
+                    >
+                      Zrušit
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn-submit"
+                      disabled={submitting}
+                    >
+                      {submitting ? 'Ukládám...' : editingTransaction ? 'Uložit změny' : 'Přidat transakci'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </>
       ) : (
         <>
@@ -864,7 +875,7 @@ const Transactions: React.FC = () => {
             <div className="recurring-section-card">
               <div className="section-header">
                 <span>Opakující se transakce ({recurring.length})</span>
-                <button 
+                <button
                   className="add-transaction-btn"
                   onClick={() => setShowRecurringModal(true)}
                 >
@@ -893,7 +904,7 @@ const Transactions: React.FC = () => {
                         <div className="recurring-item-amount" style={{
                           color: item.type === 'INCOME' ? '#10B981' : '#EF4444'
                         }}>
-                          {item.type === 'INCOME' ? '+' : '-'}{parseFloat(item.amount).toFixed(2)} {user?.currency_preference}
+                          {item.type === 'INCOME' ? '+' : '-'}{parseFloat(item.amount).toFixed(1)} {user?.currency_preference}
                         </div>
                       </div>
 
@@ -907,8 +918,8 @@ const Transactions: React.FC = () => {
                           <span className="detail-value">
                             {new Date(item.next_due_date).toLocaleDateString('cs-CZ')}
                             <span className="days-until">
-                              ({getDaysUntil(item.next_due_date) >= 0 
-                                ? `za ${getDaysUntil(item.next_due_date)} dní` 
+                              ({getDaysUntil(item.next_due_date) >= 0
+                                ? `za ${getDaysUntil(item.next_due_date)} dní`
                                 : `${Math.abs(getDaysUntil(item.next_due_date))} dní zpožděno`})
                             </span>
                           </span>
@@ -943,7 +954,7 @@ const Transactions: React.FC = () => {
                           disabled={item.status === 'COMPLETED'}
                           title={item.status === 'ACTIVE' ? 'Pozastavit' : 'Aktivovat'}
                         >
-                          {item.status === 'ACTIVE' ? '⏸️ Pozastavit' : '▶️ Aktivovat'}
+                          {item.status === 'ACTIVE' ? 'Pozastavit' : 'Aktivovat'}
                         </button>
                         <button
                           className="btn-action btn-edit"
@@ -1037,7 +1048,7 @@ const Transactions: React.FC = () => {
                       >
                         <option value="">Vyberte kategorii</option>
                         {categories
-                          .filter(cat => 
+                          .filter(cat =>
                             (recurringFormData.type === 'EXPENSE' && cat.name !== 'Mzda' && cat.name !== 'Ostatní příjmy') ||
                             (recurringFormData.type === 'INCOME' && (cat.name === 'Mzda' || cat.name === 'Ostatní příjmy'))
                           )
@@ -1150,15 +1161,15 @@ const Transactions: React.FC = () => {
             if (filterDateFrom) params.append('date_from', filterDateFrom);
             if (filterDateTo) params.append('date_to', filterDateTo);
             if (sortBy) params.append('ordering', sortBy);
-            
+
             const queryString = params.toString();
             const endpoint = `/transactions/transactions/${queryString ? '?' + queryString : ''}`;
-            
+
             const [transactionsData, categoriesData] = await Promise.all([
               api.get<Transaction[]>(endpoint),
               api.get<Category[]>('/transactions/categories/')
             ]);
-            
+
             setTransactions(transactionsData.data || []);
             setCategories(categoriesData.data || []);
           } catch (err) {

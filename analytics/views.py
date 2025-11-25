@@ -86,38 +86,92 @@ class AnalyticsViewSet(viewsets.ViewSet):
             total=Sum('amount')
         ).order_by('-total')
         
-        # Měsíční data
+        # Měsíční data - dynamická granularita podle období
         monthly_data = []
-        current_date = start_date
         
-        while current_date <= end_date:
-            month_start = current_date.replace(day=1)
-            last_day = calendar.monthrange(current_date.year, current_date.month)[1]
-            month_end = current_date.replace(day=last_day)
-            
-            month_income = transactions.filter(
-                type='INCOME',
-                date__range=[month_start, month_end]
-            ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
-            
-            month_expenses = transactions.filter(
-                type='EXPENSE',
-                date__range=[month_start, month_end]
-            ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
-            
-            monthly_data.append({
-                'month': month_start.strftime('%Y-%m'),
-                'month_name': month_start.strftime('%B %Y'),
-                'income': float(month_income),
-                'expenses': float(month_expenses),
-                'savings': float(month_income - month_expenses)
-            })
-            
-            # Přejdi na další měsíc
-            if current_date.month == 12:
-                current_date = current_date.replace(year=current_date.year + 1, month=1)
-            else:
-                current_date = current_date.replace(month=current_date.month + 1)
+        # Zjisti počet dní v období
+        days_diff = (end_date - start_date).days + 1
+        
+        if days_diff <= 60:  # Do 2 měsíců - denní granularita (30-60 sloupců)
+            temp_date = start_date
+            while temp_date <= end_date:
+                day_income = transactions.filter(
+                    type='INCOME',
+                    date=temp_date
+                ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+                
+                day_expenses = transactions.filter(
+                    type='EXPENSE',
+                    date=temp_date
+                ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+                
+                monthly_data.append({
+                    'month': temp_date.strftime('%d.%m'),
+                    'month_name': temp_date.strftime('%d. %B'),
+                    'income': float(day_income),
+                    'expenses': float(day_expenses),
+                    'savings': float(day_income - day_expenses)
+                })
+                
+                temp_date += timedelta(days=1)
+                
+        elif days_diff <= 180:  # 3-6 měsíců - týdenní granularita (12-25 týdnů)
+            temp_date = start_date
+            week_num = 1
+            while temp_date <= end_date:
+                week_end = min(temp_date + timedelta(days=6), end_date)
+                
+                week_income = transactions.filter(
+                    type='INCOME',
+                    date__range=[temp_date, week_end]
+                ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+                
+                week_expenses = transactions.filter(
+                    type='EXPENSE',
+                    date__range=[temp_date, week_end]
+                ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+                
+                monthly_data.append({
+                    'month': f'T{week_num}',
+                    'month_name': f'Týden {week_num} ({temp_date.strftime("%d.%m")} - {week_end.strftime("%d.%m")})',
+                    'income': float(week_income),
+                    'expenses': float(week_expenses),
+                    'savings': float(week_income - week_expenses)
+                })
+                
+                temp_date = week_end + timedelta(days=1)
+                week_num += 1
+                
+        else:  # Více než 6 měsíců - měsíční granularita (12+ měsíců)
+            current_date = start_date
+            while current_date <= end_date:
+                month_start = current_date.replace(day=1)
+                last_day = calendar.monthrange(current_date.year, current_date.month)[1]
+                month_end = current_date.replace(day=last_day)
+                
+                month_income = transactions.filter(
+                    type='INCOME',
+                    date__range=[month_start, month_end]
+                ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+                
+                month_expenses = transactions.filter(
+                    type='EXPENSE',
+                    date__range=[month_start, month_end]
+                ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+                
+                monthly_data.append({
+                    'month': month_start.strftime('%Y-%m'),
+                    'month_name': month_start.strftime('%B %Y'),
+                    'income': float(month_income),
+                    'expenses': float(month_expenses),
+                    'savings': float(month_income - month_expenses)
+                })
+                
+                # Přejdi na další měsíc
+                if current_date.month == 12:
+                    current_date = current_date.replace(year=current_date.year + 1, month=1)
+                else:
+                    current_date = current_date.replace(month=current_date.month + 1)
         
         # Transakce pro vizualizace
         transactions_list = list(transactions.values(
@@ -282,7 +336,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
             if savings_rate >= 20:
                 insights.append({
                     'type': 'achievement',
-                    'title': '🎉 Skvělá úspornost!',
+                    'title': 'Skvělá úspornost!',
                     'message': f'Ušetřili jste {savings_rate:.1f}% příjmů ({float(savings):.2f} Kč)',
                     'category': None,
                     'amount': float(savings),

@@ -23,7 +23,6 @@ const EmailVerification: React.FC = () => {
         const result = await verifyEmail(token);
         setSuccess(true);
         setError('');
-        console.log(result.message);
         setTimeout(() => navigate('/login'), 3000);
       } catch (err: any) {
         setSuccess(false);
@@ -43,7 +42,6 @@ const EmailVerification: React.FC = () => {
       const result = await resendVerification(email);
       setResendSuccess(true);
       setError('');
-      console.log(result.message);
     } catch (err: any) {
       setResendSuccess(false);
       setError(err.response?.data?.error || 'Odeslání selhalo. Zkuste to prosím znovu.');

@@ -59,7 +59,7 @@ const Goals: React.FC = () => {
     target_amount: '',
     target_date: '',
     icon: 'target',
-    color: '#FF4742'
+    color: '#10B981'
   });
 
   const [contributionData, setContributionData] = useState({
@@ -83,8 +83,8 @@ const Goals: React.FC = () => {
   ];
 
   const colorOptions = [
-    '#FF4742', '#10B981', '#3B82F6', '#F59E0B', '#8B5CF6',
-    '#EC4899', '#06B6D4', '#84CC16', '#F97316', '#6366F1'
+    '#10B981', '#22c55e', '#8B5CF6', '#ccff00', '#14b8a6',
+    '#EC4899', '#06B6D4', '#84CC16', '#6366F1', '#ccff00'
   ];
 
   useEffect(() => {
@@ -104,7 +104,7 @@ const Goals: React.FC = () => {
       setAllGoals(allGoalsResponse.data);
 
     } catch (error) {
-      console.error('Chyba při načítání cílů:', error);
+      // Chyba při načítání cílů
     } finally {
       setLoading(false);
     }
@@ -145,7 +145,7 @@ const Goals: React.FC = () => {
         target_amount: '',
         target_date: '',
         icon: 'target',
-        color: '#FF4742'
+        color: '#10B981'
       });
     }
     setShowModal(true);
@@ -180,7 +180,6 @@ const Goals: React.FC = () => {
       handleCloseModal();
       fetchGoals();
     } catch (error: any) {
-      console.error('Chyba při ukládání cíle:', error);
       alert('Nepodařilo se uložit cíl');
     }
   };
@@ -192,7 +191,6 @@ const Goals: React.FC = () => {
       await api.delete(`/goals/goals/${id}/`);
       fetchGoals();
     } catch (error) {
-      console.error('Chyba při mazání cíle:', error);
       alert('Nepodařilo se smazat cíl');
     }
   };
@@ -286,8 +284,8 @@ const Goals: React.FC = () => {
       {summary && (
         <div className="goals-summary">
           <div className="summary-card">
-            <div className="summary-icon" style={{ backgroundColor: '#3B82F620' }}>
-              <Target size={24} color="#3B82F6" />
+            <div className="summary-icon" style={{ backgroundColor: '#8B5CF620' }}>
+              <Target size={24} color="#8B5CF6" />
             </div>
             <div className="summary-content">
               <p className="summary-label">Aktivní cíle</p>
@@ -306,8 +304,8 @@ const Goals: React.FC = () => {
           </div>
 
           <div className="summary-card">
-            <div className="summary-icon" style={{ backgroundColor: '#F59E0B20' }}>
-              <DollarSign size={24} color="#F59E0B" />
+            <div className="summary-icon" style={{ backgroundColor: '#ccff0020' }}>
+              <DollarSign size={24} color="#ccff00" />
             </div>
             <div className="summary-content">
               <p className="summary-label">Celková cílová částka</p>
