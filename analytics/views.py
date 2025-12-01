@@ -512,6 +512,45 @@ class AnalyticsViewSet(viewsets.ViewSet):
         
         return Response(result)
 
+    @action(detail=False, methods=['get'])
+    def income_breakdown(self, request):
+        """
+        Detailní rozpis kategorií příjmů
+        """
+        time_range = request.query_params.get('time_range', '1m')
+        start_date, end_date = self._get_date_range(time_range)
+        
+        transactions = Transaction.objects.filter(
+            user=request.user,
+            type='INCOME',
+            date__range=[start_date, end_date],
+            category__isnull=False
+        )
+        
+        total_income = transactions.aggregate(total=Sum('amount'))['total'] or Decimal('0')
+        
+        breakdown = transactions.values(
+            'category__name', 'category__icon', 'category__color'
+        ).annotate(
+            total_amount=Sum('amount'),
+            transaction_count=Count('id')
+        ).order_by('-total_amount')
+        
+        result = []
+        for item in breakdown:
+            percentage = (item['total_amount'] / total_income * 100) if total_income > 0 else 0
+            
+            result.append({
+                'category_name': item['category__name'],
+                'category_icon': item['category__icon'],
+                'category_color': item['category__color'],
+                'total_amount': float(item['total_amount']),
+                'transaction_count': item['transaction_count'],
+                'percentage': float(percentage)
+            })
+        
+        return Response(result)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

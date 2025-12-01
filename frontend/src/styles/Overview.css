@@ -4,10 +4,9 @@
 
 /* Container */
 .overview-container {
-    padding: 2rem 3rem;
+    padding: 15px 25px;
     width: 100%;
     margin: 0;
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
     min-height: 100vh;
     color: #ffffff;
     box-sizing: border-box;
@@ -16,26 +15,22 @@
 
 /* Greeting Section */
 .greeting-section {
-    margin-bottom: 2rem;
+    margin-bottom: 12px;
     animation: fadeInDown 0.6s ease-out;
 }
 
 .greeting-text h1 {
-    font-size: 2.5rem;
+    font-size: 28px;
     font-weight: 300;
-    margin-bottom: 0.5rem;
+    margin: 0;
     color: #ffffff;
 }
 
-.greeting-text .highlight-name {
-    color: #ccff00;
-    text-shadow: 0 0 20px rgba(204, 255, 0, 0.5);
-}
-
-.greeting-text p {
-    font-size: 1.1rem;
+.greeting-subtitle {
+    color: var(--text-gray, #888888);
+    margin: 5px 0 0 0;
+    font-size: 13px;
     font-weight: 300;
-    color: rgba(255, 255, 255, 0.7);
 }
 
 /* Dashboard Grid */
@@ -429,39 +424,190 @@
 }
 
 .budget-circle-container {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
 }
 
-.budget-percentage {
-    font-size: 3rem;
+.budget-circle {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.circular-chart {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.circle-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 3;
+}
+
+.circle-progress {
+    fill: none;
+    stroke: #ccff00;
+    stroke-width: 3;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: center;
+    transition: stroke-dasharray 0.6s ease;
+}
+
+.budget-circle .budget-percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
     font-weight: 700;
     color: #ccff00;
-    margin-bottom: 1rem;
-    text-shadow: 0 0 30px rgba(204, 255, 0, 0.5);
-    animation: pulse 2s ease-in-out infinite;
+    margin: 0;
+    text-shadow: 0 0 15px rgba(204, 255, 0, 0.5);
 }
 
-.budget-text .growth-tag {
-    display: inline-flex;
+.budget-text {
+    text-align: left;
+}
+
+.budget-title {
+    display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: rgba(34, 197, 94, 0.1);
-    border: 1px solid rgba(34, 197, 94, 0.2);
-    border-radius: 8px;
-    font-size: 0.85rem;
-    margin-bottom: 1rem;
-}
-
-.budget-text .growth-tag .green {
-    color: #22c55e;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
 }
 
 .budget-text p {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    max-width: 200px;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.4;
+}
+
+.budget-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Quick Actions */
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.action-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #ffffff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.action-card:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+}
+
+.action-card svg {
+    color: #8b5cf6;
+}
+
+.action-card span {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Trend Indicator */
+.trend-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 600;
+}
+
+.trend-indicator.positive {
+    color: #22c55e;
+}
+
+.trend-indicator.negative {
+    color: #8b5cf6;
+}
+
+/* Metric Colors */
+.metric .value.income {
+    color: #22c55e;
+}
+
+.metric .value.expense {
+    color: #8b5cf6;
+}
+
+.metric .value.positive {
+    color: #ccff00;
+}
+
+.metric .value.negative {
+    color: #8b5cf6;
+}
+
+/* Empty State Small */
+.empty-state-small {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.85rem;
+    padding: 1rem;
+}
+
+/* Decline Tag */
+.tag.decline {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+/* Expense Label Icon */
+.expense-label {
     font-size: 0.9rem;
     color: rgba(255, 255, 255, 0.6);
-    max-width: 250px;
-    margin: 0 auto;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Period Label */
+.period-label {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Percentage Label */
+.percentage-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: right;
 }
 
 /* Transaction History Header */
@@ -601,7 +747,7 @@
 
 @media (max-width: 768px) {
     .overview-container {
-        padding: 1rem;
+        padding: 10px 15px;
     }
 
     .greeting-text h1 {
@@ -619,5 +765,22 @@
     .tags-row,
     .expense-tags {
         flex-direction: column;
+    }
+
+    .quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .budget-circle-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .budget-text {
+        text-align: center;
+    }
+
+    .budget-text p {
+        max-width: 100%;
     }
 }

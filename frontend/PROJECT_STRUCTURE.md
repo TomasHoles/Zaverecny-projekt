@@ -22,8 +22,6 @@ frontend/
 ### Layout komponenty
 - **Navbar.tsx** - Horní navigace
 - **Footer.tsx** - Patička
-- **Breadcrumbs.tsx** - Navigační breadcrumbs
-- **PageHeader.tsx** - Jednotný header pro stránky
 
 ### Stránky
 - **LandingPage.tsx** - Úvodní stránka (veřejná)
@@ -39,7 +37,6 @@ frontend/
 
 ### Pomocné komponenty
 - **Icon.tsx** - Ikony
-- **Tooltip.tsx** - Nápovědy
 - **Toast.tsx** - Notifikační zprávy
 - **ProtectedRoute.tsx** - Ochrana přihlášených stránek
 - **Prism.tsx** - Animované pozadí
@@ -93,6 +90,5 @@ Globální styly:
 ## 💡 Tipy
 
 1. Všechny chráněné stránky jsou obaleny v `ProtectedRoute`
-2. Breadcrumbs a PageHeader poskytují konzistentní UX
-3. Tooltip komponenta pro nápovědy
-4. Helper CSS třídy v App.css (`flex`, `gap-*`, `mt-*`, atd.)
+2. Toast komponenta pro notifikace
+3. Helper CSS třídy v App.css (`flex`, `gap-*`, `mt-*`, atd.)

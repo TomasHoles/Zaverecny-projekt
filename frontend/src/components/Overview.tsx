@@ -1,34 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, Cell } from 'recharts';
-import { Search, Settings, Bell, User, ArrowUpRight, ArrowDownRight, MoreHorizontal, Zap, PieChart, Activity, FileText, CreditCard, Sliders, Loader } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, AreaChart, Area, CartesianGrid, Cell } from 'recharts';
+import { ArrowUpRight, ArrowDownRight, Loader, TrendingUp, TrendingDown, Wallet, CreditCard, PiggyBank, Target } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import dashboardService, { DashboardStats, AnalyticsData, BudgetOverview, CategoryBreakdown } from '../services/dashboardService';
+import dashboardService, { DashboardStats, AnalyticsData, BudgetOverview, CategoryBreakdown, IncomeBreakdown } from '../services/dashboardService';
 import '../styles/Overview.css';
 
 const Overview: React.FC = () => {
     const { user } = useAuth();
-    const [activeTab, setActiveTab] = useState('Přehled');
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
     const [budgets, setBudgets] = useState<BudgetOverview | null>(null);
     const [categories, setCategories] = useState<CategoryBreakdown[]>([]);
+    const [incomeCategories, setIncomeCategories] = useState<IncomeBreakdown[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const [statsData, analyticsData, budgetsData, categoriesData] = await Promise.all([
+                const [statsData, analyticsData, budgetsData, categoriesData, incomeData] = await Promise.all([
                     dashboardService.getDashboardStats(),
-                    dashboardService.getAnalytics('6m'),
+                    dashboardService.getAnalytics('3m'),
                     dashboardService.getBudgetOverview(),
-                    dashboardService.getCategoryBreakdown('1m')
+                    dashboardService.getCategoryBreakdown('1m'),
+                    dashboardService.getIncomeBreakdown('1m')
                 ]);
 
                 setStats(statsData);
                 setAnalytics(analyticsData);
                 setBudgets(budgetsData);
                 setCategories(categoriesData);
+                setIncomeCategories(incomeData);
             } catch (error) {
                 console.error('Error fetching overview data:', error);
             } finally {
@@ -41,7 +44,7 @@ const Overview: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="overview-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <div className="overview-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
                 <Loader size={40} className="animate-spin" />
             </div>
         );
@@ -72,17 +75,21 @@ const Overview: React.FC = () => {
 
     // Top 3 categories for Spending Summary
     const topCategories = categories.slice(0, 3);
+    
+    // Top 3 income categories
+    const topIncomeCategories = incomeCategories.slice(0, 3);
+
+    // Calculate expense trend
+    const expenseTrend = stats?.daily_spending_change || 0;
+    const savingsRate = stats?.savings_rate || 0;
 
     return (
         <div className="overview-container">
-            {/* Header */}
-
-
             {/* Greeting Section */}
             <div className="greeting-section">
                 <div className="greeting-text">
-                    <h1>Dobré ráno, <span className="highlight-name">{user?.first_name || user?.username}</span></h1>
-                    <p>Váš osobní finanční přehled je připraven.</p>
+                    <h1>Přehled</h1>
+                    <p className="greeting-subtitle">Vítejte zpět, {user?.first_name || user?.username}. Zde je váš finanční přehled.</p>
                 </div>
             </div>
 
@@ -91,19 +98,19 @@ const Overview: React.FC = () => {
                 {/* Account Summary */}
                 <div className="card account-summary">
                     <div className="card-header">
-                        <h3>Přehled účtu</h3>
-                        <div className="dropdown-trigger">Celkem ▼</div>
+                        <h3><Wallet size={18} /> Přehled účtu</h3>
                     </div>
                     <div className="balance-section">
                         <span className="label">Celkový zůstatek</span>
                         <div className="amount">{formatCurrency(stats?.balance || 0)}</div>
                     </div>
                     <div className="tags-row">
-                        <div className="tag growth">
-                            <ArrowUpRight size={14} /> Růst <span>+{formatCurrency(stats?.savings_change || 0)}</span>
+                        <div className={`tag ${(stats?.savings_change || 0) >= 0 ? 'growth' : 'decline'}`}>
+                            {(stats?.savings_change || 0) >= 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+                            Tento měsíc <span>{(stats?.savings_change || 0) >= 0 ? '+' : ''}{formatCurrency(stats?.savings_change || 0)}</span>
                         </div>
                         <div className="tag reward">
-                            <Zap size={14} /> Úspory <span>{stats?.savings_rate || 0}%</span>
+                            <PiggyBank size={14} /> Úspory <span>{savingsRate.toFixed(2)}%</span>
                         </div>
                     </div>
                 </div>
@@ -111,7 +118,7 @@ const Overview: React.FC = () => {
                 {/* Income Overview */}
                 <div className="card income-overview">
                     <div className="card-header">
-                        <h3>Přehled příjmů</h3>
+                        <h3><TrendingUp size={18} /> Přehled příjmů</h3>
                         <span className="date">Tento měsíc</span>
                     </div>
                     <div className="income-total">
@@ -119,31 +126,21 @@ const Overview: React.FC = () => {
                         <div className="amount">{formatCurrency(stats?.total_income || 0)}</div>
                     </div>
                     <div className="mini-charts-row">
-                        {/* Using mock breakdown as backend doesn't provide specific income categories easily yet */}
-                        <div className="mini-chart-item">
-                            <div className="chart-header">
-                                <span className="percentage">--%</span>
+                        {topIncomeCategories.length > 0 ? topIncomeCategories.map((cat, index) => (
+                            <div key={index} className="mini-chart-item">
+                                <div className="chart-header">
+                                    <span className="percentage">{cat.percentage.toFixed(2)}%</span>
+                                </div>
+                                <div className="chart-label">{cat.category_name}</div>
+                                <div className="chart-value">{formatCurrency(cat.total_amount)}</div>
+                                <div 
+                                    className="mini-chart-viz" 
+                                    style={{ backgroundColor: cat.category_color || '#8b5cf6' }}
+                                ></div>
                             </div>
-                            <div className="chart-label">Hlavní příjem</div>
-                            <div className="chart-value">--</div>
-                            <div className="mini-chart-viz purple"></div>
-                        </div>
-                        <div className="mini-chart-item">
-                            <div className="chart-header">
-                                <span className="percentage">--%</span>
-                            </div>
-                            <div className="chart-label">Vedlejší</div>
-                            <div className="chart-value">--</div>
-                            <div className="mini-chart-viz green"></div>
-                        </div>
-                        <div className="mini-chart-item">
-                            <div className="chart-header">
-                                <span className="percentage">--%</span>
-                            </div>
-                            <div className="chart-label">Investice</div>
-                            <div className="chart-value">--</div>
-                            <div className="mini-chart-viz teal"></div>
-                        </div>
+                        )) : (
+                            <div className="empty-state-small">Žádné příjmy tento měsíc</div>
+                        )}
                     </div>
                 </div>
 
@@ -153,28 +150,29 @@ const Overview: React.FC = () => {
                         <div className="amount-large">{formatCurrency(stats?.total_expenses || 0)}</div>
                         <div className="expense-tags">
                             <div className="tag earned">Příjem <span>+{formatCurrency(stats?.total_income || 0)}</span></div>
-                            <div className="tag savings">Savings Rate <span>{stats?.savings_rate || 0}%</span></div>
+                            <div className="tag savings">Úspory <span>{savingsRate.toFixed(2)}%</span></div>
                         </div>
                     </div>
-                    <div className="expense-label">Celkové výdaje</div>
+                    <div className="expense-label"><CreditCard size={16} /> Celkové výdaje</div>
                     <div className="expense-chart">
                         <ResponsiveContainer width="100%" height={100}>
                             <AreaChart data={expenseChartData}>
                                 <defs>
                                     <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#8884d8" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <Area type="monotone" dataKey="value" stroke="#ffffff" strokeWidth={2} fillOpacity={1} fill="url(#colorExpense)" />
+                                <Area type="monotone" dataKey="value" stroke="#8b5cf6" strokeWidth={2} fillOpacity={1} fill="url(#colorExpense)" />
                                 <CartesianGrid vertical={false} horizontal={true} stroke="rgba(255,255,255,0.1)" strokeDasharray="3 3" />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
                     <div className="chart-footer">
-                        <span>Posledních 6 měsíců</span>
-                        <div className="reaching-target">
-                            <Zap size={14} color="#eaff00" /> Cíl <span>82%</span>
+                        <span>Poslední 3 měsíce</span>
+                        <div className={`trend-indicator ${expenseTrend <= 0 ? 'positive' : 'negative'}`}>
+                            {expenseTrend <= 0 ? <TrendingDown size={14} /> : <TrendingUp size={14} />}
+                            <span>{expenseTrend <= 0 ? '' : '+'}{expenseTrend}%</span>
                         </div>
                     </div>
                 </div>
@@ -186,35 +184,39 @@ const Overview: React.FC = () => {
                 <div className="card cash-flow">
                     <div className="card-header">
                         <h3>Cash Flow</h3>
-                        <div className="dropdown-trigger">Měsíčně ▼</div>
+                        <span className="period-label">Měsíční přehled</span>
                     </div>
                     <div className="metrics-row">
                         <div className="metric">
-                            <div className="value">{formatCurrency(stats?.total_income || 0)}</div>
-                            <div className="label">Příchozí</div>
+                            <div className="value income">{formatCurrency(stats?.total_income || 0)}</div>
+                            <div className="label">Příjmy</div>
                         </div>
                         <div className="metric">
-                            <div className="value">{formatCurrency(stats?.upcoming_recurring_count ? stats.upcoming_recurring_count * 1000 : 0)}</div>
+                            <div className="value expense">{formatCurrency(stats?.total_expenses || 0)}</div>
+                            <div className="label">Výdaje</div>
+                        </div>
+                        <div className="metric">
+                            <div className={`value ${(stats?.balance || 0) >= 0 ? 'positive' : 'negative'}`}>
+                                {formatCurrency(stats?.balance || 0)}
+                            </div>
+                            <div className="label">Bilance</div>
+                        </div>
+                        <div className="metric">
+                            <div className="value">{stats?.upcoming_recurring_count || 0}</div>
                             <div className="label">Opakované</div>
-                        </div>
-                        <div className="metric">
-                            <div className="value">{formatCurrency(stats?.total_expenses || 0)}</div>
-                            <div className="label">Náklady</div>
-                        </div>
-                        <div className="metric">
-                            <div className="value">{formatCurrency(stats?.balance || 0)}</div>
-                            <div className="label">Zůstatek</div>
                         </div>
                     </div>
 
                     <div className="cashflow-chart-container">
-                        <div className="floating-stats">
-                            <span>Růst příjmů: <span className="green">+{stats?.savings_rate_change || 0}%</span></span>
-                            <span>Výdaje: <span className="purple">--%</span></span>
-                            <span>Marže: <span className="yellow">{stats?.savings_rate || 0}%</span></span>
-                        </div>
-                        <ResponsiveContainer width="100%" height={120}>
+                        <ResponsiveContainer width="100%" height={150}>
                             <BarChart data={cashFlowData}>
+                                <XAxis 
+                                    dataKey="name" 
+                                    axisLine={false} 
+                                    tickLine={false} 
+                                    tick={{ fill: '#888', fontSize: 11 }}
+                                />
+                                <YAxis hide />
                                 <Bar dataKey="net" radius={[4, 4, 0, 0]}>
                                     {cashFlowData.map((entry, index) => (
                                         <Cell
@@ -226,14 +228,6 @@ const Overview: React.FC = () => {
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
-
-                    <div className="ai-input-section">
-                        <div className="ai-icon">✨</div>
-                        <input type="text" placeholder="Jakou oblast chcete analyzovat?" />
-                        <div className="ai-suggestion">
-                            Chci zjistit důvod poklesu v kategorii <span className="highlight">/jídlo a pití</span>
-                        </div>
-                    </div>
                 </div>
 
                 {/* Spending Summary & Budget Control */}
@@ -241,52 +235,94 @@ const Overview: React.FC = () => {
                     <div className="card spending-summary">
                         <div className="card-header">
                             <h3>Přehled útraty</h3>
-                            <div className="link-trigger">Rozpočty →</div>
+                            <Link to="/budgets" className="link-trigger">Rozpočty →</Link>
                         </div>
 
                         <div className="spending-bars">
                             {topCategories.length > 0 ? topCategories.map((cat, index) => (
                                 <div key={index} className="spending-item">
                                     <div className="spending-info">
-                                        <span className="amount">{formatCurrency(cat.total_amount)}</span>
                                         <span className="category">{cat.category_name}</span>
+                                        <span className="amount">{formatCurrency(cat.total_amount)}</span>
                                     </div>
                                     <div className="progress-bar">
                                         <div
                                             className="progress-fill"
                                             style={{
-                                                width: `${cat.percentage}%`,
-                                                background: cat.category_color || (index === 0 ? '#6366f1' : index === 1 ? '#ccff00' : '#f59e0b')
+                                                width: `${Math.min(cat.percentage, 100)}%`,
+                                                background: cat.category_color || '#8b5cf6'
                                             }}
                                         ></div>
                                     </div>
+                                    <div className="percentage-label">{cat.percentage.toFixed(2)}%</div>
                                 </div>
                             )) : (
-                                <div className="empty-state-text">Žádná data k zobrazení</div>
+                                <div className="empty-state-text">Žádné výdaje tento měsíc</div>
                             )}
                         </div>
                     </div>
 
                     <div className="card budget-control">
                         <div className="budget-circle-container">
-                            <div className="budget-percentage">
-                                {budgets?.overall_percentage ? Math.round(budgets.overall_percentage) : 0}%
+                            <div className="budget-circle">
+                                <svg viewBox="0 0 36 36" className="circular-chart">
+                                    <path
+                                        className="circle-bg"
+                                        d="M18 2.0845
+                                            a 15.9155 15.9155 0 0 1 0 31.831
+                                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    />
+                                    <path
+                                        className="circle-progress"
+                                        strokeDasharray={`${budgets?.overall_percentage || 0}, 100`}
+                                        d="M18 2.0845
+                                            a 15.9155 15.9155 0 0 1 0 31.831
+                                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    />
+                                </svg>
+                                <div className="budget-percentage">
+                                    {budgets?.overall_percentage ? Math.round(budgets.overall_percentage) : 0}%
+                                </div>
                             </div>
                             <div className="budget-text">
-                                <div className="growth-tag"><ArrowUpRight size={12} /> Čerpání <span className="green">rozpočtu</span></div>
-                                <p>Spravujete svůj rozpočet efektivně – výdaje zůstávají v normě.</p>
+                                <div className="budget-title">
+                                    <Target size={16} /> Čerpání rozpočtu
+                                </div>
+                                <p>
+                                    {(budgets?.overall_percentage || 0) < 50 
+                                        ? 'Výborně! Držíte své výdaje pod kontrolou.'
+                                        : (budgets?.overall_percentage || 0) < 80
+                                            ? 'Spravujete rozpočet efektivně.'
+                                            : 'Pozor, blížíte se k limitu rozpočtu!'}
+                                </p>
+                                <div className="budget-details">
+                                    <span>Utraceno: {formatCurrency(budgets?.total_spent || 0)}</span>
+                                    <span>Zbývá: {formatCurrency(budgets?.total_remaining || 0)}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="transaction-history-header">
-                <h3>Historie transakcí</h3>
-                <div className="filters">
-                    <span>Všechny transakce ▼</span>
-                    <button className="filter-btn"><Sliders size={16} /></button>
-                </div>
+            {/* Quick Actions */}
+            <div className="quick-actions">
+                <Link to="/transactions" className="action-card">
+                    <CreditCard size={24} />
+                    <span>Transakce</span>
+                </Link>
+                <Link to="/budgets" className="action-card">
+                    <Wallet size={24} />
+                    <span>Rozpočty</span>
+                </Link>
+                <Link to="/goals" className="action-card">
+                    <Target size={24} />
+                    <span>Cíle</span>
+                </Link>
+                <Link to="/analytics" className="action-card">
+                    <TrendingUp size={24} />
+                    <span>Analytika</span>
+                </Link>
             </div>
         </div>
     );

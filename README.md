@@ -67,7 +67,6 @@ Plutoa je moderní Progressive Web Application pro správu osobních financí. A
 - React Router v6  
 - Axios 1.12.2  
 - Recharts 3.4.1  
-- PWA se service workerem  
 - Vlastní CSS (glassmorphism + prism effects)
 
 ### Backend

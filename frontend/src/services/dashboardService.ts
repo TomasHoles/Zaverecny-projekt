@@ -153,6 +153,15 @@ export interface CategoryBreakdown {
     trend: string;
 }
 
+export interface IncomeBreakdown {
+    category_name: string;
+    category_icon: string;
+    category_color: string;
+    total_amount: number;
+    transaction_count: number;
+    percentage: number;
+}
+
 export interface FinancialHealthScore {
     score: number;
     max_score: number;
@@ -204,6 +213,11 @@ class DashboardService {
 
     async getCategoryBreakdown(timeRange: string = '3m'): Promise<CategoryBreakdown[]> {
         const response = await api.get<CategoryBreakdown[]>(`/analytics/category_breakdown/?time_range=${timeRange}`);
+        return response.data;
+    }
+
+    async getIncomeBreakdown(timeRange: string = '1m'): Promise<IncomeBreakdown[]> {
+        const response = await api.get<IncomeBreakdown[]>(`/analytics/income_breakdown/?time_range=${timeRange}`);
         return response.data;
     }
 

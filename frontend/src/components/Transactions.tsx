@@ -74,22 +74,6 @@ const Transactions: React.FC = () => {
   const [filterType, setFilterType] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
   const [visibleCount, setVisibleCount] = useState(5);
-
-  // Debug logging pro transactions state
-  useEffect(() => {
-    console.log('[Transactions] State změněn:', {
-      count: transactions.length,
-      transactions: transactions.slice(0, 3) // First 3 transactions
-    });
-  }, [transactions]);
-
-  // Debug logging pro categories state
-  useEffect(() => {
-    console.log('[Categories] State změněn:', {
-      count: categories.length,
-      categories: categories
-    });
-  }, [categories]);
   const [filterDateFrom, setFilterDateFrom] = useState('');
   const [filterDateTo, setFilterDateTo] = useState('');
   const [sortBy, setSortBy] = useState('-date');
@@ -156,19 +140,10 @@ const Transactions: React.FC = () => {
           api.get<Category[]>('/transactions/categories/')
         ]);
 
-        console.log('[API] Načtená data:', {
-          endpoint,
-          transactionsCount: transactionsData.data?.length || 0,
-          transactions: transactionsData.data,
-          categoriesCount: categoriesData.data?.length || 0,
-          categories: categoriesData.data
-        });
-
         setTransactions(transactionsData.data || []);
 
         // Pokud uživatel nemá žádné kategorie, vytvoř výchozí
         const loadedCategories = categoriesData.data || [];
-        console.log('[Categories] Načtené před zpracováním:', loadedCategories);
 
         if (loadedCategories.length === 0) {
           try {
@@ -227,16 +202,9 @@ const Transactions: React.FC = () => {
 
   // Filtruj kategorie podle typu transakce
   const getFilteredCategories = () => {
-    const filtered = categories.filter(cat =>
+    return categories.filter(cat =>
       cat.category_type === formData.type || cat.category_type === 'BOTH'
     );
-    console.log('[Categories] Filtrované kategorie:', {
-      type: formData.type,
-      allCategories: categories.length,
-      filteredCount: filtered.length,
-      filtered: filtered
-    });
-    return filtered;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {

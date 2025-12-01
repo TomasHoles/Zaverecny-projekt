@@ -7,7 +7,6 @@ import dashboardService, {
   TrendAnalysis,
   CategoryBreakdown
 } from '../services/dashboardService';
-import HeatmapCalendar from './HeatmapCalendar';
 import WaterfallChart from './WaterfallChart';
 import CategoryPieChart from './CategoryPieChart';
 import {

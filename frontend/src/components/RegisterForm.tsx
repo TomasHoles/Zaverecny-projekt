@@ -35,7 +35,7 @@ const RegisterForm: React.FC = () => {
         currency_preference: 'CZK'
       });
       
-      navigate('/dashboard');
+      navigate('/overview');
     } catch (err: any) {
       const errorData = err.response?.data;
       if (errorData) {

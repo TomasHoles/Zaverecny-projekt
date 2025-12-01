@@ -19,7 +19,7 @@ const LoginForm: React.FC = () => {
 
     try {
       await login(username, password);
-      navigate('/dashboard');
+      navigate('/overview');
     } catch (err: any) {
       const errorMessage = err.response?.data?.error || 'Přihlášení selhalo. Zkontrolujte své údaje.';
       setError(errorMessage);

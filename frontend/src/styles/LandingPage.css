@@ -128,7 +128,7 @@
 .scroll-indicator {
   position: absolute;
   bottom: 8rem;
-  left: 49%;
+  left: 50%;
   transform: translateX(-50%);
   cursor: pointer;
   z-index: 2;
@@ -342,7 +342,7 @@ section h2 {
 
 /* CTA Section */
 .cta-section {
-  background: linear-gradient(135deg, rgba(204, 255, 0, 0.1), rgba(139, 92, 246, 0.1));
+  background: rgba(139, 92, 246, 0.08);
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
   text-align: center;

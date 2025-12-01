@@ -10,7 +10,6 @@ import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
-import Dashboard from './components/Dashboard';
 import Overview from './components/Overview';
 import LandingPage from './components/LandingPage';
 import Navbar from './components/Navbar';
@@ -20,7 +19,6 @@ import Transactions from './components/Transactions';
 import Budgets from './components/Budgets';
 import Analytics from './components/Analytics';
 import Profile from './components/Profile';
-import InstallPrompt from './components/InstallPrompt';
 import Notifications from './components/Notifications';
 import Goals from './components/Goals';
 import RecurringTransactions from './components/RecurringTransactions';
@@ -73,14 +71,6 @@ function App() {
                   } />
 
                   {/* Chráněné stránky */}
-                  <Route path="/dashboard" element={
-                    <ProtectedRoute>
-                      <div className="page-container">
-                        <Dashboard />
-                      </div>
-                    </ProtectedRoute>
-                  } />
-
                   <Route path="/transactions" element={
                     <ProtectedRoute>
                       <div className="page-container">
@@ -137,17 +127,18 @@ function App() {
                     </ProtectedRoute>
                   } />
 
-                  {/* Přesměrování */}
+                  {/* Přehled */}
                   <Route path="/overview" element={
                     <ProtectedRoute>
-                      <Overview />
+                      <div className="page-container">
+                        <Overview />
+                      </div>
                     </ProtectedRoute>
                   } />
                   <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
               </main>
 
-              <InstallPrompt />
               <Footer />
             </div>
           </ToastProvider>
