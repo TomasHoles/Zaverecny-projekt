@@ -425,3 +425,137 @@
   font-size: 12px;
   margin: 0;
 }
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .goals-page {
+    padding: 15px 20px;
+  }
+
+  .goals-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .goals-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .goals-page {
+    padding: 10px 15px;
+  }
+
+  .goals-title {
+    font-size: 24px;
+  }
+
+  .goals-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .btn-primary {
+    width: 100%;
+    text-align: center;
+  }
+
+  .goals-summary {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .summary-card {
+    padding: 15px;
+  }
+
+  .summary-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .summary-value {
+    font-size: 18px;
+  }
+
+  .goals-filters {
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 12px;
+  }
+
+  .filter-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .goals-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .goal-card {
+    padding: 15px;
+  }
+
+  .goal-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .goal-actions {
+    flex-direction: column;
+  }
+
+  /* Modal */
+  .modal-content {
+    margin: 10px;
+    padding: 20px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .btn-secondary,
+  .btn-primary {
+    width: 100%;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .goals-page {
+    padding: 10px;
+  }
+
+  .goals-title {
+    font-size: 22px;
+  }
+
+  .goals-subtitle {
+    font-size: 12px;
+  }
+
+  .goal-name {
+    font-size: 16px;
+  }
+
+  .goal-amount {
+    font-size: 14px;
+  }
+
+  .goal-deadline {
+    font-size: 11px;
+  }
+}

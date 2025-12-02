@@ -5,6 +5,7 @@ import api from '../services/api';
 import { Plus, Trash2, Edit2, Wallet, PieChart, TrendingUp, AlertCircle, CheckCircle } from 'lucide-react';
 import { BudgetsSkeleton } from './SkeletonLoaders';
 import EmptyState from './EmptyState';
+import CategoryIcon from './CategoryIcon';
 import '../styles/Budgets.css';
 
 interface Category {
@@ -297,8 +298,17 @@ const Budgets: React.FC = () => {
                 <div key={budget.id} className="budget-card">
                   <div className="budget-header">
                     <div className="budget-info">
-                      <h3>{budget.name}</h3>
-                      <p className="budget-category">{budget.category || 'Obecný rozpočet'}</p>
+                      <div className="budget-icon">
+                        <CategoryIcon 
+                          iconName={budget.category_icon || 'wallet'} 
+                          color={budget.category_color || '#8b5cf6'} 
+                          size={24} 
+                        />
+                      </div>
+                      <div>
+                        <h3>{budget.name}</h3>
+                        <p className="budget-category">{budget.category || 'Obecný rozpočet'}</p>
+                      </div>
                     </div>
                     <div className="budget-stats">
                       <p className={`budget-percentage ${status}`}>

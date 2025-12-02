@@ -342,7 +342,7 @@ const Analytics: React.FC = () => {
             <div className="insights-section">
               <h2 className="section-title">Finanční Insights</h2>
               <div className="insights-grid">
-                {insights.slice(0, 6).map((insight, idx) => {
+                {insights.slice(0, 3).map((insight, idx) => {
                   const iconData = getInsightIcon(insight.type);
                   return (
                     <div key={idx} className={`insight-card insight-${insight.type}`}>

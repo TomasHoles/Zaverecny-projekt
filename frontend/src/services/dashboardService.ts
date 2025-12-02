@@ -64,6 +64,8 @@ export interface Budget {
     remaining: number;
     percentage_used: number;
     category: string | null;
+    category_icon: string;
+    category_color: string;
     period: string;
     is_active: boolean;
 }

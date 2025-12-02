@@ -184,22 +184,58 @@
 /* Responsive */
 @media (max-width: 768px) {
   .budget-alerts-card {
-    padding: 1.5rem;
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  .budget-alerts-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
 
   .budget-alert-item {
     flex-direction: column;
     align-items: flex-start;
+    padding: 12px;
   }
 
   .alert-icon {
     align-self: flex-start;
+    width: 36px;
+    height: 36px;
   }
 
   .alert-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
+  }
+
+  .alert-name {
+    font-size: 14px;
+  }
+
+  .alert-category {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .budget-alerts-card {
+    padding: 12px;
+  }
+
+  .budget-alert-item {
+    padding: 10px;
+  }
+
+  .alert-progress-bar {
+    height: 6px;
+  }
+
+  .alert-stats {
+    font-size: 11px;
   }
 }
 

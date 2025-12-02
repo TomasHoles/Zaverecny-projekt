@@ -349,20 +349,22 @@
 @media (max-width: 640px) {
   .import-modal {
     width: 95%;
-    max-height: 95vh;
+    max-width: none;
+    max-height: 90vh;
+    margin: 20px 10px;
   }
 
   .import-modal-header,
   .import-modal-content {
-    padding: 1.5rem;
+    padding: 15px;
   }
 
   .import-modal-title {
-    font-size: 1.5rem;
+    font-size: 20px;
   }
 
   .import-drop-zone {
-    padding: 2rem 1rem;
+    padding: 25px 15px;
   }
 
   .template-header {
@@ -374,5 +376,43 @@
   .template-download {
     width: 100%;
     justify-content: center;
+  }
+
+  .import-modal-footer {
+    flex-direction: column;
+    padding: 15px;
+  }
+
+  .btn-cancel,
+  .btn-import {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .import-modal {
+    margin: 10px;
+  }
+
+  .import-modal-header,
+  .import-modal-content {
+    padding: 12px;
+  }
+
+  .import-modal-title {
+    font-size: 18px;
+  }
+
+  .import-drop-zone {
+    padding: 20px 12px;
+  }
+
+  .drop-icon {
+    font-size: 36px;
+  }
+
+  .drop-text {
+    font-size: 14px;
   }
 }

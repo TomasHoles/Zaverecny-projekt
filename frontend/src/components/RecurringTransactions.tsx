@@ -374,13 +374,11 @@ const RecurringTransactions: React.FC = () => {
             <div key={item.id} className={`recurring-item ${item.status.toLowerCase()}`}>
               <div className="recurring-item-header">
                 <div className="recurring-item-title">
-                  {item.category && (
-                    <CategoryIcon
-                      iconName={item.category.icon}
-                      color={item.category.color}
-                      size={32}
-                    />
-                  )}
+                  <CategoryIcon
+                    iconName={item.category?.icon || 'repeat'}
+                    color={item.category?.color || '#8b5cf6'}
+                    size={32}
+                  />
                   <div>
                     <h3>{item.name}</h3>
                     <p className="recurring-description">{item.description}</p>
@@ -446,7 +444,7 @@ const RecurringTransactions: React.FC = () => {
                   onClick={() => handleEdit(item)}
                   title="Upravit"
                 >
-                  <Icon name="plus" size={16} />
+                  <Icon name="edit" size={16} />
                   Upravit
                 </button>
                 <button

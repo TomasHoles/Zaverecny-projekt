@@ -270,13 +270,15 @@
 /* Cash Flow Card */
 .cash-flow {
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .metrics-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .metric .value {
@@ -293,7 +295,10 @@
 
 .cashflow-chart-container {
     position: relative;
-    margin-bottom: 1.5rem;
+    flex: 1;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
 }
 
 .floating-stats {
@@ -751,24 +756,84 @@
     }
 
     .greeting-text h1 {
+        font-size: 22px;
+    }
+
+    .greeting-subtitle {
+        font-size: 12px;
+    }
+
+    .card {
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .card-header h3 {
+        font-size: 14px;
+    }
+
+    .balance-section .amount,
+    .income-total .amount {
         font-size: 1.8rem;
     }
 
     .mini-charts-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .mini-chart-item .percentage {
+        font-size: 1rem;
+    }
+
+    .mini-chart-item .chart-label {
+        font-size: 10px;
+    }
+
+    .mini-chart-item .chart-value {
+        font-size: 11px;
     }
 
     .metrics-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .metric .value {
+        font-size: 1.2rem;
+    }
+
+    .metric .label {
+        font-size: 12px;
     }
 
     .tags-row,
     .expense-tags {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .tag {
+        padding: 4px 8px;
+        font-size: 11px;
     }
 
     .quick-actions {
         grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .action-card {
+        padding: 1rem;
+    }
+
+    .action-card svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .action-card span {
+        font-size: 12px;
     }
 
     .budget-circle-container {
@@ -782,5 +847,80 @@
 
     .budget-text p {
         max-width: 100%;
+    }
+
+    .budget-circle {
+        width: 80px;
+        height: 80px;
+    }
+
+    .budget-circle .budget-percentage {
+        font-size: 1.2rem;
+    }
+
+    .spending-item {
+        gap: 6px;
+    }
+
+    .spending-info .amount {
+        font-size: 14px;
+    }
+
+    .spending-info .category {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .overview-container {
+        padding: 10px;
+    }
+
+    .greeting-text h1 {
+        font-size: 20px;
+    }
+
+    .balance-section .amount,
+    .income-total .amount {
+        font-size: 1.5rem;
+    }
+
+    .total-expenses .amount-large {
+        font-size: 1.8rem;
+    }
+
+    .mini-charts-row {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px;
+    }
+
+    .mini-chart-item .chart-value {
+        font-size: 10px;
+    }
+
+    .mini-chart-viz {
+        height: 30px;
+    }
+
+    .metrics-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .metric .value {
+        font-size: 1rem;
+    }
+
+    .quick-actions {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+
+    .action-card {
+        padding: 12px 8px;
+        gap: 6px;
+    }
+
+    .action-card span {
+        font-size: 10px;
     }
 }

@@ -615,7 +615,7 @@ const Transactions: React.FC = () => {
               {transactions.length > 0 ? (
                 <div className="transactions-list">
                   {transactions.slice(0, visibleCount).map((transaction) => (
-                    <div key={transaction.id} className="transaction-item">
+                    <div key={transaction.id} className={`transaction-item ${transaction.type === 'INCOME' ? 'income' : 'expense'}`}>
                       <div className="transaction-header">
                         <div className="transaction-info">
                           <div className="transaction-category-icon">
@@ -632,21 +632,19 @@ const Transactions: React.FC = () => {
                             <p className="transaction-date">{formatDate(transaction.date)}</p>
                           </div>
                         </div>
-                        <p className={`transaction-amount ${transaction.type === 'INCOME' ? 'income' : 'expense'
-                          }`}>
-                          {transaction.type === 'INCOME' ? '+' : '-'}{formatCurrency(transaction.amount)}
-                        </p>
+                        <div className="transaction-right">
+                          <p className={`transaction-amount ${transaction.type === 'INCOME' ? 'income' : 'expense'}`}>
+                            {transaction.type === 'INCOME' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                          </p>
+                          <span className={`transaction-badge ${transaction.type === 'INCOME' ? 'income' : 'expense'}`}>
+                            {transaction.type === 'INCOME' ? 'Příjem' : 'Výdaj'}
+                          </span>
+                        </div>
                       </div>
                       {transaction.description && (
                         <p className="transaction-description">{transaction.description}</p>
                       )}
                       <div className="transaction-footer">
-                        <div className="transaction-tags">
-                          <span className={`transaction-badge ${transaction.type === 'INCOME' ? 'income' : 'expense'
-                            }`}>
-                            {transaction.type === 'INCOME' ? 'Příjem' : 'Výdaj'}
-                          </span>
-                        </div>
                         <div className="transaction-actions">
                           <button
                             className="action-btn edit-btn"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, AreaChart, Area, CartesianGrid, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, AreaChart, Area, CartesianGrid, Cell, ReferenceLine } from 'recharts';
 import { ArrowUpRight, ArrowDownRight, Loader, TrendingUp, TrendingDown, Wallet, CreditCard, PiggyBank, Target } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import dashboardService, { DashboardStats, AnalyticsData, BudgetOverview, CategoryBreakdown, IncomeBreakdown } from '../services/dashboardService';
@@ -208,7 +208,7 @@ const Overview: React.FC = () => {
                     </div>
 
                     <div className="cashflow-chart-container">
-                        <ResponsiveContainer width="100%" height={150}>
+                        <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={cashFlowData}>
                                 <XAxis 
                                     dataKey="name" 
@@ -217,6 +217,7 @@ const Overview: React.FC = () => {
                                     tick={{ fill: '#888', fontSize: 11 }}
                                 />
                                 <YAxis hide />
+                                <ReferenceLine y={0} stroke="rgba(255, 255, 255, 0.3)" strokeWidth={1} />
                                 <Bar dataKey="net" radius={[4, 4, 0, 0]}>
                                     {cashFlowData.map((entry, index) => (
                                         <Cell

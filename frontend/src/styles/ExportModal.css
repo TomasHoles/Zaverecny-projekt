@@ -273,17 +273,19 @@
 @media (max-width: 768px) {
   .export-modal {
     width: 95%;
-    max-height: 95vh;
+    max-width: none;
+    max-height: 90vh;
+    margin: 20px 10px;
   }
 
   .export-modal-header,
   .export-modal-content,
   .export-modal-footer {
-    padding: 1.5rem;
+    padding: 15px;
   }
 
   .export-modal-title {
-    font-size: 1.5rem;
+    font-size: 20px;
   }
 
   .quick-dates,
@@ -293,5 +295,41 @@
 
   .date-inputs {
     grid-template-columns: 1fr;
+  }
+
+  .export-modal-footer {
+    flex-direction: column;
+  }
+
+  .btn-cancel,
+  .btn-export {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .export-modal {
+    margin: 10px;
+  }
+
+  .export-modal-header,
+  .export-modal-content,
+  .export-modal-footer {
+    padding: 12px;
+  }
+
+  .export-modal-title {
+    font-size: 18px;
+  }
+
+  .section-title {
+    font-size: 12px;
+  }
+
+  .quick-date-btn,
+  .format-option {
+    padding: 10px;
+    font-size: 13px;
   }
 }

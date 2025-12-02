@@ -54,6 +54,8 @@ class BudgetViewSet(viewsets.ModelViewSet):
                 'remaining': float(budget.amount - spent_amount),
                 'percentage_used': (spent_amount / budget.amount * 100) if budget.amount > 0 else 0,
                 'category': budget.category.name if budget.category else None,
+                'category_icon': budget.category.icon if budget.category else 'wallet',
+                'category_color': budget.category.color if budget.category else '#8b5cf6',
                 'period': budget.period,
                 'is_active': budget.is_active
             }

@@ -136,6 +136,24 @@
   margin-bottom: 15px;
 }
 
+.budget-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.budget-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .budget-info h3 {
   margin: 0 0 5px 0;
   font-size: 16px;
@@ -391,4 +409,131 @@ input:focus {
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .budgets-page {
+    padding: 15px 20px;
+  }
+
+  .budgets-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .budgets-page {
+    padding: 10px 15px;
+  }
+
+  .budgets-title {
+    font-size: 24px;
+  }
+
+  .budgets-summary {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .summary-card {
+    padding: 15px;
+  }
+
+  .summary-value {
+    font-size: 26px;
+  }
+
+  .budgets-container {
+    padding: 15px;
+    border-radius: 16px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .add-budget-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .budgets-grid {
+    gap: 15px;
+  }
+
+  .budget-card {
+    padding: 15px;
+  }
+
+  .budget-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .budget-stats {
+    text-align: left;
+  }
+
+  .budget-actions {
+    flex-direction: column;
+  }
+
+  .budget-action-btn {
+    padding: 10px;
+  }
+
+  /* Modal */
+  .modal-content {
+    margin: 10px;
+    padding: 20px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .budgets-page {
+    padding: 10px;
+  }
+
+  .budgets-title {
+    font-size: 22px;
+  }
+
+  .budgets-subtitle {
+    font-size: 12px;
+  }
+
+  .summary-value {
+    font-size: 22px;
+  }
+
+  .budget-name {
+    font-size: 15px;
+  }
+
+  .budget-category {
+    font-size: 11px;
+  }
+
+  .budget-percentage {
+    font-size: 16px;
+  }
 }
