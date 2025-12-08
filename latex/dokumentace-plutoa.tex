@@ -1,0 +1,1216 @@
+% DOKUMENTACE PROJEKTU PLUTOA - PERSONAL FINANCE MANAGER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Autor: Tomáš Holes
+% Projekt: Plutoa - Webová aplikace pro správu osobních financí
+%
+\documentclass[12pt, a4paper,
+twoside,
+openright
+]{report}
+
+%% Nutné balíčky a nastavení
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Proměnné
+\newcommand\obor{INFORMAČNÍ TECHNOLOGIE}
+\newcommand\kodOboru{18-20-M/01}
+\newcommand\zamereni{se zaměřením na počítačové sítě a programování}
+\newcommand\skola{Střední škola průmyslová a umělecká, Opava}
+\newcommand\trida{IT4}
+\newcommand\jmenoAutora{Tomáš Holes}
+\newcommand\skolniRok{2024/25}
+\newcommand\datumOdevzdani{8. 12. 2024}
+\newcommand\nazevPrace{Plutoa - Webová aplikace pro správu osobních financí}
+
+\title{\nazevPrace}
+\author{\jmenoAutora}
+\date{\datumOdevzdani}
+
+\usepackage[top=2.5cm, bottom=2.5cm, left=3.5cm, right=1.5cm]{geometry}
+
+\usepackage[czech]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{cmap}
+
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{hyperref}
+
+\linespread{1.25}
+\setlength{\parskip}{0.5em}
+
+\usepackage[pagestyles]{titlesec}
+\titleformat{\chapter}[block]{\scshape\bfseries\LARGE}{\thechapter}{10pt}{\vspace{0pt}}[\vspace{-22pt}]
+\titleformat{\section}[block]{\scshape\bfseries\Large}{\thesection}{10pt}{\vspace{0pt}}
+\titleformat{\subsection}[block]{\bfseries\large}{\thesubsection}{10pt}{\vspace{0pt}}
+
+\usepackage{tocloft}
+\setlength{\cftbeforechapskip}{0pt}
+\setlength{\cftbeforesecskip}{0pt}
+
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0.025pt}
+
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{pdfpages}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{helvet}
+\usepackage{mathptmx}
+
+\makeatletter
+\@namedef{ver@figureversions.sty}{9999/99/99}
+\newcommand{\DeclareFigureVersion}[2]{}
+\newcommand{\figureversion}[1]{}
+\makeatother
+
+\makeatletter
+\providecommand{\superiorSup}{}
+\providecommand{\textOsF}{}
+\providecommand{\textTOsF}{}
+\providecommand{\liningLF}{}
+\providecommand{\liningTLF}{}
+\providecommand{\tabularTab}{}
+\providecommand{\proportionalProp}{}
+\providecommand{\tabularmath}{}
+\providecommand{\proportionalmath}{}
+\makeatother
+
+\usepackage{Oswald}
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\renewcommand{\lstlistingname}{Kód}
+\renewcommand{\lstlistlistingname}{Seznam programových kódů}
+
+% Nastavení barev
+\definecolor{mediumgray}{rgb}{0.3, 0.4, 0.4}
+\definecolor{mediumblue}{rgb}{0.0, 0.0, 0.8}
+\definecolor{forestgreen}{rgb}{0.13, 0.55, 0.13}
+\definecolor{darkviolet}{rgb}{0.58, 0.0, 0.83}
+\definecolor{royalblue}{rgb}{0.25, 0.41, 0.88}
+\definecolor{crimson}{rgb}{0.86, 0.8, 0.24}
+
+% Nastavení pro Python
+\lstdefinestyle{Python}{
+	language=Python,
+	backgroundcolor=\color{white},
+	basicstyle=\ttfamily\small,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	columns=fullflexible,
+	commentstyle=\color{mediumgray}\upshape,
+	frame=single,
+	identifierstyle=\color{black},
+	keepspaces=true,
+	keywordstyle=\color{mediumblue},
+	keywordstyle={[2]\color{darkviolet}},
+	literate=%
+	{á}{{\'a}}1 {č}{{\v{c}}}1 {ď}{{\v{d}}}1 {é}{{\'e}}1 {ě}{{\v{e}}}1
+	{í}{{\'i}}1 {ň}{{\v{n}}}1 {ó}{{\'o}}1 {ř}{{\v{r}}}1 {š}{{\v{s}}}1
+	{ť}{{\v{t}}}1 {ú}{{\'u}}1 {ů}{{\r{u}}}1 {ý}{{\'y}}1 {ž}{{\v{z}}}1,		
+	numbers=left,
+	numbersep=5pt,
+	numberstyle=\tiny\color{black},
+	rulecolor=\color{black},
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	stringstyle=\color{forestgreen},
+	tabsize=2,
+	upquote=true
+}
+
+% Nastavení pro TypeScript/JavaScript
+\lstdefinestyle{TypeScript}{
+	language=Java,
+	backgroundcolor=\color{white},
+	basicstyle=\ttfamily\small,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	columns=fullflexible,
+	commentstyle=\color{mediumgray}\upshape,
+	frame=single,
+	identifierstyle=\color{black},
+	keepspaces=true,
+	keywordstyle=\color{mediumblue},
+	keywordstyle={[2]\color{darkviolet}},
+	morekeywords={const, let, interface, export, import, async, await, from, React, useState, useEffect, type},
+	literate=%
+	{á}{{\'a}}1 {č}{{\v{c}}}1 {ď}{{\v{d}}}1 {é}{{\'e}}1 {ě}{{\v{e}}}1
+	{í}{{\'i}}1 {ň}{{\v{n}}}1 {ó}{{\'o}}1 {ř}{{\v{r}}}1 {š}{{\v{s}}}1
+	{ť}{{\v{t}}}1 {ú}{{\'u}}1 {ů}{{\r{u}}}1 {ý}{{\'y}}1 {ž}{{\v{z}}}1,		
+	numbers=left,
+	numbersep=5pt,
+	numberstyle=\tiny\color{black},
+	rulecolor=\color{black},
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	stringstyle=\color{forestgreen},
+	tabsize=2,
+	upquote=true
+}
+
+\setlength{\headheight}{15pt}
+
+\AtBeginDocument{\clearpage\pagestyle{empty}}
+
+%% Začátek dokumentu
+%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+	
+	\pagestyle{empty}
+	\pagenumbering{Roman}
+	
+	\cleardoublepage
+
+%% Titulní stránka
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	{\fontfamily{phv}\selectfont
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width=0.6\linewidth]{image/logo-skoly.png} 
+		\end{figure}
+		
+		{\bfseries
+			\begin{center}
+				\vspace{0.025 \textheight}
+				\LARGE{ZÁVĚREČNÁ STUDIJNÍ PRÁCE}\\
+				\large{dokumentace}\\
+				\vspace{0.075 \textheight}
+				\LARGE {\nazevPrace}\\
+			\end{center}  
+		}
+		
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width=0.8\linewidth]{image/programovani-02.jpg} 
+		\end{figure}
+		
+		\vspace{0.02 \textheight}
+		\begin{table}[h!]
+			\begin{tabular}{ll}
+				\textbf{Autor:} & \jmenoAutora\\ 
+				\textbf{Obor:} & \kodOboru { } \obor\\
+				\textbf{} & \zamereni\\
+				\textbf{Třída:} & \trida\\
+				\textbf{Školní rok:} & \skolniRok\\
+			\end{tabular}
+		\end{table}		
+	}
+	
+\cleardoublepage
+
+%% Poděkování a prohlášení
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\noindent{\large{\bfseries{Poděkování}\\}}
+	\noindent Děkuji všem, kteří mi pomáhali při tvorbě této závěrečné práce. Zvláštní poděkování patří mému vedoucímu práce za cenné rady a připomínky během vývoje aplikace Plutoa.
+	
+	\vspace*{0.7\textheight}
+
+	\noindent{\large{\bfseries{Prohlášení}\\}}
+	\noindent{Prohlašuji, že jsem závěrečnou práci vypracoval samostatně a uvedl veškeré použité informační zdroje.\\}
+	\noindent{Souhlasím, aby tato studijní práce byla použita k výukovým a prezentačním účelům na Střední průmyslové a umělecké škole v Opavě, Praskova 399/8.}
+	\vfill
+	\noindent{V Opavě \datumOdevzdani\\}
+	\noindent
+	\begin{minipage}{\linewidth}
+		\hspace{9.5cm} 
+		\begin{tabular}{@{}p{6cm}@{}}
+			\dotfill \\
+			Podpis autora
+		\end{tabular}
+	\end{minipage}
+	
+	\cleardoublepage
+
+%% Abstrakt
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+
+	\noindent{\Large{\bfseries{Abstrakt}\\}}
+	\noindent Tato závěrečná práce se zabývá návrhem a implementací webové aplikace Plutoa pro správu osobních financí. Aplikace je vytvořena jako moderní Progressive Web Application kombinující React frontend s Django REST Framework backendem. Práce popisuje kompletní architekturu systému, datový model, implementaci klíčových funkcí jako sledování transakcí, rozpočtů, finančních cílů a pokročilé analytiky. Důraz je kladen na uživatelskou přívětivost, bezpečnost autentizace pomocí JWT tokenů a responzivní design s moderním glassmorphism stylem. Výsledkem je plně funkční aplikace umožňující uživatelům efektivně spravovat své osobní finance s přehlednými vizualizacemi a automatickými upozorněními.
+	
+	\vspace{18pt}
+	
+	\noindent{\large{\bfseries{Klíčová slova}}}
+	
+	\noindent Webová aplikace, React, Django, REST API, osobní finance, rozpočty, analytika, JWT autentizace, TypeScript, Python
+	
+	\vspace{18pt}
+
+	\noindent{\Large{\bfseries{Abstract}}}
+	
+	\noindent This thesis deals with the design and implementation of the Plutoa web application for personal finance management. The application is built as a modern Progressive Web Application combining a React frontend with a Django REST Framework backend. The work describes the complete system architecture, data model, and implementation of key features such as transaction tracking, budgets, financial goals, and advanced analytics. Emphasis is placed on user friendliness, authentication security using JWT tokens, and responsive design with modern glassmorphism style. The result is a fully functional application that allows users to effectively manage their personal finances with clear visualizations and automatic notifications.
+	
+	\vspace{18pt}
+	
+	\noindent{\large{\bfseries{Keywords}}}
+	
+	\noindent Web application, React, Django, REST API, personal finance, budgets, analytics, JWT authentication, TypeScript, Python
+	
+	\clearpage
+
+%% Obsah
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+	
+	\tableofcontents
+
+	\pagenumbering{arabic}
+	\setcounter{page}{1}
+
+%% Úvod
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%		
+	\chapter*{Úvod}
+	\addcontentsline{toc}{chapter}{Úvod}
+	
+Správa osobních financí je v dnešní době důležitější než kdy předtím. S rostoucími životními náklady a množstvím finančních produktů na trhu je pro většinu lidí obtížné udržet si přehled o svých příjmech a výdajích. Existující aplikace pro správu financí jsou často buď příliš jednoduché, nebo naopak přehnaně komplexní a nepřehledné.
+
+Cílem této závěrečné práce bylo vytvořit moderní webovou aplikaci \textbf{Plutoa}, která kombinuje intuitivní uživatelské rozhraní s pokročilými analytickými nástroji. Aplikace umožňuje uživatelům sledovat své transakce, vytvářet rozpočty, definovat finanční cíle a získávat přehledné vizualizace svého finančního zdraví.
+
+Projekt Plutoa byl implementován jako full-stack webová aplikace využívající moderní technologie. Frontend je postaven na React s TypeScriptem, backend využívá Django REST Framework. Aplikace klade důraz na bezpečnost, výkon a uživatelskou přívětivost.
+
+První kapitola této práce představuje použité technologie a vysvětluje důvody jejich výběru. Druhá kapitola se zabývá architekturou aplikace, včetně struktury backendu a frontendu. Třetí kapitola detailně popisuje datový model a databázové schéma. Čtvrtá kapitola se věnuje implementaci klíčových funkcí aplikace. Pátá kapitola popisuje uživatelské rozhraní a jeho design. Závěrečná kapitola shrnuje dosažené výsledky a nastiňuje možnosti budoucího rozvoje.
+
+	\chapter{Použité technologie}
+	\pagestyle{fancy}
+	
+V této kapitole jsou popsány technologie použité při vývoji aplikace Plutoa. Výběr technologií byl proveden s ohledem na modernost, výkon, bezpečnost a možnosti budoucího rozšíření.
+
+	\section{Backend technologie}
+	
+	\subsection{Django 5.2}
+Django je vysokoúrovňový webový framework napsaný v Pythonu, který podporuje rychlý vývoj a čistý, pragmatický design. Pro tento projekt byla zvolena verze 5.2, která přináší nejnovější vylepšení v oblasti bezpečnosti a výkonu.
+
+Hlavní výhody Django:
+\begin{itemize}
+	\item Zabudovaný ORM (Object-Relational Mapping) pro práci s databází
+	\item Automatická administrační konzole
+	\item Robustní systém autentizace a autorizace
+	\item Podpora pro migrace databázového schématu
+	\item Rozsáhlá dokumentace a aktivní komunita
+\end{itemize}
+
+	\subsection{Django REST Framework 3.16}
+Django REST Framework (DRF) je flexibilní nástroj pro vytváření Web API. Poskytuje:
+\begin{itemize}
+	\item Serializaci dat mezi Python objekty a JSON
+	\item Autentizaci a oprávnění
+	\item Viewsety pro rychlé vytváření CRUD operací
+	\item Automatickou dokumentaci API
+	\item Throttling pro omezení počtu požadavků
+\end{itemize}
+
+	\subsection{JWT Autentizace}
+Pro autentizaci je použita knihovna \texttt{djangorestframework-simplejwt}, která implementuje JSON Web Tokens. JWT tokeny poskytují:
+\begin{itemize}
+	\item Bezstavovou autentizaci bez nutnosti ukládat session na serveru
+	\item Access token s platností 1 hodina
+	\item Refresh token s platností 7 dní
+	\item Automatickou rotaci tokenů
+\end{itemize}
+
+	\subsection{SQLite / PostgreSQL}
+Pro vývoj je použita SQLite databáze pro jednoduchost nasazení. Aplikace je však připravena pro produkční nasazení s PostgreSQL, která nabízí:
+\begin{itemize}
+	\item Lepší výkon při velkém množství dat
+	\item Pokročilé dotazovací funkce
+	\item Podporu pro konkurenční přístup
+	\item Robustní zálohování a replikaci
+\end{itemize}
+
+	\section{Frontend technologie}
+	
+	\subsection{React 19.1}
+React je JavaScriptová knihovna pro vytváření uživatelských rozhraní. Verze 19.1 přináší:
+\begin{itemize}
+	\item Vylepšený concurrent rendering
+	\item Automatic batching pro lepší výkon
+	\item Hooks API pro správu stavu a životního cyklu
+	\item Server Components pro hybridní renderování
+\end{itemize}
+
+	\subsection{TypeScript 4.9}
+TypeScript je nadmnožina JavaScriptu přidávající statické typování. Výhody použití TypeScriptu:
+\begin{itemize}
+	\item Detekce chyb během kompilace
+	\item Lepší IntelliSense a automatické doplňování
+	\item Snadnější refaktoring kódu
+	\item Dokumentace přímo v kódu pomocí typů
+\end{itemize}
+
+	\subsection{React Router v7}
+React Router zajišťuje směrování v aplikaci. Umožňuje:
+\begin{itemize}
+	\item Deklarativní definici routes
+	\item Nested routes pro komplexní layouty
+	\item Protected routes pro autentizované uživatele
+	\item Programatickou navigaci
+\end{itemize}
+
+	\subsection{Recharts 3.4}
+Pro vizualizaci dat je použita knihovna Recharts, která poskytuje:
+\begin{itemize}
+	\item Responzivní grafy
+	\item Širokou škálu typů grafů (Bar, Line, Pie, Area, Waterfall)
+	\item Interaktivní tooltipy a legendy
+	\item Customizovatelné styly
+\end{itemize}
+
+	\subsection{Axios 1.13}
+Axios je HTTP klient pro komunikaci s backendem. Nabízí:
+\begin{itemize}
+	\item Interceptory pro automatické přidávání tokenů
+	\item Podpora pro Promise API
+	\item Automatická transformace JSON dat
+	\item Zpracování chyb
+\end{itemize}
+
+	\section{Další nástroje}
+	
+	\subsection{Lucide React}
+Knihovna ikon poskytující konzistentní sadu SVG ikon pro uživatelské rozhraní.
+
+	\subsection{GSAP}
+GreenSock Animation Platform pro plynulé animace a přechody v aplikaci.
+
+	\subsection{CORS Headers}
+Django CORS Headers pro správné nastavení Cross-Origin Resource Sharing mezi frontendem a backendem.
+
+	\chapter{Architektura aplikace}
+	
+Aplikace Plutoa je navržena jako moderní full-stack webová aplikace s odděleným frontendem a backendem komunikujícími přes REST API.
+
+	\section{Celková struktura projektu}
+	
+Projekt je organizován do následující adresářové struktury:
+
+\begin{verbatim}
+Zaverecny-projekt/
+├── accounts/          # Správa uživatelů a autentizace
+├── analytics/         # Analytické funkce a statistiky
+├── budgets/           # Správa rozpočtů
+├── finance_platform/  # Hlavní Django konfigurace
+├── frontend/          # React aplikace
+├── goals/             # Finanční cíle
+├── notifications/     # Systém notifikací
+├── transactions/      # Transakce a kategorie
+├── latex/             # Dokumentace
+├── media/             # Nahrané soubory
+├── manage.py          # Django management script
+├── requirements.txt   # Python závislosti
+└── db.sqlite3         # SQLite databáze
+\end{verbatim}
+
+	\section{Backend architektura}
+	
+Backend je postaven na Django frameworku s modulární strukturou. Každý modul (Django app) má specifickou zodpovědnost:
+
+	\subsection{Modul accounts}
+Zajišťuje správu uživatelů včetně:
+\begin{itemize}
+	\item Registrace nových uživatelů
+	\item Přihlášení a odhlášení
+	\item Správa uživatelského profilu
+	\item Reset hesla pomocí tokenů
+	\item JWT autentizace
+\end{itemize}
+
+	\subsection{Modul transactions}
+Spravuje transakce a kategorie:
+\begin{itemize}
+	\item CRUD operace pro transakce
+	\item Kategorie příjmů a výdajů
+	\item Opakující se transakce
+	\item CSV import a export
+\end{itemize}
+
+	\subsection{Modul budgets}
+Implementuje rozpočtové funkce:
+\begin{itemize}
+	\item Vytváření a správa rozpočtů
+	\item Sledování využití rozpočtu
+	\item Upozornění na překročení
+	\item Přiřazení kategorií k rozpočtům
+\end{itemize}
+
+	\subsection{Modul goals}
+Spravuje finanční cíle:
+\begin{itemize}
+	\item Definice cílů s cílovou částkou
+	\item Sledování pokroku
+	\item Příspěvky do cílů
+	\item Různé typy cílů (úspory, splácení dluhu, investice)
+\end{itemize}
+
+	\subsection{Modul analytics}
+Poskytuje analytické funkce:
+\begin{itemize}
+	\item Přehledy příjmů a výdajů
+	\item Trendy a predikce
+	\item Financial Health Score
+	\item Vizualizační data pro grafy
+\end{itemize}
+
+	\subsection{Modul notifications}
+Zajišťuje systém notifikací:
+\begin{itemize}
+	\item Upozornění na rozpočty
+	\item Připomínky pravidelných plateb
+	\item Notifikace o dosažení cílů
+\end{itemize}
+
+	\section{Frontend architektura}
+	
+Frontend je React aplikace využívající moderní patterns a best practices:
+
+	\subsection{Struktura komponent}
+\begin{verbatim}
+frontend/src/
+├── components/     # React komponenty
+├── contexts/       # React Context pro globální stav
+├── services/       # API služby
+├── styles/         # CSS styly
+├── utils/          # Pomocné funkce
+└── App.tsx         # Hlavní komponenta
+\end{verbatim}
+
+	\subsection{Context API}
+Aplikace využívá React Context pro správu globálního stavu:
+\begin{itemize}
+	\item \texttt{AuthContext} - stav autentizace a uživatele
+	\item \texttt{ToastContext} - systém notifikací
+	\item \texttt{ThemeContext} - správa tématu (světlé/tmavé)
+\end{itemize}
+
+	\subsection{Služby}
+API komunikace je centralizována ve službách:
+\begin{itemize}
+	\item \texttt{api.ts} - základní Axios instance s interceptory
+	\item \texttt{dashboardService.ts} - služby pro dashboard a analytiku
+\end{itemize}
+
+	\section{REST API}
+	
+Backend poskytuje RESTful API s následujícími hlavními endpointy:
+
+\begin{table}[h]
+	\caption{Hlavní API endpointy}
+	\label{tab:api}
+	\centering
+	\begin{tabular}{lll}
+		\toprule
+		Endpoint & Metoda & Popis\\
+		\midrule
+		/api/accounts/login/ & POST & Přihlášení uživatele\\
+		/api/accounts/register/ & POST & Registrace uživatele\\
+		/api/accounts/users/me/ & GET & Profil uživatele\\
+		/api/transactions/ & GET, POST & Seznam/vytvoření transakcí\\
+		/api/categories/ & GET, POST & Seznam/vytvoření kategorií\\
+		/api/budgets/ & GET, POST & Seznam/vytvoření rozpočtů\\
+		/api/goals/ & GET, POST & Seznam/vytvoření cílů\\
+		/api/analytics/overview/ & GET & Analytický přehled\\
+		/api/notifications/ & GET & Seznam notifikací\\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+	\section{Bezpečnost}
+	
+Aplikace implementuje několik bezpečnostních opatření:
+
+\begin{itemize}
+	\item JWT tokeny s omezenou platností
+	\item CORS ochrana pro API
+	\item CSRF ochrana
+	\item Rate limiting (throttling)
+	\item Hashování hesel pomocí PBKDF2
+	\item Validace vstupních dat
+	\item XSS a clickjacking ochrana
+\end{itemize}
+
+	\chapter{Datový model}
+	
+Tato kapitola popisuje databázové schéma aplikace Plutoa a vztahy mezi jednotlivými entitami.
+
+	\section{Entity-Relationship diagram}
+	
+Databáze obsahuje následující hlavní entity:
+\begin{itemize}
+	\item \textbf{User} - uživatel systému
+	\item \textbf{Category} - kategorie transakcí
+	\item \textbf{Transaction} - finanční transakce
+	\item \textbf{Budget} - rozpočet
+	\item \textbf{FinancialGoal} - finanční cíl
+	\item \textbf{Notification} - notifikace
+	\item \textbf{RecurringTransaction} - opakující se transakce
+\end{itemize}
+
+	\section{Model User}
+	
+Uživatelský model rozšiřuje Django AbstractUser:
+
+\begin{lstlisting}[style=Python, caption={Model User}]
+class User(AbstractUser):
+    email = models.EmailField(blank=True, null=True)
+    username = models.CharField(max_length=30, unique=True)
+    first_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=30, blank=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    is_verified = models.BooleanField(default=True)
+    avatar = models.ImageField(upload_to='avatars/', 
+                               null=True, blank=True)
+    currency_preference = models.CharField(
+        max_length=3, default='CZK')
+    
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = []
+\end{lstlisting}
+
+	\section{Model Category}
+	
+Kategorie slouží k třídění transakcí:
+
+\begin{lstlisting}[style=Python, caption={Model Category}]
+class Category(models.Model):
+    CATEGORY_TYPES = [
+        ('EXPENSE', 'Expense'),
+        ('INCOME', 'Income'),
+        ('BOTH', 'Both'),
+    ]
+    
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    icon = models.CharField(max_length=50, blank=True)
+    color = models.CharField(max_length=7, default='#000000')
+    category_type = models.CharField(
+        max_length=10, 
+        choices=CATEGORY_TYPES, 
+        default='EXPENSE')
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE)
+\end{lstlisting}
+
+	\section{Model Transaction}
+	
+Transakce reprezentuje finanční operaci:
+
+\begin{lstlisting}[style=Python, caption={Model Transaction}]
+class Transaction(models.Model):
+    TRANSACTION_TYPES = [
+        ('EXPENSE', 'Expense'),
+        ('INCOME', 'Income'),
+        ('TRANSFER', 'Transfer')
+    ]
+    
+    amount = models.DecimalField(
+        max_digits=10, decimal_places=2)
+    type = models.CharField(
+        max_length=10, choices=TRANSACTION_TYPES)
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True)
+    date = models.DateField()
+    description = models.TextField(blank=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+\end{lstlisting}
+
+	\section{Model Budget}
+	
+Rozpočet umožňuje sledovat výdaje v kategoriích:
+
+\begin{lstlisting}[style=Python, caption={Model Budget}]
+class Budget(models.Model):
+    PERIOD_CHOICES = [
+        ('MONTHLY', 'Monthly'),
+        ('YEARLY', 'Yearly'),
+        ('CUSTOM', 'Custom')
+    ]
+    
+    name = models.CharField(max_length=100)
+    amount = models.DecimalField(
+        max_digits=10, decimal_places=2)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    period = models.CharField(
+        max_length=10, choices=PERIOD_CHOICES)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE)
+    category = models.ForeignKey(
+        Category, 
+        on_delete=models.SET_NULL, 
+        null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+\end{lstlisting}
+
+	\section{Model FinancialGoal}
+	
+Finanční cíl pro spoření na konkrétní účel:
+
+\begin{lstlisting}[style=Python, caption={Model FinancialGoal}]
+class FinancialGoal(models.Model):
+    GOAL_TYPES = [
+        ('SAVINGS', 'Úspory'),
+        ('DEBT_PAYMENT', 'Splacení dluhu'),
+        ('PURCHASE', 'Nákup'),
+        ('EMERGENCY_FUND', 'Nouzový fond'),
+        ('INVESTMENT', 'Investice'),
+        ('OTHER', 'Jiné'),
+    ]
+    
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    target_amount = models.DecimalField(
+        max_digits=12, decimal_places=2)
+    current_amount = models.DecimalField(
+        max_digits=12, decimal_places=2, default=0)
+    target_date = models.DateField(null=True, blank=True)
+    status = models.CharField(max_length=20, default='ACTIVE')
+    icon = models.CharField(max_length=10, default='target')
+    color = models.CharField(max_length=7, default='#FF4742')
+\end{lstlisting}
+
+	\section{Model RecurringTransaction}
+	
+Pravidelné platby s automatickým vytvářením transakcí:
+
+\begin{lstlisting}[style=Python, caption={Model RecurringTransaction}]
+class RecurringTransaction(models.Model):
+    FREQUENCY_CHOICES = [
+        ('DAILY', 'Denně'),
+        ('WEEKLY', 'Týdně'),
+        ('BIWEEKLY', 'Každé 2 týdny'),
+        ('MONTHLY', 'Měsíčně'),
+        ('QUARTERLY', 'Čtvrtletně'),
+        ('YEARLY', 'Ročně'),
+    ]
+    
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    amount = models.DecimalField(
+        max_digits=12, decimal_places=2)
+    type = models.CharField(max_length=10)
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True)
+    frequency = models.CharField(
+        max_length=20, choices=FREQUENCY_CHOICES)
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+    next_due_date = models.DateField()
+    auto_create = models.BooleanField(default=False)
+    notify_before_days = models.IntegerField(default=3)
+\end{lstlisting}
+
+	\section{Vztahy mezi entitami}
+	
+Hlavní vztahy v databázi:
+\begin{itemize}
+	\item User $\rightarrow$ Transaction (1:N) - uživatel má mnoho transakcí
+	\item User $\rightarrow$ Category (1:N) - uživatel má vlastní kategorie
+	\item User $\rightarrow$ Budget (1:N) - uživatel má mnoho rozpočtů
+	\item User $\rightarrow$ FinancialGoal (1:N) - uživatel má mnoho cílů
+	\item Category $\rightarrow$ Transaction (1:N) - kategorie má mnoho transakcí
+	\item Category $\rightarrow$ Budget (1:N) - kategorie může být přiřazena rozpočtům
+	\item FinancialGoal $\rightarrow$ GoalContribution (1:N) - cíl má příspěvky
+\end{itemize}
+
+	\chapter{Implementace klíčových funkcí}
+	
+Tato kapitola popisuje implementaci hlavních funkcí aplikace Plutoa.
+
+	\section{Autentizace a správa uživatelů}
+	
+	\subsection{Registrace}
+Registrace vytvoří nového uživatele s hashovaným heslem:
+
+\begin{lstlisting}[style=Python, caption={Registrace uživatele}]
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_user(request):
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        # Vytvoření JWT tokenů
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'token': str(refresh.access_token),
+            'refresh': str(refresh),
+            'user': UserProfileSerializer(user).data,
+            'message': 'Registrace úspěšná!'
+        }, status=status.HTTP_201_CREATED)
+    return Response(
+        serializer.errors, 
+        status=status.HTTP_400_BAD_REQUEST)
+\end{lstlisting}
+
+	\subsection{Přihlášení}
+Přihlášení ověří credentials a vrátí JWT tokeny:
+
+\begin{lstlisting}[style=Python, caption={Přihlášení uživatele}]
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_user(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+    
+    user = authenticate(
+        username=username, 
+        password=password)
+    
+    if user:
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'token': str(refresh.access_token),
+            'refresh': str(refresh),
+            'user': UserProfileSerializer(user).data
+        })
+    
+    return Response(
+        {'error': 'Neplatné přihlašovací údaje'},
+        status=status.HTTP_401_UNAUTHORIZED)
+\end{lstlisting}
+
+	\section{Správa transakcí}
+	
+	\subsection{Vytvoření transakce}
+\begin{lstlisting}[style=Python, caption={Vytvoření transakce}]
+class TransactionViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Transaction.objects.filter(
+            user=self.request.user
+        ).order_by('-date')
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+\end{lstlisting}
+
+	\subsection{CSV Import}
+Aplikace podporuje hromadný import transakcí z CSV:
+\begin{lstlisting}[style=Python, caption={CSV Import transakcí}]
+@action(detail=False, methods=['post'])
+def import_csv(self, request):
+    file = request.FILES.get('file')
+    reader = csv.DictReader(
+        io.StringIO(file.read().decode('utf-8')))
+    
+    transactions = []
+    for row in reader:
+        transaction = Transaction(
+            user=request.user,
+            amount=Decimal(row['amount']),
+            type=row['type'],
+            date=parse_date(row['date']),
+            description=row.get('description', '')
+        )
+        transactions.append(transaction)
+    
+    Transaction.objects.bulk_create(transactions)
+    return Response({'imported': len(transactions)})
+\end{lstlisting}
+
+	\section{Rozpočty a upozornění}
+	
+	\subsection{Výpočet využití rozpočtu}
+\begin{lstlisting}[style=Python, caption={Výpočet využití rozpočtu}]
+class Budget(models.Model):
+    def get_spent_amount(self, start_date=None, 
+                         end_date=None):
+        if start_date is None:
+            start_date = self.start_date
+        if end_date is None:
+            end_date = self.end_date
+        
+        transactions = Transaction.objects.filter(
+            user=self.user,
+            type='EXPENSE',
+            date__range=[start_date, end_date]
+        )
+        
+        if self.category:
+            transactions = transactions.filter(
+                category=self.category)
+        
+        total = transactions.aggregate(
+            total=Sum('amount'))['total'] or 0
+        return total
+\end{lstlisting}
+
+	\subsection{Budget Alerts}
+Systém automaticky generuje upozornění při překročení rozpočtu:
+\begin{lstlisting}[style=Python, caption={Budget Alerts}]
+@action(detail=False, methods=['get'])
+def alerts(self, request):
+    budgets = Budget.objects.filter(
+        user=request.user, 
+        is_active=True)
+    
+    alerts = []
+    for budget in budgets:
+        spent = budget.get_spent_amount()
+        percentage = (spent / budget.amount) * 100
+        
+        if percentage >= 100:
+            status = 'exceeded'
+        elif percentage >= 90:
+            status = 'danger'
+        elif percentage >= 80:
+            status = 'warning'
+        else:
+            status = 'safe'
+        
+        if status != 'safe':
+            alerts.append({
+                'budget_id': budget.id,
+                'name': budget.name,
+                'percentage': percentage,
+                'status': status
+            })
+    
+    return Response({'alerts': alerts})
+\end{lstlisting}
+
+	\section{Analytika}
+	
+	\subsection{Financial Health Score}
+Aplikace vypočítává celkové skóre finančního zdraví:
+
+\begin{lstlisting}[style=Python, caption={Financial Health Score}]
+@action(detail=False, methods=['get'])
+def health_score(self, request):
+    # Získání dat za posledních 6 měsíců
+    end_date = timezone.now().date()
+    start_date = end_date - timedelta(days=180)
+    
+    transactions = Transaction.objects.filter(
+        user=request.user,
+        date__range=[start_date, end_date])
+    
+    income = transactions.filter(
+        type='INCOME').aggregate(
+        total=Sum('amount'))['total'] or 0
+    expenses = transactions.filter(
+        type='EXPENSE').aggregate(
+        total=Sum('amount'))['total'] or 0
+    
+    # Výpočet skóre
+    savings_rate = ((income - expenses) / income * 100) 
+                   if income > 0 else 0
+    
+    # Normalizace na škálu 0-100
+    score = min(100, max(0, savings_rate * 2 + 50))
+    
+    return Response({
+        'score': round(score),
+        'savings_rate': savings_rate,
+        'total_income': income,
+        'total_expenses': expenses
+    })
+\end{lstlisting}
+
+	\subsection{Trend Analysis}
+Detekce trendů v příjmech a výdajích:
+
+\begin{lstlisting}[style=Python, caption={Trend Analysis}]
+@action(detail=False, methods=['get'])
+def trends(self, request):
+    categories = Category.objects.filter(
+        user=request.user)
+    
+    trends = []
+    for category in categories:
+        # Porovnání aktuálního a předchozího měsíce
+        current = Transaction.objects.filter(
+            category=category,
+            date__month=timezone.now().month
+        ).aggregate(total=Sum('amount'))['total'] or 0
+        
+        previous = Transaction.objects.filter(
+            category=category,
+            date__month=timezone.now().month - 1
+        ).aggregate(total=Sum('amount'))['total'] or 0
+        
+        if previous > 0:
+            change = ((current - previous) / previous) * 100
+        else:
+            change = 100 if current > 0 else 0
+        
+        trends.append({
+            'category': category.name,
+            'current': current,
+            'previous': previous,
+            'change_percentage': change,
+            'trend': 'up' if change > 0 else 'down'
+        })
+    
+    return Response(trends)
+\end{lstlisting}
+
+	\chapter{Uživatelské rozhraní}
+	
+Tato kapitola popisuje design a komponenty uživatelského rozhraní aplikace Plutoa.
+
+	\section{Design systém}
+	
+	\subsection{Glassmorphism styl}
+Aplikace využívá moderní glassmorphism design charakterizovaný:
+\begin{itemize}
+	\item Poloprůhledným pozadím s rozmazáním (backdrop-filter: blur)
+	\item Jemnými stíny a gradienty
+	\item Světlými ohraničeními
+	\item Měkkými přechody barev
+\end{itemize}
+
+	\subsection{Barevná paleta}
+\begin{itemize}
+	\item Primární: \#8b5cf6 (fialová)
+	\item Úspěch: \#10b981 (zelená)
+	\item Varování: \#f59e0b (oranžová)
+	\item Chyba: \#ef4444 (červená)
+	\item Pozadí: \#0f0f23 (tmavě modrá)
+\end{itemize}
+
+	\section{Hlavní komponenty}
+	
+	\subsection{Navbar}
+Navigační lišta s odkazy na hlavní sekce aplikace, uživatelským menu a přepínačem tématu.
+
+	\subsection{Dashboard (Overview)}
+Hlavní přehled obsahující:
+\begin{itemize}
+	\item Celkový zůstatek a měsíční změnu
+	\item Přehled příjmů s top kategoriemi
+	\item Graf výdajů za poslední období
+	\item Stav rozpočtů
+	\item Pokrok v cílech
+\end{itemize}
+
+	\subsection{Transactions}
+Seznam transakcí s možností:
+\begin{itemize}
+	\item Filtrování podle typu, kategorie a data
+	\item Vytváření nových transakcí
+	\item Editace a mazání
+	\item Import z CSV
+	\item Export do CSV
+\end{itemize}
+
+	\subsection{Budgets}
+Správa rozpočtů s vizualizací:
+\begin{itemize}
+	\item Progress bary s procentuálním využitím
+	\item Barevné indikátory stavu
+	\item Vytváření rozpočtů pro kategorie
+\end{itemize}
+
+	\subsection{Goals}
+Finanční cíle s:
+\begin{itemize}
+	\item Vizualizací pokroku
+	\item Možností přidávání příspěvků
+	\item Výběrem ikon a barev
+\end{itemize}
+
+	\subsection{Analytics}
+Pokročilá analytika zahrnující:
+\begin{itemize}
+	\item Financial Health Score
+	\item Waterfall chart cash flow
+	\item Pie charty kategorií
+	\item Trend analýzu
+	\item Heatmap kalendář aktivity
+\end{itemize}
+
+	\section{Responzivní design}
+	
+Aplikace je plně responzivní a optimalizovaná pro:
+\begin{itemize}
+	\item Desktop (1200px+)
+	\item Tablet (768px - 1199px)
+	\item Mobile (do 767px)
+\end{itemize}
+
+	\section{Animace a přechody}
+	
+Aplikace využívá GSAP pro plynulé animace:
+\begin{itemize}
+	\item Fade-in efekty při načítání
+	\item Smooth scrolling
+	\item Hover efekty na kartách
+	\item Přechody mezi stránkami
+\end{itemize}
+
+	\chapter*{Závěr}
+	\addcontentsline{toc}{chapter}{Závěr}
+	
+Cílem této závěrečné práce bylo vytvořit moderní webovou aplikaci pro správu osobních financí. Aplikace Plutoa byla úspěšně implementována jako full-stack řešení využívající React na frontendu a Django REST Framework na backendu.
+
+Hlavní přínosy projektu:
+\begin{itemize}
+	\item Intuitivní uživatelské rozhraní s moderním designem
+	\item Komplexní správa transakcí s kategorizací
+	\item Flexibilní systém rozpočtů s automatickými upozorněními
+	\item Finanční cíle s vizualizací pokroku
+	\item Pokročilá analytika včetně Financial Health Score
+	\item Bezpečná JWT autentizace
+	\item Responzivní design pro všechna zařízení
+\end{itemize}
+
+Během vývoje jsem získal cenné zkušenosti s:
+\begin{itemize}
+	\item Návrhem REST API
+	\item Správou stavu v React aplikacích
+	\item Implementací bezpečnostních mechanismů
+	\item Optimalizací databázových dotazů
+	\item Vytvářením responzivních uživatelských rozhraní
+\end{itemize}
+
+\textbf{Možnosti budoucího rozvoje:}
+\begin{itemize}
+	\item Integrace s bankovními API pro automatický import transakcí
+	\item Mobilní aplikace (React Native)
+	\item AI-powered insights a predikce
+	\item Sdílené rozpočty pro rodiny
+	\item Export reportů do PDF
+	\item Multi-currency podpora
+\end{itemize}
+
+Projekt Plutoa demonstruje praktické využití moderních webových technologií pro řešení reálného problému správy osobních financí. Aplikace je připravena pro produkční nasazení a může sloužit jako základ pro další rozvoj.
+
+%% literatura
+\begin{thebibliography}{99}
+	\bibitem{django} Django Software Foundation. \textit{Django Documentation} [online]. 2024 [cit. 2024-12-08]. Dostupné z: \url{https://docs.djangoproject.com/}
+	
+	\bibitem{react} Meta Platforms, Inc. \textit{React Documentation} [online]. 2024 [cit. 2024-12-08]. Dostupné z: \url{https://react.dev/}
+	
+	\bibitem{drf} Encode OSS Ltd. \textit{Django REST Framework} [online]. 2024 [cit. 2024-12-08]. Dostupné z: \url{https://www.django-rest-framework.org/}
+	
+	\bibitem{typescript} Microsoft. \textit{TypeScript Documentation} [online]. 2024 [cit. 2024-12-08]. Dostupné z: \url{https://www.typescriptlang.org/docs/}
+	
+	\bibitem{jwt} Auth0. \textit{JSON Web Tokens} [online]. 2024 [cit. 2024-12-08]. Dostupné z: \url{https://jwt.io/introduction}
+	
+	\bibitem{recharts} Recharts. \textit{Recharts - A composable charting library} [online]. 2024 [cit. 2024-12-08]. Dostupné z: \url{https://recharts.org/}
+	
+	\bibitem{axios} Axios. \textit{Axios HTTP Client} [online]. 2024 [cit. 2024-12-08]. Dostupné z: \url{https://axios-http.com/}
+	
+	\bibitem{simplejwt} SimpleJWT. \textit{Simple JWT Documentation} [online]. 2024 [cit. 2024-12-08]. Dostupné z: \url{https://django-rest-framework-simplejwt.readthedocs.io/}
+\end{thebibliography}
+
+%% tabulky
+\listoftables
+
+%% kódy
+\lstlistoflistings
+
+\appendix
+
+\titleformat{\chapter}[block]{\scshape\bfseries\LARGE}{Příloha \thechapter}{10pt}{\vspace{0pt}}[\vspace{-22pt}]
+
+\chapter{Databázové schéma (DBML)}
+
+\begin{lstlisting}[basicstyle=\ttfamily\small, caption={DBML schéma databáze}]
+Table users {
+  id integer [pk, increment]
+  username varchar(30) [not null]
+  email varchar(254)
+  password varchar(128) [not null]
+  first_name varchar(30)
+  last_name varchar(30)
+  currency_preference varchar(3) [default: 'CZK']
+  is_active boolean [default: true]
+  is_verified boolean [default: true]
+}
+
+Table categories {
+  id integer [pk, increment]
+  name varchar(100) [not null]
+  icon varchar(50)
+  color varchar(7) [default: '#000000']
+  category_type varchar(10)
+  user_id integer [not null]
+}
+
+Table transactions {
+  id integer [pk, increment]
+  amount decimal(10,2) [not null]
+  type varchar(10) [not null]
+  category_id integer
+  user_id integer [not null]
+  date date [not null]
+  description text
+}
+
+Table budgets {
+  id integer [pk, increment]
+  name varchar(100) [not null]
+  amount decimal(10,2) [not null]
+  start_date date [not null]
+  end_date date [not null]
+  period varchar(10) [not null]
+  user_id integer [not null]
+  category_id integer
+  is_active boolean [default: true]
+}
+
+Table financial_goals {
+  id integer [pk, increment]
+  name varchar(200) [not null]
+  target_amount decimal(12,2) [not null]
+  current_amount decimal(12,2) [default: 0]
+  target_date date
+  goal_type varchar(20)
+  status varchar(20) [default: 'ACTIVE']
+  user_id integer [not null]
+}
+\end{lstlisting}
+
+\chapter{Závislosti projektu}
+
+\section{Backend (Python)}
+\begin{lstlisting}[basicstyle=\ttfamily\small, caption={requirements.txt}]
+asgiref==3.10.0
+Django==5.2.8
+django-cors-headers==4.9.0
+djangorestframework==3.16.1
+djangorestframework_simplejwt==5.5.1
+pillow==12.0.0
+PyJWT==2.10.1
+python-dateutil
+sqlparse==0.5.3
+tzdata==2025.2
+\end{lstlisting}
+
+\section{Frontend (Node.js)}
+\begin{lstlisting}[basicstyle=\ttfamily\small, caption={Hlavní frontend závislosti}]
+react: ^19.1.1
+react-dom: ^19.1.1
+react-router-dom: ^7.9.6
+typescript: ^4.9.5
+axios: ^1.13.2
+recharts: ^3.4.1
+lucide-react: ^0.554.0
+gsap: ^3.13.0
+\end{lstlisting}
+
+\end{document}

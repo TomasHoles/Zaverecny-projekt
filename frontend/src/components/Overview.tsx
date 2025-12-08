@@ -14,6 +14,7 @@ const Overview: React.FC = () => {
     const [budgets, setBudgets] = useState<BudgetOverview | null>(null);
     const [categories, setCategories] = useState<CategoryBreakdown[]>([]);
     const [incomeCategories, setIncomeCategories] = useState<IncomeBreakdown[]>([]);
+    const [timeRange, setTimeRange] = useState<string>('1m');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -21,10 +22,10 @@ const Overview: React.FC = () => {
                 setLoading(true);
                 const [statsData, analyticsData, budgetsData, categoriesData, incomeData] = await Promise.all([
                     dashboardService.getDashboardStats(),
-                    dashboardService.getAnalytics('3m'),
+                    dashboardService.getAnalytics(timeRange),
                     dashboardService.getBudgetOverview(),
-                    dashboardService.getCategoryBreakdown('1m'),
-                    dashboardService.getIncomeBreakdown('1m')
+                    dashboardService.getCategoryBreakdown(timeRange),
+                    dashboardService.getIncomeBreakdown(timeRange)
                 ]);
 
                 setStats(statsData);
@@ -40,7 +41,7 @@ const Overview: React.FC = () => {
         };
 
         fetchData();
-    }, []);
+    }, [timeRange]);
 
     if (loading) {
         return (
@@ -90,6 +91,32 @@ const Overview: React.FC = () => {
                 <div className="greeting-text">
                     <h1>Přehled</h1>
                     <p className="greeting-subtitle">Vítejte zpět, {user?.first_name || user?.username}. Zde je váš finanční přehled.</p>
+                </div>
+                <div className="time-range-selector">
+                    <button
+                        className={`time-range-btn ${timeRange === '1m' ? 'active' : ''}`}
+                        onClick={() => setTimeRange('1m')}
+                    >
+                        1 měsíc
+                    </button>
+                    <button
+                        className={`time-range-btn ${timeRange === '3m' ? 'active' : ''}`}
+                        onClick={() => setTimeRange('3m')}
+                    >
+                        3 měsíce
+                    </button>
+                    <button
+                        className={`time-range-btn ${timeRange === '6m' ? 'active' : ''}`}
+                        onClick={() => setTimeRange('6m')}
+                    >
+                        6 měsíců
+                    </button>
+                    <button
+                        className={`time-range-btn ${timeRange === '1y' ? 'active' : ''}`}
+                        onClick={() => setTimeRange('1y')}
+                    >
+                        1 rok
+                    </button>
                 </div>
             </div>
 

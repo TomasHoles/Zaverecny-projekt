@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import api from '../services/api';
 import Icon from './Icon';
 import CategoryIcon from './CategoryIcon';
@@ -33,6 +34,7 @@ interface RecurringTransaction {
 
 const RecurringTransactions: React.FC = () => {
   const { user } = useAuth();
+  const toast = useToast();
   const [recurring, setRecurring] = useState<RecurringTransaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,7 +49,7 @@ const RecurringTransactions: React.FC = () => {
     frequency: 'MONTHLY' as RecurringTransaction['frequency'],
     start_date: new Date().toISOString().split('T')[0],
     end_date: '',
-    auto_create: false,
+    auto_create: true,
     notify_before_days: 3,
   });
 
@@ -89,14 +91,21 @@ const RecurringTransactions: React.FC = () => {
 
       if (editingId) {
         await api.put(`/transactions/recurring/${editingId}/`, payload);
+        toast.success('Opakující se transakce byla upravena');
       } else {
         await api.post('/transactions/recurring/', payload);
+        toast.success('Opakující se transakce byla vytvořena');
       }
 
       fetchRecurring();
       resetForm();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Chyba při ukládání:', error);
+      const errorMessage = error.response?.data?.detail 
+        || error.response?.data?.message 
+        || JSON.stringify(error.response?.data) 
+        || 'Nepodařilo se uložit opakující se transakci';
+      toast.error(errorMessage);
     }
   };
 
@@ -140,10 +149,22 @@ const RecurringTransactions: React.FC = () => {
   const createTransactionNow = async (id: number) => {
     try {
       await api.post(`/transactions/recurring/${id}/create_transaction/`);
-      alert('Transakce vytvořena!');
+      toast.success('Transakce byla vytvořena!');
       fetchRecurring();
     } catch (error) {
       console.error('Chyba při vytváření transakce:', error);
+      toast.error('Nepodařilo se vytvořit transakci');
+    }
+  };
+
+  const processAllDue = async () => {
+    try {
+      const response = await api.post('/transactions/recurring/process_all_due/');
+      toast.success(response.data.message || 'Všechny splatné transakce byly zpracovány');
+      fetchRecurring();
+    } catch (error) {
+      console.error('Chyba při zpracování transakcí:', error);
+      toast.error('Nepodařilo se zpracovat transakce');
     }
   };
 
@@ -157,7 +178,7 @@ const RecurringTransactions: React.FC = () => {
       frequency: 'MONTHLY',
       start_date: new Date().toISOString().split('T')[0],
       end_date: '',
-      auto_create: false,
+      auto_create: true,
       notify_before_days: 3,
     });
     setEditingId(null);
@@ -213,13 +234,23 @@ const RecurringTransactions: React.FC = () => {
             Spravujte pravidelné příjmy a výdaje
           </p>
         </div>
-        <button
-          className="btn-new-recurring"
-          onClick={() => setShowForm(!showForm)}
-        >
-          <Icon name="plus" size={20} />
-          {showForm ? 'Zrušit' : 'Nová opakující se transakce'}
-        </button>
+        <div className="recurring-header-actions">
+          <button
+            className="btn-process-due"
+            onClick={processAllDue}
+            title="Zpracovat všechny splatné transakce"
+          >
+            <Icon name="zap" size={20} />
+            Zpracovat splatné
+          </button>
+          <button
+            className="btn-new-recurring"
+            onClick={() => setShowForm(!showForm)}
+          >
+            <Icon name="plus" size={20} />
+            {showForm ? 'Zrušit' : 'Nová opakující se transakce'}
+          </button>
+        </div>
       </div>
 
       {showForm && (

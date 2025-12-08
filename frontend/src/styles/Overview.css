@@ -17,6 +17,11 @@
 .greeting-section {
     margin-bottom: 12px;
     animation: fadeInDown 0.6s ease-out;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 .greeting-text h1 {
@@ -31,6 +36,39 @@
     margin: 5px 0 0 0;
     font-size: 13px;
     font-weight: 300;
+}
+
+/* Time Range Selector */
+.time-range-selector {
+    display: flex;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.time-range-btn {
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    color: #888888;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.time-range-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.time-range-btn.active {
+    background: #ccff00;
+    color: #0a0a0c;
+    font-weight: 600;
 }
 
 /* Dashboard Grid */
@@ -755,12 +793,29 @@
         padding: 10px 15px;
     }
 
+    .greeting-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
     .greeting-text h1 {
         font-size: 22px;
     }
 
     .greeting-subtitle {
         font-size: 12px;
+    }
+
+    .time-range-selector {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .time-range-btn {
+        padding: 6px 10px;
+        font-size: 12px;
+        flex: 1;
+        text-align: center;
     }
 
     .card {

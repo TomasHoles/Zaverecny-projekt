@@ -652,19 +652,135 @@ class RecurringTransactionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return RecurringTransaction.objects.filter(user=self.request.user)
     
-    @action(detail=True, methods=['post'])
-    def create_transaction(self, request, pk=None):
-        """Vytvoří transakci z opakující se platby"""
-        recurring = self.get_object()
+    def list(self, request, *args, **kwargs):
+        """Při načtení seznamu automaticky zpracuj splatné transakce"""
+        self._process_due_transactions(request.user)
+        return super().list(request, *args, **kwargs)
+    
+    def _process_due_transactions(self, user):
+        """Zpracuje všechny splatné opakující se transakce"""
+        today = timezone.now().date()
+        
+        # Najdi všechny aktivní transakce, které mají auto_create=True a jsou splatné
+        due_recurring = RecurringTransaction.objects.filter(
+            user=user,
+            status='ACTIVE',
+            auto_create=True,
+            next_due_date__lte=today
+        )
+        
+        for recurring in due_recurring:
+            # Vytváříme transakce dokud next_due_date není v budoucnosti
+            while recurring.next_due_date <= today:
+                # Zkontroluj, zda už tato transakce nebyla vytvořena
+                already_created = RecurringTransactionHistory.objects.filter(
+                    recurring_transaction=recurring,
+                    transaction__date=recurring.next_due_date
+                ).exists()
+                
+                if not already_created:
+                    # Vytvoř transakci
+                    transaction = Transaction.objects.create(
+                        user=user,
+                        amount=recurring.amount,
+                        type=recurring.type,
+                        category=recurring.category,
+                        date=recurring.next_due_date,
+                        description=f"{recurring.name}"
+                    )
+                    
+                    # Zaznamenej do historie
+                    RecurringTransactionHistory.objects.create(
+                        recurring_transaction=recurring,
+                        transaction=transaction,
+                        was_auto_created=True
+                    )
+                
+                # Posuň na další datum
+                recurring.next_due_date = recurring.calculate_next_due_date()
+                
+                # Zkontroluj, zda není čas ukončit
+                if recurring.end_date and recurring.next_due_date > recurring.end_date:
+                    recurring.status = 'COMPLETED'
+                    recurring.save()
+                    break
+            
+            recurring.save()
+    
+    def perform_create(self, serializer):
+        """Při vytvoření opakující se transakce případně ihned vytvoř první transakci"""
+        recurring = serializer.save(user=self.request.user)
+        
+        # Pokud je auto_create a next_due_date je dnes nebo v minulosti, vytvoř transakci
+        today = timezone.now().date()
+        if recurring.auto_create and recurring.next_due_date <= today:
+            self._create_single_transaction(recurring, self.request.user)
+    
+    def _create_single_transaction(self, recurring, user):
+        """Vytvoří jednu transakci z opakující se platby"""
+        # Zkontroluj, zda už nebyla vytvořena
+        already_created = RecurringTransactionHistory.objects.filter(
+            recurring_transaction=recurring,
+            transaction__date=recurring.next_due_date
+        ).exists()
+        
+        if already_created:
+            return None
         
         # Vytvoř transakci
+        transaction = Transaction.objects.create(
+            user=user,
+            amount=recurring.amount,
+            type=recurring.type,
+            category=recurring.category,
+            date=recurring.next_due_date,
+            description=f"{recurring.name}"
+        )
+        
+        # Zaznamenej do historie
+        RecurringTransactionHistory.objects.create(
+            recurring_transaction=recurring,
+            transaction=transaction,
+            was_auto_created=True
+        )
+        
+        # Posuň na další datum
+        recurring.next_due_date = recurring.calculate_next_due_date()
+        
+        # Zkontroluj, zda není čas ukončit
+        if recurring.end_date and recurring.next_due_date > recurring.end_date:
+            recurring.status = 'COMPLETED'
+        
+        recurring.save()
+        
+        return transaction
+    
+    @action(detail=False, methods=['post'])
+    def process_all_due(self, request):
+        """Manuálně zpracuje všechny splatné opakující se transakce"""
+        self._process_due_transactions(request.user)
+        
+        # Vrať aktualizovaný seznam
+        queryset = self.get_queryset()
+        return Response({
+            'message': 'Všechny splatné transakce byly zpracovány',
+            'recurring_transactions': self.get_serializer(queryset, many=True).data
+        })
+    
+    @action(detail=True, methods=['post'])
+    def create_transaction(self, request, pk=None):
+        """Manuálně vytvoří transakci z opakující se platby (bez ohledu na datum)"""
+        recurring = self.get_object()
+        today = timezone.now().date()
+        
+        # Vytvoř transakci s dnešním datem
         transaction = Transaction.objects.create(
             user=request.user,
             amount=recurring.amount,
             type=recurring.type,
             category=recurring.category,
-            date=recurring.next_due_date,
-            description=f"{recurring.name} - {recurring.description}"
+            date=today,
+            description=f"{recurring.name}"
         )
         
         # Zaznamenej do historie
@@ -674,8 +790,12 @@ class RecurringTransactionViewSet(viewsets.ModelViewSet):
             was_auto_created=False
         )
         
-        # Aktualizuj next_due_date
-        recurring.next_due_date = recurring.calculate_next_due_date()
+        # Aktualizuj next_due_date - posuň na další období od dnešního data
+        if recurring.next_due_date <= today:
+            recurring.next_due_date = recurring.calculate_next_due_date()
+            # Pokud je stále v minulosti, posuň opakovaně
+            while recurring.next_due_date <= today:
+                recurring.next_due_date = recurring.calculate_next_due_date()
         
         # Zkontroluj, zda není čas ukončit
         if recurring.end_date and recurring.next_due_date > recurring.end_date:

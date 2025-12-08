@@ -47,6 +47,7 @@ class RecurringTransactionSerializer(serializers.ModelSerializer):
         allow_null=True,
         required=False
     )
+    next_due_date = serializers.DateField(required=False, allow_null=True)
     
     class Meta:
         model = RecurringTransaction
@@ -58,12 +59,25 @@ class RecurringTransactionSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['created_at', 'updated_at']
     
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Filtrujeme kategorie pouze pro aktuálního uživatele
+        request = self.context.get('request')
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            self.fields['category_id'].queryset = Category.objects.filter(user=request.user)
+    
     def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user
         # Nastavit next_due_date na start_date pokud není zadáno
-        if 'next_due_date' not in validated_data:
-            validated_data['next_due_date'] = validated_data['start_date']
+        if 'next_due_date' not in validated_data or validated_data.get('next_due_date') is None:
+            validated_data['next_due_date'] = validated_data.get('start_date')
+        # User se předává z perform_create ve views
         return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        # Při aktualizaci zajistit, že next_due_date není None
+        if 'next_due_date' in validated_data and validated_data['next_due_date'] is None:
+            validated_data['next_due_date'] = validated_data.get('start_date', instance.start_date)
+        return super().update(instance, validated_data)
 
 
 class RecurringTransactionHistorySerializer(serializers.ModelSerializer):
