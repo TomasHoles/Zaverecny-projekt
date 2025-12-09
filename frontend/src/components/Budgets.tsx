@@ -1,3 +1,18 @@
+/**
+ * Budgets.tsx - Správa rozpočtů
+ * 
+ * @author Tomáš Holes
+ * @description Komponenta pro správu finančních rozpočtů:
+ *   - Vytváření měsíčních/ročních/vlastních rozpočtů
+ *   - Vizualizace plnění rozpočtu (progress bar)
+ *   - Přiřazení ke kategorii
+ *   - Upozornění při překročení limitu
+ * 
+ * @features
+ *   - Barevné indikátory stavu (zelená/oranžová/červená)
+ *   - Automatický výpočet zbývající částky
+ *   - Editace a mazání rozpočtů
+ */
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import dashboardService, { BudgetOverview, Budget } from '../services/dashboardService';

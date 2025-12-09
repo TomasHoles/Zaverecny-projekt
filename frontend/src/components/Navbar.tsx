@@ -124,10 +124,10 @@ const Navbar: React.FC = () => {
       <div className={`navbar-links ${mobileMenuOpen ? 'active' : ''}`}>
         <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`} onClick={closeMobileMenu}>Home</Link>
         <Link to="/overview" className={`nav-link ${location.pathname === '/overview' ? 'active' : ''}`} onClick={closeMobileMenu}>Přehled</Link>
+        <Link to="/analytics" className={`nav-link ${location.pathname === '/analytics' ? 'active' : ''}`} onClick={closeMobileMenu}>Analytika</Link>
         <Link to="/transactions" className={`nav-link ${location.pathname === '/transactions' ? 'active' : ''}`} onClick={closeMobileMenu}>Transakce</Link>
         <Link to="/budgets" className={`nav-link ${location.pathname === '/budgets' ? 'active' : ''}`} onClick={closeMobileMenu}>Rozpočty</Link>
         <Link to="/goals" className={`nav-link ${location.pathname === '/goals' ? 'active' : ''}`} onClick={closeMobileMenu}>Cíle</Link>
-        <Link to="/analytics" className={`nav-link ${location.pathname === '/analytics' ? 'active' : ''}`} onClick={closeMobileMenu}>Analytika</Link>
 
         {/* Mobile user actions */}
         {user && (

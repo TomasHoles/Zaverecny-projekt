@@ -4,7 +4,7 @@
 
 /* Container */
 .overview-container {
-    padding: 15px 25px;
+    padding: 10px 20px;
     width: 100%;
     margin: 0;
     min-height: 100vh;
@@ -15,17 +15,17 @@
 
 /* Greeting Section */
 .greeting-section {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     animation: fadeInDown 0.6s ease-out;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 10px;
 }
 
 .greeting-text h1 {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 300;
     margin: 0;
     color: #ffffff;
@@ -33,29 +33,29 @@
 
 .greeting-subtitle {
     color: var(--text-gray, #888888);
-    margin: 5px 0 0 0;
-    font-size: 13px;
+    margin: 3px 0 0 0;
+    font-size: 12px;
     font-weight: 300;
 }
 
 /* Time Range Selector */
 .time-range-selector {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     background: rgba(255, 255, 255, 0.05);
-    padding: 4px;
-    border-radius: 10px;
+    padding: 3px;
+    border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .time-range-btn {
-    padding: 8px 16px;
+    padding: 6px 12px;
     border: none;
     background: transparent;
     color: #888888;
-    font-size: 13px;
+    font-size: 12px;
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 6px;
     transition: all 0.2s ease;
     font-weight: 500;
 }
@@ -74,32 +74,181 @@
 /* Dashboard Grid */
 .dashboard-grid {
     display: grid;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
 
 .dashboard-grid.top-row {
     grid-template-columns: repeat(3, 1fr);
 }
 
+.dashboard-grid.accounts-row {
+    grid-template-columns: 1fr;
+}
+
 .dashboard-grid.middle-row {
     grid-template-columns: 2fr 1fr;
+}
+
+/* Accounts Overview Card */
+.accounts-overview {
+    padding: 1rem;
+}
+
+.accounts-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.account-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    border-left: 3px solid;
+    transition: all 0.2s ease;
+}
+
+.account-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+.account-item.default {
+    background: rgba(204, 255, 0, 0.05);
+}
+
+.account-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+
+.account-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.account-name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.default-badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+    background: rgba(204, 255, 0, 0.2);
+    color: #ccff00;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.account-type {
+    font-size: 0.75rem;
+    color: #888888;
+}
+
+.account-balance {
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: right;
+}
+
+.account-balance.positive {
+    color: #ccff00;
+}
+
+.account-balance.negative {
+    color: #ff6b6b;
+}
+
+.accounts-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+}
+
+.accounts-total span:first-child {
+    color: #888888;
+}
+
+.accounts-total .total-amount {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ccff00;
+}
+
+/* Empty accounts state */
+.accounts-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.accounts-empty .empty-icon {
+    color: #888888;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.accounts-empty p {
+    color: #888888;
+    font-size: 0.95rem;
+    margin: 0 0 1rem 0;
+}
+
+.accounts-empty .add-account-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #ccff00 0%, #a8e600 100%);
+    color: #0a0a0c;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.accounts-empty .add-account-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(204, 255, 0, 0.3);
 }
 
 /* Card Base Styles */
 .card {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
-    border-radius: 16px;
-    padding: 1.5rem;
+    border-radius: 12px;
+    padding: 1rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
     animation: fadeInUp 0.6s ease-out;
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(204, 255, 0, 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(204, 255, 0, 0.15);
     border-color: rgba(204, 255, 0, 0.3);
 }
 
@@ -107,18 +256,18 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
 }
 
 .card-header h3 {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: #ffffff;
 }
 
 .dropdown-trigger,
 .link-trigger {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.6);
     cursor: pointer;
     transition: color 0.3s ease;
@@ -131,32 +280,32 @@
 
 /* Account Summary Card */
 .account-summary .label {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
     display: block;
 }
 
 .account-summary .amount {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
     color: #ffffff;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     text-shadow: 0 0 20px rgba(204, 255, 0, 0.3);
 }
 
 .tags-row {
     display: flex;
-    gap: 0.75rem;
+    gap: 0.5rem;
 }
 
 .tag {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
+    gap: 0.4rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
     font-weight: 500;
     transition: all 0.3s ease;
 }
@@ -179,28 +328,28 @@
 
 /* Income Overview Card */
 .income-overview .date {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.5);
 }
 
 .income-total .label {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
     display: block;
 }
 
 .income-total .amount {
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: #ffffff;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
 }
 
 .mini-charts-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .mini-chart-item {
@@ -208,26 +357,26 @@
 }
 
 .mini-chart-item .percentage {
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 600;
     color: #ccff00;
 }
 
 .mini-chart-item .chart-label {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.5);
-    margin: 0.5rem 0;
+    margin: 0.3rem 0;
 }
 
 .mini-chart-item .chart-value {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: #ffffff;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
 }
 
 .mini-chart-viz {
-    height: 40px;
-    border-radius: 8px;
+    height: 30px;
+    border-radius: 6px;
     background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(139, 92, 246, 0.1));
     animation: pulse 2s ease-in-out infinite;
 }
@@ -251,17 +400,17 @@
 }
 
 .total-expenses .amount-large {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
     color: #ffffff;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     text-shadow: 0 0 20px rgba(204, 255, 0, 0.3);
 }
 
 .expense-tags {
     display: flex;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .tag.earned {
@@ -277,27 +426,27 @@
 }
 
 .expense-label {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .expense-chart {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .chart-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.5);
 }
 
 .reaching-target {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
     color: #ccff00;
 }
 
@@ -315,37 +464,37 @@
 .metrics-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 1rem;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
 }
 
 .metric .value {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: #ffffff;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.2rem;
 }
 
 .metric .label {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     color: rgba(255, 255, 255, 0.5);
 }
 
 .cashflow-chart-container {
     position: relative;
     flex: 1;
-    min-height: 120px;
+    min-height: 100px;
     display: flex;
     flex-direction: column;
 }
 
 .floating-stats {
     position: absolute;
-    top: -10px;
+    top: -8px;
     right: 0;
     display: flex;
-    gap: 1rem;
-    font-size: 0.75rem;
+    gap: 0.75rem;
+    font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.6);
     z-index: 10;
 }
@@ -366,26 +515,26 @@
 .ai-input-section {
     position: relative;
     background: rgba(255, 255, 255, 0.03);
-    border-radius: 12px;
-    padding: 1rem;
+    border-radius: 10px;
+    padding: 0.75rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .ai-icon {
     position: absolute;
-    left: 1rem;
+    left: 0.75rem;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 1.2rem;
+    font-size: 1rem;
 }
 
 .ai-input-section input {
     width: 100%;
     background: transparent;
     border: none;
-    padding: 0.75rem 1rem 0.75rem 3rem;
+    padding: 0.5rem 0.75rem 0.5rem 2.5rem;
     color: #ffffff;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     outline: none;
 }
 
@@ -394,10 +543,10 @@
 }
 
 .ai-suggestion {
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.6);
 }
 
@@ -410,20 +559,20 @@
 .right-column {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 /* Spending Summary */
 .spending-summary .spending-bars {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .spending-item {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.35rem;
 }
 
 .spending-info {
@@ -433,27 +582,27 @@
 }
 
 .spending-info .amount {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: #ffffff;
 }
 
 .spending-info .category {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.6);
 }
 
 .progress-bar {
     width: 100%;
-    height: 8px;
+    height: 6px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    border-radius: 3px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    border-radius: 4px;
+    border-radius: 3px;
     transition: width 0.6s ease;
     animation: progressGlow 2s ease-in-out infinite;
 }
@@ -463,19 +612,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 200px;
+    min-height: 160px;
 }
 
 .budget-circle-container {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .budget-circle {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
 }
 
 .circular-chart {
@@ -505,7 +654,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: #ccff00;
     margin: 0;
@@ -519,26 +668,26 @@
 .budget-title {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 1rem;
+    gap: 0.4rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: #ffffff;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.35rem;
 }
 
 .budget-text p {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     color: rgba(255, 255, 255, 0.6);
-    max-width: 200px;
-    margin: 0 0 0.75rem 0;
+    max-width: 180px;
+    margin: 0 0 0.5rem 0;
     line-height: 1.4;
 }
 
 .budget-details {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
-    font-size: 0.8rem;
+    gap: 0.2rem;
+    font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.5);
 }
 
@@ -546,8 +695,8 @@
 .quick-actions {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-top: 1.5rem;
+    gap: 0.75rem;
+    margin-top: 1rem;
 }
 
 .action-card {
@@ -555,11 +704,11 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
-    padding: 1.5rem;
+    gap: 0.5rem;
+    padding: 1rem;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    border-radius: 10px;
     color: #ffffff;
     text-decoration: none;
     transition: all 0.3s ease;
@@ -568,8 +717,8 @@
 .action-card:hover {
     background: rgba(139, 92, 246, 0.1);
     border-color: rgba(139, 92, 246, 0.3);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.2);
 }
 
 .action-card svg {
@@ -577,7 +726,7 @@
 }
 
 .action-card span {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 500;
 }
 
@@ -658,16 +807,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 2rem;
-    padding: 1.5rem;
+    margin-top: 1rem;
+    padding: 1rem;
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
-    border-radius: 16px;
+    border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .transaction-history-header h3 {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: #ffffff;
 }
@@ -675,11 +824,11 @@
 .filters {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .filters span {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.6);
     cursor: pointer;
     transition: color 0.3s ease;
@@ -712,8 +861,8 @@
 .empty-state-text {
     text-align: center;
     color: rgba(255, 255, 255, 0.5);
-    padding: 2rem;
-    font-size: 0.95rem;
+    padding: 1.5rem;
+    font-size: 0.9rem;
 }
 
 /* ========================================
@@ -723,7 +872,7 @@
 @keyframes fadeInDown {
     from {
         opacity: 0;
-        transform: translateY(-20px);
+        transform: translateY(-15px);
     }
 
     to {
@@ -735,7 +884,7 @@
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(15px);
     }
 
     to {
@@ -754,7 +903,7 @@
 
     50% {
         opacity: 0.8;
-        transform: scale(1.02);
+        transform: scale(1.01);
     }
 }
 
@@ -762,11 +911,11 @@
 
     0%,
     100% {
-        box-shadow: 0 0 10px rgba(204, 255, 0, 0.3);
+        box-shadow: 0 0 8px rgba(204, 255, 0, 0.3);
     }
 
     50% {
-        box-shadow: 0 0 20px rgba(204, 255, 0, 0.6);
+        box-shadow: 0 0 15px rgba(204, 255, 0, 0.5);
     }
 }
 
@@ -790,7 +939,7 @@
 
 @media (max-width: 768px) {
     .overview-container {
-        padding: 10px 15px;
+        padding: 8px 12px;
     }
 
     .greeting-section {
@@ -977,5 +1126,33 @@
 
     .action-card span {
         font-size: 10px;
+    }
+
+    /* Accounts responsivity */
+    .accounts-list {
+        grid-template-columns: 1fr;
+    }
+
+    .account-item {
+        padding: 0.5rem;
+    }
+
+    .account-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .account-name {
+        font-size: 0.85rem;
+    }
+
+    .account-balance {
+        font-size: 0.85rem;
+    }
+
+    .accounts-total {
+        flex-direction: column;
+        gap: 0.25rem;
+        text-align: center;
     }
 }

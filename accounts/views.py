@@ -410,3 +410,73 @@ def verify_reset_token(request):
             'valid': False,
             'error': 'Token vypršel nebo byl použit'
         }, status=status.HTTP_200_OK)
+
+
+class FinancialAccountViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet pro správu finančních účtů uživatele.
+    Poskytuje CRUD operace pro účty (běžný, spořicí, hotovost, kreditka).
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def get_serializer_class(self):
+        from .serializers import FinancialAccountSerializer, FinancialAccountSummarySerializer
+        if self.action == 'list_summary':
+            return FinancialAccountSummarySerializer
+        return FinancialAccountSerializer
+    
+    def get_queryset(self):
+        """Vrátí pouze účty aktuálního uživatele."""
+        return self.request.user.financial_accounts.all()
+    
+    def perform_create(self, serializer):
+        """Přiřadí účet aktuálnímu uživateli."""
+        # Pokud je to první účet, nastav ho jako výchozí
+        is_first = not self.request.user.financial_accounts.exists()
+        serializer.save(user=self.request.user, is_default=is_first)
+    
+    @action(detail=False, methods=['get'])
+    def list_summary(self, request):
+        """Vrátí zkrácený seznam účtů pro výběry."""
+        from .serializers import FinancialAccountSummarySerializer
+        accounts = self.get_queryset().filter(is_active=True)
+        serializer = FinancialAccountSummarySerializer(accounts, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def total_balance(self, request):
+        """Vrátí celkový zůstatek ze všech aktivních účtů."""
+        from decimal import Decimal
+        accounts = self.get_queryset().filter(is_active=True, include_in_total=True)
+        total = sum(acc.current_balance for acc in accounts)
+        return Response({
+            'total_balance': float(total),
+            'accounts_count': accounts.count()
+        })
+    
+    @action(detail=True, methods=['post'])
+    def set_default(self, request, pk=None):
+        """Nastaví účet jako výchozí."""
+        account = self.get_object()
+        account.is_default = True
+        account.save()  # save() automaticky odstraní is_default z ostatních
+        return Response({'message': f'Účet "{account.name}" byl nastaven jako výchozí.'})
+    
+    @action(detail=False, methods=['get'])
+    def account_types(self, request):
+        """Vrátí seznam dostupných typů účtů."""
+        from .models import FinancialAccount
+        return Response({
+            'types': [
+                {'value': choice[0], 'label': choice[1]} 
+                for choice in FinancialAccount.ACCOUNT_TYPES
+            ],
+            'colors': [
+                {'value': choice[0], 'label': choice[1]} 
+                for choice in FinancialAccount.ACCOUNT_COLORS
+            ],
+            'icons': [
+                {'value': choice[0], 'label': choice[1]} 
+                for choice in FinancialAccount.ACCOUNT_ICONS
+            ]
+        })

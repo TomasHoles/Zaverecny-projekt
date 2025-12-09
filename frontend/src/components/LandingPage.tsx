@@ -1,5 +1,29 @@
+/**
+ * LandingPage.tsx - Úvodní stránka aplikace Plutoa
+ * 
+ * @author Tomáš Holes
+ * @description Marketingová landing page pro nepřihlášené uživatele:
+ *   - Hero sekce s animovaným Prism pozadím
+ *   - Prezentace hlavních funkcí aplikace
+ *   - CTA sekce pro registraci
+ * 
+ * @components Prism (WebGL animace pozadí)
+ * @icons Lucide React
+ */
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { 
+  TrendingUp, 
+  PieChart, 
+  Target, 
+  Bell, 
+  Shield, 
+  Wallet,
+  ArrowRight,
+  BarChart3,
+  CreditCard,
+  Sparkles
+} from 'lucide-react';
 import Prism from './Prism';
 import '../styles/LandingPage.css';
 
@@ -65,131 +89,94 @@ const LandingPage: React.FC = () => {
         </div>
       </div>
 
-      {/* O aplikaci */}
-      <section className="about-section">
+      {/* Funkce aplikace */}
+      <section className="features-section">
         <div className="container">
-          <h2>Co je Plutoa?</h2>
-          <p className="about-intro">
-            Plutoa je moderní webová aplikace pro správu osobních financí, která vám pomůže
-            získat kontrolu nad vašimi penězi. Jednoduché rozhraní, výkonné nástroje a
-            přehledné grafy – to vše na jednom místě.
-          </p>
-
-          <div className="features-grid">
-            <div className="feature-card">
-              <h3>Sledování transakcí</h3>
-              <p>
-                Evidujte všechny příjmy a výdaje na jednom místě. Přidávejte transakce
-                rychle a jednoduše, organizujte je do kategorií a sledujte, kam vaše
-                peníze skutečně odcházejí.
-              </p>
+          <h2>Co Plutoa nabízí</h2>
+          
+          <div className="features-grid-new">
+            {/* Feature 1 - velká karta */}
+            <div className="feature-card-large">
+              <div className="feature-visual">
+                <div className="mock-chart">
+                  <div className="chart-bar" style={{ height: '60%', background: 'linear-gradient(180deg, #ccff00 0%, #a8e600 100%)' }}></div>
+                  <div className="chart-bar" style={{ height: '80%', background: 'linear-gradient(180deg, #8b5cf6 0%, #7c3aed 100%)' }}></div>
+                  <div className="chart-bar" style={{ height: '45%', background: 'linear-gradient(180deg, #ccff00 0%, #a8e600 100%)' }}></div>
+                  <div className="chart-bar" style={{ height: '90%', background: 'linear-gradient(180deg, #8b5cf6 0%, #7c3aed 100%)' }}></div>
+                  <div className="chart-bar" style={{ height: '70%', background: 'linear-gradient(180deg, #ccff00 0%, #a8e600 100%)' }}></div>
+                </div>
+              </div>
+              <div className="feature-content">
+                <div className="feature-icon-badge">
+                  <TrendingUp size={20} />
+                </div>
+                <h3>Sledování transakcí</h3>
+                <p>
+                  Zaznamenávejte všechny své příjmy a výdaje. Kategorizujte je, 
+                  přidávejte poznámky a mějte přehled o každé koruně.
+                </p>
+              </div>
             </div>
 
-            <div className="feature-card">
+            {/* Feature 2 */}
+            <div className="feature-card-medium">
+              <div className="feature-icon-badge purple">
+                <PieChart size={20} />
+              </div>
               <h3>Rozpočty</h3>
-              <p>
-                Vytvářejte si měsíční nebo roční rozpočty pro různé kategorie výdajů.
-                Aplikace vás upozorní, když se blížíte k limitu, a pomůže vám udržet
-                výdaje pod kontrolou.
-              </p>
+              <p>Nastavte si měsíční limity a dostávejte upozornění při jejich překročení.</p>
+              <div className="feature-mini-visual">
+                <div className="mini-progress">
+                  <div className="mini-progress-fill" style={{ width: '75%' }}></div>
+                </div>
+                <span className="mini-label">75% využito</span>
+              </div>
             </div>
 
-            <div className="feature-card">
+            {/* Feature 3 */}
+            <div className="feature-card-medium">
+              <div className="feature-icon-badge green">
+                <Target size={20} />
+              </div>
               <h3>Finanční cíle</h3>
-              <p>
-                Stanujte si finanční cíle – ať už jde o nový telefon, dovolenou nebo
-                nouzový fond. Sledujte svůj pokrok a motivujte se k dosažení svých snů.
-              </p>
+              <p>Definujte si cíle a sledujte svůj pokrok k jejich dosažení.</p>
+              <div className="feature-mini-visual">
+                <div className="goal-circles">
+                  <div className="goal-circle active"></div>
+                  <div className="goal-circle active"></div>
+                  <div className="goal-circle active"></div>
+                  <div className="goal-circle"></div>
+                  <div className="goal-circle"></div>
+                </div>
+                <span className="mini-label">3 z 5 splněno</span>
+              </div>
             </div>
 
-            <div className="feature-card">
-              <h3>Analýzy a statistiky</h3>
-              <p>
-                Získejte detailní přehled o svých financích pomocí grafů a statistik.
-                Zjistěte, které kategorie vás nejvíce zatěžují, a identifikujte možnosti
-                úspor.
-              </p>
-            </div>
-
-            <div className="feature-card">
+            {/* Feature 4 */}
+            <div className="feature-card-small">
+              <div className="feature-icon-badge orange">
+                <Bell size={20} />
+              </div>
               <h3>Notifikace</h3>
-              <p>
-                Buďte informováni o důležitých událostech – překročení rozpočtu,
-                blížící se termín cíle nebo opakující se platby. Nic vám neunikne.
-              </p>
+              <p>Upozornění na důležité události</p>
             </div>
 
-            <div className="feature-card">
-              <h3>Bezpečnost</h3>
-              <p>
-                Vaše data jsou v bezpečí. Používáme moderní šifrovací metody a
-                bezpečnostní protokoly, abychom chránili vaše citlivé finanční informace.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Jak to funguje */}
-      <section className="how-it-works-section">
-        <div className="container">
-          <h2>Jak to funguje?</h2>
-          <div className="steps">
-            <div className="step">
-              <div className="step-number">1</div>
-              <h3>Zaregistrujte se</h3>
-              <p>
-                Vytvoření účtu trvá jen pár sekund. Stačí email a heslo – žádné
-                složité formuláře nebo ověřování platebních karet.
-              </p>
+            {/* Feature 5 */}
+            <div className="feature-card-small">
+              <div className="feature-icon-badge blue">
+                <Wallet size={20} />
+              </div>
+              <h3>Více účtů</h3>
+              <p>Správa všech financí na jednom místě</p>
             </div>
 
-            <div className="step">
-              <div className="step-number">2</div>
-              <h3>Přidejte své transakce</h3>
-              <p>
-                Začněte zaznamenávat své příjmy a výdaje. Můžete je přidávat ručně
-                nebo nastavit opakující se transakce pro pravidelné platby.
-              </p>
-            </div>
-
-            <div className="step">
-              <div className="step-number">3</div>
-              <h3>Vytvořte rozpočty a cíle</h3>
-              <p>
-                Nastavte si měsíční rozpočty pro různé kategorie a definujte své
-                finanční cíle. Aplikace vám pomůže je dodržovat.
-              </p>
-            </div>
-
-            <div className="step">
-              <div className="step-number">4</div>
-              <h3>Sledujte a analyzujte</h3>
-              <p>
-                Využijte dashboard a analýzy k získání přehledu o svých financích.
-                Identifikujte trendy a optimalizujte své výdaje.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Proč Plutoa */}
-      <section className="why-section">
-        <div className="container">
-          <h2>Proč zvolit Plutoa?</h2>
-          <div className="why-grid">
-            <div className="why-item">
-              <h3>Jednoduché</h3>
-              <p>Intuitivní rozhraní, které zvládne každý – bez zbytečné složitosti.</p>
-            </div>
-            <div className="why-item">
-              <h3>Rychlé</h3>
-              <p>Přidání transakce trvá jen pár sekund. Žádné zdlouhavé procesy.</p>
-            </div>
-            <div className="why-item">
-              <h3>Zdarma</h3>
-              <p>Všechny základní funkce jsou dostupné úplně zdarma. Bez skrytých poplatků.</p>
+            {/* Feature 6 */}
+            <div className="feature-card-small">
+              <div className="feature-icon-badge pink">
+                <CreditCard size={20} />
+              </div>
+              <h3>Opakované platby</h3>
+              <p>Automatické zaznamenávání</p>
             </div>
           </div>
         </div>
@@ -198,14 +185,28 @@ const LandingPage: React.FC = () => {
       {/* CTA sekce */}
       <section className="cta-section">
         <div className="container">
-          <h2>Připraveni začít?</h2>
-          <p>
-            Připojte se k uživatelům, kteří již mají své finance pod kontrolou.
-            Registrace je zdarma a trvá jen chvilku.
-          </p>
-          <Link to="/register" className="button-primary large">
-            Začít zdarma
-          </Link>
+          <div className="cta-content">
+            <h2>Začněte spravovat své finance ještě dnes</h2>
+            <p>Registrace zabere jen okamžik</p>
+            <Link to="/register" className="cta-button">
+              Vytvořit účet
+              <ArrowRight size={20} />
+            </Link>
+          </div>
+          <div className="cta-decoration">
+            <div className="floating-card card-1">
+              <TrendingUp size={24} />
+              <span>+12%</span>
+            </div>
+            <div className="floating-card card-2">
+              <Wallet size={24} />
+              <span>Úspory</span>
+            </div>
+            <div className="floating-card card-3">
+              <Target size={24} />
+              <span>Cíl splněn</span>
+            </div>
+          </div>
         </div>
       </section>
 

@@ -1,3 +1,15 @@
+"""
+models.py - Model pro správu rozpočtů aplikace Plutoa
+
+@author Tomáš Holes
+@description Obsahuje:
+    - Budget: Rozpočet s limitem, obdobím a volitelnou kategorií
+
+@features
+    - Automatický výpočet utracené částky (get_spent_amount)
+    - Podpora měsíčních, ročních a vlastních období
+    - Možnost přiřazení ke konkrétní kategorii
+"""
 from django.db import models
 from django.conf import settings
 from django.db.models import Sum

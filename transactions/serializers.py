@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Category, Transaction, RecurringTransaction, RecurringTransactionHistory
+from accounts.models import FinancialAccount
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,6 +11,14 @@ class CategorySerializer(serializers.ModelSerializer):
         validated_data['user'] = self.context['request'].user
         return super().create(validated_data)
 
+
+class AccountSimpleSerializer(serializers.ModelSerializer):
+    """Jednoduchý serializer pro účet - jen pro zobrazení v transakcích"""
+    class Meta:
+        model = FinancialAccount
+        fields = ['id', 'name', 'color', 'icon', 'account_type']
+
+
 class TransactionSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True, allow_null=True)
     category_id = serializers.PrimaryKeyRelatedField(
@@ -19,19 +28,38 @@ class TransactionSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=True
     )
+    account = AccountSimpleSerializer(read_only=True, allow_null=True)
+    account_id = serializers.PrimaryKeyRelatedField(
+        queryset=FinancialAccount.objects.all(),
+        source='account',
+        write_only=True,
+        required=False,
+        allow_null=True
+    )
+    to_account = AccountSimpleSerializer(read_only=True, allow_null=True)
+    to_account_id = serializers.PrimaryKeyRelatedField(
+        queryset=FinancialAccount.objects.all(),
+        source='to_account',
+        write_only=True,
+        required=False,
+        allow_null=True
+    )
 
     class Meta:
         model = Transaction
         fields = ['id', 'amount', 'type', 'category', 'category_id',
+                 'account', 'account_id', 'to_account', 'to_account_id',
                  'date', 'description', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Filtrujeme kategorie pouze pro aktuálního uživatele
+        # Filtrujeme kategorie a účty pouze pro aktuálního uživatele
         request = self.context.get('request')
         if request and hasattr(request, 'user') and request.user.is_authenticated:
             self.fields['category_id'].queryset = Category.objects.filter(user=request.user)
+            self.fields['account_id'].queryset = FinancialAccount.objects.filter(user=request.user, is_active=True)
+            self.fields['to_account_id'].queryset = FinancialAccount.objects.filter(user=request.user, is_active=True)
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user

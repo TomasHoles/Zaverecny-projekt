@@ -1,3 +1,18 @@
+"""
+models.py - Model pro systém notifikací aplikace Plutoa
+
+@author Tomáš Holes
+@description Obsahuje:
+    - Notification: Notifikace pro uživatele (rozpočty, cíle, pravidelné platby)
+
+@types
+    - BUDGET_EXCEEDED: Překročení rozpočtu
+    - BUDGET_WARNING: Varování o blížícím se limitu
+    - RECURRING_DUE: Blížící se pravidelná platba
+    - GOAL_ACHIEVED: Dosažení finančního cíle
+    - GOAL_PROGRESS: Pokrok v cíli
+    - MONTHLY_SUMMARY: Měsíční souhrn
+"""
 from django.db import models
 from django.conf import settings
 

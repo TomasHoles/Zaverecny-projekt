@@ -1,3 +1,20 @@
+/**
+ * Goals.tsx - Správa finančních cílů
+ * 
+ * @author Tomáš Holes
+ * @description Komponenta pro správu a sledování finančních cílů:
+ *   - Vytváření cílů s cílovou částkou a datem
+ *   - Vizualizace pokroku (kruhový progress)
+ *   - Přidávání příspěvků k cílům
+ *   - Historie příspěvků
+ * 
+ * @goal_types
+ *   - SAVINGS: Úspory
+ *   - DEBT_PAYMENT: Splacení dluhu
+ *   - PURCHASE: Nákup
+ *   - EMERGENCY_FUND: Nouzový fond
+ *   - INVESTMENT: Investice
+ */
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';

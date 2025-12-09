@@ -1,3 +1,14 @@
+"""
+models.py - Modely pro správu transakcí aplikace Plutoa
+
+@author Tomáš Holes
+@description Obsahuje:
+    - Category: Kategorie transakcí (příjmy/výdaje)
+    - Transaction: Finanční transakce s vazbou na účet a kategorii
+
+@note Transakce podporují typy: EXPENSE (výdaj), INCOME (příjem), TRANSFER (převod)
+@note Při mazání kategorie se transakce zachová (SET_NULL)
+"""
 from django.db import models
 from django.conf import settings
 from datetime import timedelta
@@ -37,6 +48,24 @@ class Transaction(models.Model):
     date = models.DateField()
     description = models.TextField(blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # Finanční účet - zdrojový účet pro výdaje/transfery, cílový pro příjmy
+    account = models.ForeignKey(
+        'accounts.FinancialAccount',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='transactions',
+        verbose_name='Účet'
+    )
+    # Cílový účet pro transfery mezi účty
+    to_account = models.ForeignKey(
+        'accounts.FinancialAccount',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='incoming_transfers',
+        verbose_name='Cílový účet'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

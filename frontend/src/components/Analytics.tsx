@@ -1,3 +1,18 @@
+/**
+ * Analytics.tsx - Pokročilá analytika a vizualizace financí
+ * 
+ * @author Tomáš Holes
+ * @description Komplexní analytická komponenta obsahující:
+ *   - Financial Health Score (hodnocení finančního zdraví 0-100)
+ *   - Heatmap Calendar (vizualizace denní aktivity)
+ *   - Waterfall Chart (kaskádový graf cash flow)
+ *   - Category Distribution (koláčové grafy příjmů/výdajů)
+ *   - Trend Analysis (analýza trendů v kategoriích)
+ *   - AI Insights (personalizovaná doporučení)
+ * 
+ * @charts Recharts (BarChart, LineChart, PieChart, AreaChart)
+ * @components WaterfallChart, CategoryPieChart
+ */
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import dashboardService, {
@@ -19,7 +34,7 @@ import {
 } from 'recharts';
 import '../styles/Analytics.css';
 
-// Helper function for health rating
+// Helper funkce pro hodnocení finančního zdraví
 const getHealthRating = (score: number) => {
   if (score >= 80) {
     return {

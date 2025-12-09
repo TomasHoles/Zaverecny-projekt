@@ -1,3 +1,16 @@
+"""
+models.py - Modely pro správu uživatelů aplikace Plutoa
+
+@author Tomáš Holes
+@description Obsahuje:
+    - CustomUserManager: Vlastní správce pro vytváření uživatelů
+    - User: Rozšířený uživatelský model s preferencemi měny
+    - EmailVerificationToken: Token pro ověření emailové adresy
+    - PasswordResetToken: Token pro reset hesla
+    - FinancialAccount: Model pro finanční účty uživatele
+
+@note Používá Django AbstractUser jako základ pro rozšíření
+"""
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
@@ -128,3 +141,122 @@ class PasswordResetToken(models.Model):
         # Vytvoř nový token
         token = secrets.token_urlsafe(32)
         return cls.objects.create(user=user, token=token)
+
+
+class FinancialAccount(models.Model):
+    """
+    Model pro finanční účty uživatele.
+    Podporuje různé typy účtů: běžný účet, spořicí účet, hotovost, kreditní karta.
+    """
+    ACCOUNT_TYPES = [
+        ('CHECKING', 'Běžný účet'),
+        ('SAVINGS', 'Spořicí účet'),
+        ('CASH', 'Hotovost'),
+        ('CREDIT', 'Kreditní karta'),
+        ('INVESTMENT', 'Investiční účet'),
+        ('OTHER', 'Ostatní'),
+    ]
+    
+    ACCOUNT_COLORS = [
+        ('#3B82F6', 'Modrá'),
+        ('#22C55E', 'Zelená'),
+        ('#EAB308', 'Žlutá'),
+        ('#EF4444', 'Červená'),
+        ('#8B5CF6', 'Fialová'),
+        ('#EC4899', 'Růžová'),
+        ('#06B6D4', 'Tyrkysová'),
+        ('#F97316', 'Oranžová'),
+    ]
+    
+    ACCOUNT_ICONS = [
+        ('wallet', 'Peněženka'),
+        ('credit-card', 'Kreditní karta'),
+        ('piggy-bank', 'Prasátko'),
+        ('landmark', 'Banka'),
+        ('banknote', 'Bankovky'),
+        ('coins', 'Mince'),
+        ('trending-up', 'Investice'),
+        ('building', 'Instituce'),
+    ]
+    
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='financial_accounts'
+    )
+    name = models.CharField(max_length=100, verbose_name='Název účtu')
+    account_type = models.CharField(
+        max_length=20, 
+        choices=ACCOUNT_TYPES, 
+        default='CHECKING',
+        verbose_name='Typ účtu'
+    )
+    initial_balance = models.DecimalField(
+        max_digits=12, 
+        decimal_places=2, 
+        default=0,
+        verbose_name='Počáteční zůstatek'
+    )
+    currency = models.CharField(max_length=3, default='CZK', verbose_name='Měna')
+    color = models.CharField(max_length=7, default='#3B82F6', verbose_name='Barva')
+    icon = models.CharField(max_length=50, default='wallet', verbose_name='Ikona')
+    is_active = models.BooleanField(default=True, verbose_name='Aktivní')
+    is_default = models.BooleanField(default=False, verbose_name='Výchozí účet')
+    include_in_total = models.BooleanField(default=True, verbose_name='Zahrnout do celkového zůstatku')
+    description = models.TextField(blank=True, verbose_name='Popis')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-is_default', 'name']
+        verbose_name = 'Finanční účet'
+        verbose_name_plural = 'Finanční účty'
+    
+    def __str__(self):
+        return f"{self.name} ({self.get_account_type_display()})"
+    
+    def save(self, *args, **kwargs):
+        # Pokud je tento účet nastaven jako výchozí, odstraň výchozí z ostatních
+        if self.is_default:
+            FinancialAccount.objects.filter(
+                user=self.user, 
+                is_default=True
+            ).exclude(pk=self.pk).update(is_default=False)
+        super().save(*args, **kwargs)
+    
+    @property
+    def current_balance(self):
+        """Vypočítá aktuální zůstatek účtu na základě transakcí"""
+        from transactions.models import Transaction
+        from django.db.models import Sum, Case, When, F, DecimalField
+        from decimal import Decimal
+        
+        # Suma příjmů
+        income = Transaction.objects.filter(
+            user=self.user,
+            account=self,
+            type='INCOME'
+        ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+        
+        # Suma výdajů
+        expenses = Transaction.objects.filter(
+            user=self.user,
+            account=self,
+            type='EXPENSE'
+        ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+        
+        # Transfery - příchozí (tento účet je cílem)
+        transfers_in = Transaction.objects.filter(
+            user=self.user,
+            to_account=self,
+            type='TRANSFER'
+        ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+        
+        # Transfery - odchozí (tento účet je zdrojem)
+        transfers_out = Transaction.objects.filter(
+            user=self.user,
+            account=self,
+            type='TRANSFER'
+        ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+        
+        return self.initial_balance + income - expenses + transfers_in - transfers_out

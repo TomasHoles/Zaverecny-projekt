@@ -100,6 +100,11 @@ class TransactionViewSet(viewsets.ModelViewSet):
         if category:
             queryset = queryset.filter(category_id=category)
         
+        # Filtr podle účtu
+        account = self.request.query_params.get('account', None)
+        if account:
+            queryset = queryset.filter(account_id=account)
+        
         # Filtr podle data (od)
         date_from = self.request.query_params.get('date_from', None)
         if date_from:
@@ -852,11 +857,12 @@ class RecurringTransactionViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def generate_demo_data(request):
-    """Vygeneruje demo data pro uživatele včetně rozpočtů a cílů"""
+    """Vygeneruje demo data pro uživatele včetně rozpočtů, cílů a účtů - rok dozadu, v plusu"""
     from decimal import Decimal
-    from random import randint, choice
+    from random import randint, choice, uniform
     from budgets.models import Budget
     from goals.models import FinancialGoal
+    from accounts.models import FinancialAccount
     
     user = request.user
     
@@ -867,6 +873,38 @@ def generate_demo_data(request):
             {'error': 'Již máte dostatek dat. Tato funkce je určena pro nové účty.'},
             status=status.HTTP_400_BAD_REQUEST
         )
+    
+    # Vytvoř výchozí finanční účty, pokud neexistují
+    accounts_created = 0
+    if not FinancialAccount.objects.filter(user=user).exists():
+        default_accounts = [
+            {
+                'name': 'Běžný účet',
+                'account_type': 'CHECKING',
+                'initial_balance': Decimal('25000'),
+                'color': '#3B82F6',
+                'icon': 'landmark',
+                'is_default': True,
+                'description': 'Hlavní běžný účet pro každodenní platby'
+            },
+            {
+                'name': 'Spořicí účet',
+                'account_type': 'SAVINGS',
+                'initial_balance': Decimal('150000'),
+                'color': '#22C55E',
+                'icon': 'piggy-bank',
+                'is_default': False,
+                'description': 'Účet pro dlouhodobé spoření'
+            },
+        ]
+        
+        for acc_data in default_accounts:
+            FinancialAccount.objects.create(user=user, **acc_data)
+            accounts_created += 1
+    
+    # Získej účty pro přiřazení transakcí
+    checking_account = FinancialAccount.objects.filter(user=user, account_type='CHECKING').first()
+    savings_account = FinancialAccount.objects.filter(user=user, account_type='SAVINGS').first()
     
     # Vytvoř výchozí kategorie, pokud neexistují
     categories = Category.objects.filter(user=user)
@@ -883,19 +921,38 @@ def generate_demo_data(request):
             status=status.HTTP_400_BAD_REQUEST
         )
     
-    # Generuj transakce za poslední 3 měsíce
+    # Generuj transakce za poslední rok (365 dní)
     end_date = timezone.now().date()
-    start_date = end_date - timedelta(days=90)
+    start_date = end_date - timedelta(days=365)
     
     transactions_created = 0
     current_date = start_date
     
+    # Základní měsíční příjem - realistický
+    base_monthly_income = Decimal('45000')  # Průměrný měsíční příjem
+    
     while current_date <= end_date:
-        # Přidej náhodné výdaje (2-5 denně)
-        num_expenses = randint(2, 5)
+        # Určení měsíce pro sezónní variace
+        month = current_date.month
+        
+        # Všechny transakce půjdou na běžný účet
+        transaction_account = checking_account
+        
+        # Přidej náhodné výdaje (1-4 denně) - nižší než dříve
+        num_expenses = randint(1, 4)
         for _ in range(num_expenses):
             category = choice(expense_categories)
-            amount = Decimal(randint(50, 2000))
+            # Různé výše podle kategorie
+            if 'Bydlení' in category.name:
+                amount = Decimal(randint(100, 500))  # Menší denní výdaje za bydlení (energie apod.)
+            elif 'Jídlo' in category.name:
+                amount = Decimal(randint(50, 400))
+            elif 'Doprava' in category.name:
+                amount = Decimal(randint(30, 200))
+            elif 'Zábava' in category.name:
+                amount = Decimal(randint(100, 800))
+            else:
+                amount = Decimal(randint(50, 600))
             
             Transaction.objects.create(
                 user=user,
@@ -903,14 +960,18 @@ def generate_demo_data(request):
                 amount=amount,
                 category=category,
                 date=current_date,
-                description=f'Demo výdaj - {category.name}'
+                description=f'Demo výdaj - {category.name}',
+                account=transaction_account
             )
             transactions_created += 1
         
-        # Přidej příjem každý 15. a poslední den v měsíci
-        if current_date.day == 15 or current_date.day >= 28:
+        # Hlavní příjem - 10. a 25. den v měsíci (realistické výplatní termíny)
+        if current_date.day == 10:
+            # Hlavní výplata
             category = choice(income_categories)
-            amount = Decimal(randint(15000, 35000))
+            # Variace příjmu ±10%
+            variation = Decimal(str(uniform(0.9, 1.1)))
+            amount = (base_monthly_income * variation).quantize(Decimal('1'))
             
             Transaction.objects.create(
                 user=user,
@@ -918,7 +979,53 @@ def generate_demo_data(request):
                 amount=amount,
                 category=category,
                 date=current_date,
-                description=f'Demo příjem - {category.name}'
+                description='Výplata',
+                account=checking_account
+            )
+            transactions_created += 1
+        
+        # Občasný vedlejší příjem (brigáda, bonusy) - náhodně
+        if randint(1, 30) == 1:  # Cca 1x měsíčně
+            category = choice(income_categories)
+            amount = Decimal(randint(2000, 8000))
+            
+            Transaction.objects.create(
+                user=user,
+                type='INCOME',
+                amount=amount,
+                category=category,
+                date=current_date,
+                description='Vedlejší příjem',
+                account=checking_account
+            )
+            transactions_created += 1
+        
+        # Fixní měsíční výdaje na začátku měsíce
+        if current_date.day == 1:
+            # Nájem
+            rent_category = next((c for c in expense_categories if 'Bydlení' in c.name), expense_categories[0])
+            Transaction.objects.create(
+                user=user,
+                type='EXPENSE',
+                amount=Decimal('12000'),
+                category=rent_category,
+                date=current_date,
+                description='Nájem',
+                account=checking_account
+            )
+            transactions_created += 1
+        
+        if current_date.day == 15:
+            # Pojištění, internet apod.
+            other_category = next((c for c in expense_categories if 'Ostatní' in c.name), expense_categories[0])
+            Transaction.objects.create(
+                user=user,
+                type='EXPENSE',
+                amount=Decimal('1500'),
+                category=other_category,
+                date=current_date,
+                description='Internet a pojištění',
+                account=checking_account
             )
             transactions_created += 1
         
@@ -1031,7 +1138,8 @@ def generate_demo_data(request):
         recurring_created += 1
     
     return Response({
-        'message': f'Úspěšně vytvořeno {transactions_created} transakcí, {budgets_created} rozpočtů, {goals_created} cílů a {recurring_created} opakujících se transakcí!',
+        'message': f'Úspěšně vytvořeno {accounts_created} účtů, {transactions_created} transakcí, {budgets_created} rozpočtů, {goals_created} cílů a {recurring_created} opakujících se transakcí!',
+        'accounts': accounts_created,
         'transactions': transactions_created,
         'budgets': budgets_created,
         'goals': goals_created,
@@ -1042,9 +1150,10 @@ def generate_demo_data(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def delete_all_data(request):
-    """Smaže všechna data uživatele (transakce, rozpočty, cíle)"""
+    """Smaže všechna data uživatele (transakce, rozpočty, cíle, účty)"""
     from budgets.models import Budget
     from goals.models import FinancialGoal
+    from accounts.models import FinancialAccount
     
     user = request.user
     
@@ -1061,8 +1170,13 @@ def delete_all_data(request):
     goals_deleted = FinancialGoal.objects.filter(user=user).count()
     FinancialGoal.objects.filter(user=user).delete()
     
+    # Smazání finančních účtů
+    accounts_deleted = FinancialAccount.objects.filter(user=user).count()
+    FinancialAccount.objects.filter(user=user).delete()
+    
     return Response({
-        'message': f'Úspěšně smazáno {transactions_deleted} transakcí, {recurring_deleted} opakujících se transakcí, {budgets_deleted} rozpočtů a {goals_deleted} cílů!',
+        'message': f'Úspěšně smazáno {accounts_deleted} účtů, {transactions_deleted} transakcí, {recurring_deleted} opakujících se transakcí, {budgets_deleted} rozpočtů a {goals_deleted} cílů!',
+        'accounts': accounts_deleted,
         'transactions': transactions_deleted,
         'recurring': recurring_deleted,
         'budgets': budgets_deleted,

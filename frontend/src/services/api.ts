@@ -1,3 +1,14 @@
+/**
+ * api.ts - Konfigurace Axios instance pro API komunikaci
+ * 
+ * @author Tomáš Holes
+ * @description Centrální konfigurace pro HTTP požadavky na backend:
+ *   - Base URL pro Django REST API
+ *   - Automatické přidávání autentizačního tokenu
+ *   - Jednotné hlavičky pro JSON komunikaci
+ * 
+ * @note Token je ukládán v localStorage a automaticky přidáván ke všem požadavkům
+ */
 import axios from 'axios';
 
 // Vytvoření axios instance s výchozí konfigurací

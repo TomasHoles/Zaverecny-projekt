@@ -1,5 +1,18 @@
 /**
- * Hlavní komponenta aplikace Plutoa
+ * App.tsx - Hlavní komponenta aplikace Plutoa
+ * 
+ * @author Tomáš Holes
+ * @description Kořenová komponenta aplikace obsahující:
+ *   - Providery pro autentizaci, témata a toast notifikace
+ *   - React Router konfigurace
+ *   - Definice všech routes (veřejné i chráněné)
+ * 
+ * @structure
+ *   ThemeProvider -> Router -> AuthProvider -> ToastProvider -> App layout
+ * 
+ * @routes
+ *   Veřejné: /, /login, /register, /forgot-password, /reset-password/:token, /verify-email
+ *   Chráněné: /overview, /transactions, /budgets, /goals, /analytics, /profile, /notifications, /recurring, /settings
  */
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -23,6 +36,7 @@ import Notifications from './components/Notifications';
 import Goals from './components/Goals';
 import RecurringTransactions from './components/RecurringTransactions';
 import EmailVerification from './components/EmailVerification';
+import Settings from './components/Settings';
 import './styles/App.css';
 import './styles/GlobalHoverEffects.css';
 
@@ -123,6 +137,14 @@ function App() {
                     <ProtectedRoute>
                       <div className="page-container">
                         <RecurringTransactions />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+
+                  <Route path="/settings" element={
+                    <ProtectedRoute>
+                      <div className="page-container">
+                        <Settings />
                       </div>
                     </ProtectedRoute>
                   } />

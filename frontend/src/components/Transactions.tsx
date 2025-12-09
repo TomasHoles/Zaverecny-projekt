@@ -1,6 +1,23 @@
+/**
+ * Transactions.tsx - Správa finančních transakcí
+ * 
+ * @author Tomáš Holes
+ * @description Komplexní komponenta pro správu transakcí:
+ *   - Zobrazení seznamu transakcí s filtrováním
+ *   - Přidávání, editace a mazání transakcí
+ *   - Import/export CSV
+ *   - Správa kategorií
+ * 
+ * @features
+ *   - Filtrování podle data, typu, kategorie
+ *   - Stránkování výsledků
+ *   - Modální okna pro formuláře
+ *   - Drag & drop import CSV
+ */
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import dashboardService, { Transaction } from '../services/dashboardService';
+import accountService, { FinancialAccountSummary } from '../services/accountService';
 import api from '../services/api';
 import CategoryIcon from './CategoryIcon';
 import ExportModal from './ExportModal';
@@ -25,6 +42,7 @@ interface TransactionFormData {
   category: string;
   date: string;
   description: string;
+  account_id: string;
 }
 
 interface RecurringTransaction {
@@ -67,6 +85,7 @@ const Transactions: React.FC = () => {
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [accounts, setAccounts] = useState<FinancialAccountSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'transactions' | 'recurring'>('transactions');
   const [searchTerm, setSearchTerm] = useState('');
@@ -83,12 +102,14 @@ const Transactions: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
+  const [filterAccount, setFilterAccount] = useState('all');
   const [formData, setFormData] = useState<TransactionFormData>({
     amount: '',
     type: 'EXPENSE',
     category: '',
     date: new Date().toISOString().split('T')[0],
     description: '',
+    account_id: '',
   });
 
   // Recurring transactions state
@@ -128,6 +149,7 @@ const Transactions: React.FC = () => {
         if (debouncedSearchTerm) params.append('search', debouncedSearchTerm);
         if (filterType !== 'all') params.append('type', filterType);
         if (filterCategory !== 'all') params.append('category', filterCategory);
+        if (filterAccount !== 'all') params.append('account', filterAccount);
         if (filterDateFrom) params.append('date_from', filterDateFrom);
         if (filterDateTo) params.append('date_to', filterDateTo);
         if (sortBy) params.append('ordering', sortBy);
@@ -135,12 +157,14 @@ const Transactions: React.FC = () => {
         const queryString = params.toString();
         const endpoint = `/transactions/transactions/${queryString ? '?' + queryString : ''}`;
 
-        const [transactionsData, categoriesData] = await Promise.all([
+        const [transactionsData, categoriesData, accountsData] = await Promise.all([
           api.get<Transaction[]>(endpoint),
-          api.get<Category[]>('/transactions/categories/')
+          api.get<Category[]>('/transactions/categories/'),
+          accountService.getAccountsSummary().catch(() => [])
         ]);
 
         setTransactions(transactionsData.data || []);
+        setAccounts(accountsData || []);
 
         // Pokud uživatel nemá žádné kategorie, vytvoř výchozí
         const loadedCategories = categoriesData.data || [];
@@ -174,7 +198,7 @@ const Transactions: React.FC = () => {
     };
 
     fetchData();
-  }, [debouncedSearchTerm, filterType, filterCategory, filterDateFrom, filterDateTo, sortBy]);
+  }, [debouncedSearchTerm, filterType, filterCategory, filterAccount, filterDateFrom, filterDateTo, sortBy]);
 
   const fetchRecurring = async () => {
     try {
@@ -235,13 +259,18 @@ const Transactions: React.FC = () => {
 
     try {
       setSubmitting(true);
-      const payload = {
+      const payload: any = {
         amount: parseFloat(formData.amount),
         type: formData.type,
         category_id: parseInt(formData.category),
         date: formData.date,
         description: formData.description,
       };
+
+      // Přidej account_id pokud je vybrán
+      if (formData.account_id) {
+        payload.account_id = parseInt(formData.account_id);
+      }
 
       let response: ApiResponse;
       if (editingTransaction) {
@@ -264,6 +293,9 @@ const Transactions: React.FC = () => {
         alert('Transakce byla úspěšně přidána!');
       }
 
+      // Najdi výchozí účet pro reset
+      const defaultAccount = accounts.find(a => a.is_default);
+      
       // Resetujeme formulář
       setFormData({
         amount: '',
@@ -271,6 +303,7 @@ const Transactions: React.FC = () => {
         category: '',
         date: new Date().toISOString().split('T')[0],
         description: '',
+        account_id: defaultAccount?.id.toString() || '',
       });
 
       setShowModal(false);
@@ -295,6 +328,7 @@ const Transactions: React.FC = () => {
       category: transaction.category?.id.toString() || '',
       date: transaction.date,
       description: transaction.description || '',
+      account_id: (transaction as any).account?.id?.toString() || '',
     });
     setShowModal(true);
   };
@@ -317,12 +351,15 @@ const Transactions: React.FC = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setEditingTransaction(null);
+    // Najdi výchozí účet
+    const defaultAccount = accounts.find(a => a.is_default);
     setFormData({
       amount: '',
       type: 'EXPENSE',
       category: '',
       date: new Date().toISOString().split('T')[0],
       description: '',
+      account_id: defaultAccount?.id.toString() || '',
     });
   };
 
@@ -330,6 +367,7 @@ const Transactions: React.FC = () => {
     setSearchTerm('');
     setFilterType('all');
     setFilterCategory('all');
+    setFilterAccount('all');
     setFilterDateFrom('');
     setFilterDateTo('');
     setSortBy('-date');
@@ -530,6 +568,21 @@ const Transactions: React.FC = () => {
                   </option>
                 ))}
               </select>
+
+              {accounts.length > 0 && (
+                <select
+                  className="filter-select"
+                  value={filterAccount}
+                  onChange={(e) => setFilterAccount(e.target.value)}
+                >
+                  <option value="all">Všechny účty</option>
+                  {accounts.map(account => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
             <div className="filter-row">
@@ -785,6 +838,26 @@ const Transactions: React.FC = () => {
                       </p>
                     )}
                   </div>
+
+                  {accounts.length > 0 && (
+                    <div className="form-group">
+                      <label htmlFor="account_id">Účet</label>
+                      <select
+                        id="account_id"
+                        name="account_id"
+                        value={formData.account_id}
+                        onChange={handleInputChange}
+                        className="form-input"
+                      >
+                        <option value="">Bez účtu</option>
+                        {accounts.map((account) => (
+                          <option key={account.id} value={account.id}>
+                            {account.name} {account.is_default ? '(výchozí)' : ''}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
                   <div className="form-group">
                     <label htmlFor="date">Datum *</label>

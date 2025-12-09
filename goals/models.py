@@ -1,3 +1,16 @@
+"""
+models.py - Model pro správu finančních cílů aplikace Plutoa
+
+@author Tomáš Holes
+@description Obsahuje:
+    - FinancialGoal: Finanční cíl s cílovou částkou a datem
+    - GoalContribution: Historie příspěvků k cíli
+
+@features
+    - Automatický výpočet procentuálního pokroku
+    - Podpora různých typů cílů (úspory, splátky, investice...)
+    - Stavy: aktivní, dokončeno, pozastaveno, zrušeno
+"""
 from django.db import models
 from django.conf import settings
 from decimal import Decimal

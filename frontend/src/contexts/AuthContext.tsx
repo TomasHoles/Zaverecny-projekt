@@ -1,4 +1,16 @@
-﻿import React, { createContext, useContext, useState, useEffect } from 'react';
+﻿/**
+ * AuthContext.tsx - Kontext pro správu autentizace
+ * 
+ * @author Tomáš Holes
+ * @description Poskytuje autentizační stav a metody pro celou aplikaci:
+ *   - Přihlášení/odhlášení uživatele
+ *   - Registrace nového uživatele
+ *   - Verifikace emailu
+ *   - Automatické obnovení session při refreshi stránky
+ * 
+ * @usage const { user, login, logout } = useAuth();
+ */
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
 
 interface User {

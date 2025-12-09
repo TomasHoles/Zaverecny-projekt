@@ -3,13 +3,14 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 from . import views
 
-# Router pro automatické generování URL pro UserViewSet
+# Router pro automatické generování URL pro ViewSety
 router = DefaultRouter()
 router.register('users', views.UserViewSet)
+router.register('financial-accounts', views.FinancialAccountViewSet, basename='financial-account')
 
 # URL konfigurace pro accounts aplikaci
 urlpatterns = [
-    # Automaticky generované URL pro UserViewSet (CRUD operace)
+    # Automaticky generované URL pro ViewSety (CRUD operace)
     path('', include(router.urls)),
     
     # JWT Authentication endpoints

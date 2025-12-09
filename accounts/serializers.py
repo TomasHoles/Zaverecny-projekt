@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.validators import UniqueValidator
+from .models import FinancialAccount
 
 User = get_user_model()
 
@@ -94,3 +95,49 @@ class UserProfileSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(obj.avatar.url)
             return obj.avatar.url
         return None
+
+
+class FinancialAccountSerializer(serializers.ModelSerializer):
+    """
+    Serializer pro finanční účty.
+    Obsahuje aktuální zůstatek jako computed field.
+    """
+    current_balance = serializers.DecimalField(
+        max_digits=12, 
+        decimal_places=2, 
+        read_only=True
+    )
+    account_type_display = serializers.CharField(
+        source='get_account_type_display', 
+        read_only=True
+    )
+    
+    class Meta:
+        model = FinancialAccount
+        fields = (
+            'id', 'name', 'account_type', 'account_type_display',
+            'initial_balance', 'current_balance', 'currency', 
+            'color', 'icon', 'is_active', 'is_default',
+            'include_in_total', 'description', 'created_at', 'updated_at'
+        )
+        read_only_fields = ('created_at', 'updated_at', 'current_balance')
+    
+    def create(self, validated_data):
+        """Vytvoří nový účet pro aktuálního uživatele."""
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
+
+
+class FinancialAccountSummarySerializer(serializers.ModelSerializer):
+    """
+    Zkrácený serializer pro finanční účty - pro výběry a přehledy.
+    """
+    current_balance = serializers.DecimalField(
+        max_digits=12, 
+        decimal_places=2, 
+        read_only=True
+    )
+    
+    class Meta:
+        model = FinancialAccount
+        fields = ('id', 'name', 'account_type', 'color', 'icon', 'current_balance', 'is_default')
