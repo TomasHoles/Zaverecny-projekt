@@ -9,25 +9,63 @@
  * 
  * @components Prism (WebGL animace pozadí)
  * @icons Lucide React
+ * 
+ * @performance
+ *   - Lazy loading Prism komponenty
+ *   - Detekce slabého hardware pro fallback
+ *   - Snížená kvalita na mobilech
  */
-import React from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   TrendingUp, 
   PieChart, 
   Target, 
   Bell, 
-  Shield, 
   Wallet,
   ArrowRight,
-  BarChart3,
-  CreditCard,
-  Sparkles
+  CreditCard
 } from 'lucide-react';
-import Prism from './Prism';
 import '../styles/LandingPage.css';
 
+// Lazy load Prism komponenty - načte se až když je potřeba
+const Prism = lazy(() => import('./Prism'));
+
+// Detekce slabého hardware
+const isLowEndDevice = (): boolean => {
+  // Detekce mobilů
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
+  // Detekce počtu CPU jader (méně než 4 = slabý)
+  const lowCPU = navigator.hardwareConcurrency ? navigator.hardwareConcurrency < 4 : false;
+  
+  // Detekce málo paměti (méně než 4GB)
+  const lowMemory = (navigator as any).deviceMemory ? (navigator as any).deviceMemory < 4 : false;
+  
+  // Preference reduced motion
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  return isMobile || lowCPU || lowMemory || prefersReducedMotion;
+};
+
+// Fallback gradient pozadí pro slabé počítače
+const StaticBackground: React.FC = () => (
+  <div className="static-background">
+    <div className="gradient-orb orb-1"></div>
+    <div className="gradient-orb orb-2"></div>
+  </div>
+);
+
 const LandingPage: React.FC = () => {
+  const [useStaticBg, setUseStaticBg] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    // Zkontroluj hardware při načtení
+    setUseStaticBg(isLowEndDevice());
+    setIsLoaded(true);
+  }, []);
+
   const scrollToContent = () => {
     window.scrollTo({
       top: window.innerHeight,
@@ -39,19 +77,28 @@ const LandingPage: React.FC = () => {
     <div className="landing-page">
       {/* Hero sekce s Prism pozadím */}
       <div className="hero-wrapper">
-        {/* Prism Background */}
+        {/* Prism Background nebo statický fallback */}
         <div className="dither-background">
-          <Prism
-            animationType="rotate"
-            timeScale={0.5}
-            height={3.5}
-            baseWidth={5.5}
-            scale={2.5}
-            hueShift={0.46}
-            colorFrequency={2.15}
-            noise={0}
-            glow={1}
-          />
+          {isLoaded && (
+            useStaticBg ? (
+              <StaticBackground />
+            ) : (
+              <Suspense fallback={<StaticBackground />}>
+                <Prism
+                  animationType="rotate"
+                  timeScale={0.5}
+                  height={3.5}
+                  baseWidth={5.5}
+                  scale={2.5}
+                  hueShift={0.46}
+                  colorFrequency={2.15}
+                  noise={0}
+                  glow={1}
+                  suspendWhenOffscreen={true}
+                />
+              </Suspense>
+            )
+          )}
         </div>
 
         {/* Hero sekce */}

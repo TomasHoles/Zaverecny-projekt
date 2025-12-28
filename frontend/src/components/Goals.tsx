@@ -18,7 +18,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
-import { Target, Home, Car, Plane, Gift, Laptop, Smartphone, Heart, Star, Trophy, Umbrella, Book, CheckCircle, TrendingUp, DollarSign, Edit2, Trash2, Plus } from 'lucide-react';
+import { Target, Home, Car, Plane, Gift, Laptop, Smartphone, Heart, Star, Trophy, Umbrella, Book, CheckCircle, TrendingUp, DollarSign, Edit2, Trash2, Plus, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import { GoalsSkeleton } from './SkeletonLoaders';
 import EmptyState from './EmptyState';
 import '../styles/Goals.css';
@@ -58,6 +58,12 @@ interface GoalSummary {
   goals: Goal[];
 }
 
+interface Toast {
+  message: string;
+  type: 'success' | 'error';
+  visible: boolean;
+}
+
 const Goals: React.FC = () => {
   const { user } = useAuth();
   const [summary, setSummary] = useState<GoalSummary | null>(null);
@@ -68,6 +74,8 @@ const Goals: React.FC = () => {
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('active');
+  const [expandedContributions, setExpandedContributions] = useState<number[]>([]);
+  const [toast, setToast] = useState<Toast>({ message: '', type: 'success', visible: false });
 
   const [formData, setFormData] = useState({
     name: '',
@@ -125,6 +133,21 @@ const Goals: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type, visible: true });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, visible: false }));
+    }, 3000);
+  };
+
+  const toggleContributions = (goalId: number) => {
+    setExpandedContributions(prev => 
+      prev.includes(goalId) 
+        ? prev.filter(id => id !== goalId)
+        : [...prev, goalId]
+    );
   };
 
   const formatCurrency = (amount: number) => {
@@ -231,18 +254,35 @@ const Goals: React.FC = () => {
     }
 
     try {
-      await api.post(`/goals/goals/${selectedGoal.id}/add_contribution/`, {
+      const response = await api.post(`/goals/goals/${selectedGoal.id}/add_contribution/`, {
         amount: parseFloat(contributionData.amount),
         date: contributionData.date,
         note: contributionData.note
       });
 
+      const addedAmount = parseFloat(contributionData.amount);
+      const newTotal = selectedGoal.current_amount + addedAmount;
+      const isCompleted = newTotal >= selectedGoal.target_amount;
+
       setShowContributionModal(false);
       setSelectedGoal(null);
+      
+      // Zobraz toast s informací
+      if (isCompleted) {
+        showToast(`🎉 Gratulujeme! Cíl "${selectedGoal.name}" byl dosažen!`, 'success');
+      } else {
+        showToast(`+${formatCurrency(addedAmount)} přidáno do "${selectedGoal.name}"`, 'success');
+      }
+
+      // Automaticky rozbal sekci příspěvků pro tento cíl
+      if (!expandedContributions.includes(selectedGoal.id)) {
+        setExpandedContributions(prev => [...prev, selectedGoal.id]);
+      }
+
       fetchGoals();
     } catch (error) {
       console.error('Chyba při přidávání příspěvku:', error);
-      alert('Nepodařilo se přidat příspěvek');
+      showToast('Nepodařilo se přidat příspěvek', 'error');
     }
   };
 
@@ -286,6 +326,13 @@ const Goals: React.FC = () => {
 
   return (
     <div className="goals-page">
+      {/* Toast notifikace */}
+      {toast.visible && (
+        <div className={`toast-notification ${toast.type}`}>
+          {toast.message}
+        </div>
+      )}
+
       {/* Header */}
       <div className="goals-header">
         <div>
@@ -446,6 +493,53 @@ const Goals: React.FC = () => {
               {goal.status === 'COMPLETED' && (
                 <div className="goal-completed-badge">
                   Dokončeno
+                </div>
+              )}
+
+              {/* Sekce příspěvků */}
+              {goal.contributions && goal.contributions.length > 0 && (
+                <div className="contributions-section">
+                  <button 
+                    className="contributions-toggle"
+                    onClick={() => toggleContributions(goal.id)}
+                  >
+                    <Clock size={14} />
+                    <span>Historie příspěvků ({goal.contributions.length})</span>
+                    {expandedContributions.includes(goal.id) ? (
+                      <ChevronUp size={14} />
+                    ) : (
+                      <ChevronDown size={14} />
+                    )}
+                  </button>
+                  
+                  {expandedContributions.includes(goal.id) && (
+                    <div className="contributions-list">
+                      {goal.contributions
+                        .slice()
+                        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                        .slice(0, 5)
+                        .map(contribution => (
+                          <div key={contribution.id} className="contribution-item">
+                            <div className="contribution-info">
+                              <span className="contribution-amount" style={{ color: goal.color }}>
+                                +{formatCurrency(contribution.amount)}
+                              </span>
+                              <span className="contribution-date">
+                                {formatDate(contribution.date)}
+                              </span>
+                            </div>
+                            {contribution.note && (
+                              <p className="contribution-note">{contribution.note}</p>
+                            )}
+                          </div>
+                        ))}
+                      {goal.contributions.length > 5 && (
+                        <p className="contributions-more">
+                          a dalších {goal.contributions.length - 5} příspěvků...
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

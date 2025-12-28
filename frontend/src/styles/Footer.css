@@ -1,4 +1,15 @@
-/* Footer - Fundja Dark Theme */
+/**
+ * Footer.css - Styly pro patičku stránky
+ * 
+ * @author Tomáš Holes
+ * @description Styly pro:
+ *   - Footer layout s odkazy
+ *   - Kontaktní informace
+ *   - Copyright sekce
+ * 
+ * @note Proměnné jsou definovány centrálně v variables.css
+ */
+
 .footer {
     background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
     border-top: 1px solid rgba(204, 255, 0, 0.2);

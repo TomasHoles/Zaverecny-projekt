@@ -17,7 +17,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import dashboardService, { BudgetOverview, Budget } from '../services/dashboardService';
 import api from '../services/api';
-import { Plus, Trash2, Edit2, Wallet, PieChart, TrendingUp, AlertCircle, CheckCircle } from 'lucide-react';
+import { Plus, Trash2, Edit2, Wallet, PieChart, TrendingUp, AlertCircle, CheckCircle, Calendar } from 'lucide-react';
 import { BudgetsSkeleton } from './SkeletonLoaders';
 import EmptyState from './EmptyState';
 import CategoryIcon from './CategoryIcon';
@@ -90,6 +90,23 @@ const Budgets: React.FC = () => {
     if (percentage >= 100) return 'Překročeno';
     if (percentage >= 80) return 'Pozor';
     return 'V pořádku';
+  };
+
+  const formatPeriodLabel = (period: string) => {
+    switch (period) {
+      case 'MONTHLY': return 'Měsíční';
+      case 'YEARLY': return 'Roční';
+      case 'CUSTOM': return 'Vlastní';
+      default: return period;
+    }
+  };
+
+  const formatDateRange = (startDate: string | null, endDate: string | null) => {
+    if (!startDate || !endDate) return null;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' };
+    return `${start.toLocaleDateString('cs-CZ', options)} - ${end.toLocaleDateString('cs-CZ', options)}`;
   };
 
   const handleOpenModal = (budget?: Budget) => {
@@ -331,6 +348,15 @@ const Budgets: React.FC = () => {
                       </p>
                       <p className="budget-status">{getStatusText(budget.percentage_used)}</p>
                     </div>
+                  </div>
+
+                  {/* Časové období */}
+                  <div className="budget-period">
+                    <Calendar size={14} />
+                    <span className="period-type">{formatPeriodLabel(budget.period)}</span>
+                    {formatDateRange(budget.start_date, budget.end_date) && (
+                      <span className="period-dates">{formatDateRange(budget.start_date, budget.end_date)}</span>
+                    )}
                   </div>
 
                   <div className="budget-amounts">

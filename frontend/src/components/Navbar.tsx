@@ -1,20 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useToast } from '../contexts/ToastContext';
 import api from '../services/api';
-import { Bell, Trash2, Plus, Clock, LogOut, User, Settings } from 'lucide-react';
+import { Bell, LogOut, User, Wallet } from 'lucide-react';
 import '../styles/Navbar.css';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
-  const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [generatingData, setGeneratingData] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = () => {
@@ -26,45 +23,6 @@ const Navbar: React.FC = () => {
 
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
-  };
-
-  const handleGenerateDemoData = async () => {
-    if (!user) return;
-
-    try {
-      setGeneratingData(true);
-      const response = await api.post('/transactions/generate-demo-data/');
-      toast.success(response.data.message || 'Demo data byla úspěšně vytvořena! (včetně opakujících se transakcí)');
-
-      // Refresh stránky po 2 sekundách, aby backend stihl vytvořit všechna data
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Nepodařilo se vytvořit demo data');
-      setGeneratingData(false);
-    }
-  };
-
-  const handleDeleteAllData = async () => {
-    if (!user) return;
-
-    if (!window.confirm('Opravdu chcete smazat VŠECHNA data? Tato akce je nevratná!')) {
-      return;
-    }
-
-    try {
-      setGeneratingData(true);
-      const response = await api.post('/transactions/delete-all-data/');
-      toast.success(response.data.message || 'Všechna data byla smazána!');
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Nepodařilo se smazat data');
-      setGeneratingData(false);
-    }
   };
 
   // Zavře dropdown při kliknutí mimo něj
@@ -148,34 +106,6 @@ const Navbar: React.FC = () => {
       </div>
 
       <div className="user-section" ref={dropdownRef}>
-        {/* Delete All Data Button */}
-        {user && (
-          <button
-            className="delete-data-button"
-            onClick={handleDeleteAllData}
-            disabled={generatingData}
-            title="Smazat všechna data"
-          >
-            <Trash2 size={18} color="#ffffff" />
-          </button>
-        )}
-
-        {/* Generate Demo Data Button */}
-        {user && (
-          <button
-            className="demo-data-button"
-            onClick={handleGenerateDemoData}
-            disabled={generatingData}
-            title="Vygenerovat demo data"
-          >
-            {generatingData ? (
-              <Clock size={18} color="#ffffff" />
-            ) : (
-              <Plus size={18} color="#ffffff" />
-            )}
-          </button>
-        )}
-
         {user && (
           <Link to="/notifications" className="nav-link notification-link">
             <Bell size={20} color="currentColor" />
@@ -214,7 +144,7 @@ const Navbar: React.FC = () => {
                     <User size={16} /> Profil
                   </Link>
                   <Link to="/settings" className="dropdown-link">
-                    <Settings size={16} /> Nastavení
+                    <Wallet size={16} /> Účty
                   </Link>
                 </div>
                 <div className="dropdown-divider"></div>

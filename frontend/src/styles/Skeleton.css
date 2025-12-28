@@ -1,10 +1,21 @@
+/**
+ * Skeleton.css - Styly pro loading skeleton komponenty
+ * 
+ * @author Tomáš Holes
+ * @description Placeholder animace při načítání dat:
+ *   - Pulse a wave animace
+ *   - Skeleton karty a položky
+ * 
+ * @note Proměnné jsou definovány centrálně v variables.css
+ */
+
 /* Skeleton Loading Animations */
 .skeleton {
   background: linear-gradient(
     90deg,
-    var(--skeleton-base) 0%,
-    var(--skeleton-highlight) 50%,
-    var(--skeleton-base) 100%
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%
   );
   background-size: 200% 100%;
   display: inline-block;
@@ -41,17 +52,6 @@
   100% {
     background-position: -200% 0;
   }
-}
-
-/* CSS Variables for Skeleton Colors */
-:root {
-  --skeleton-base: rgba(255, 255, 255, 0.05);
-  --skeleton-highlight: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="light"] {
-  --skeleton-base: rgba(0, 0, 0, 0.08);
-  --skeleton-highlight: rgba(0, 0, 0, 0.12);
 }
 
 /* Skeleton Card Layouts */

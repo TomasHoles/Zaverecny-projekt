@@ -1,4 +1,23 @@
+/**
+ * dashboardService.ts - Služba pro komunikaci s dashboard API
+ * 
+ * @author Tomáš Holes
+ * @description Poskytuje metody pro:
+ *   - Získání statistik dashboardu
+ *   - Analytická data (grafy, trendy)
+ *   - Přehled rozpočtů
+ *   - Rozdělení kategorií
+ * 
+ * @exports
+ *   - DashboardStats, Transaction, BudgetOverview, Budget
+ *   - AnalyticsData, CategoryBreakdown, IncomeBreakdown
+ *   - dashboardService (singleton)
+ */
 import api from './api';
+
+/* ============================================
+   INTERFACES - Typové definice pro API odpovědi
+   ============================================ */
 
 export interface DashboardStats {
     total_income: number;
@@ -67,6 +86,8 @@ export interface Budget {
     category_icon: string;
     category_color: string;
     period: string;
+    start_date: string | null;
+    end_date: string | null;
     is_active: boolean;
 }
 

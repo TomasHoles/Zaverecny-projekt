@@ -1,0 +1,31 @@
+# Dockerfile pro Django backend (produkce s Gunicorn)
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Instalace systémových závislostí
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Kopírování requirements a instalace Python závislostí
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt gunicorn psycopg2-binary
+
+# Kopírování zdrojového kódu
+COPY . .
+
+# Vytvoření adresářů
+RUN mkdir -p /app/media /app/staticfiles
+
+# Collect static files
+RUN python manage.py collectstatic --noinput || true
+
+EXPOSE 8000
+
+# Spuštění Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "finance_platform.wsgi:application"]

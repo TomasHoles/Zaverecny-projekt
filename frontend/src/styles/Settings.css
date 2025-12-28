@@ -387,6 +387,18 @@
     cursor: pointer;
 }
 
+.form-group select option {
+    background-color: #1a1a1d;
+    color: #ffffff;
+    padding: 10px;
+}
+
+.form-group select option:hover,
+.form-group select option:checked {
+    background-color: #2a2a2d;
+    color: #ffffff;
+}
+
 .form-group textarea {
     resize: vertical;
     min-height: 60px;

@@ -1,3 +1,15 @@
+/**
+ * Toast.css - Styly pro toast notifikace
+ * 
+ * @author Tomáš Holes
+ * @description Styly pro:
+ *   - Toast kontejner (fixed position)
+ *   - Typy: success, error, warning, info
+ *   - Animace vstup/výstup
+ * 
+ * @note Proměnné jsou definovány centrálně v variables.css
+ */
+
 /* Toast Container */
 .toast-container {
   position: fixed;

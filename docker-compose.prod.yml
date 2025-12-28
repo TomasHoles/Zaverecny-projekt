@@ -1,0 +1,58 @@
+services:
+  # Django Backend (produkce s Gunicorn)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: plutoa-backend-prod
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./media:/app/media
+      - static_volume:/app/staticfiles
+    environment:
+      - DEBUG=False
+      - DJANGO_SETTINGS_MODULE=finance_platform.settings
+      - DATABASE_URL=postgres://plutoa:plutoa123@db:5432/plutoa
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+    depends_on:
+      - db
+    networks:
+      - plutoa-network
+    restart: unless-stopped
+
+  # React Frontend (produkce s nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: plutoa-frontend-prod
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - plutoa-network
+    restart: unless-stopped
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: plutoa-db-prod
+    environment:
+      - POSTGRES_DB=plutoa
+      - POSTGRES_USER=plutoa
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-plutoa123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - plutoa-network
+    restart: unless-stopped
+
+networks:
+  plutoa-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  static_volume:

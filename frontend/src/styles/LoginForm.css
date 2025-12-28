@@ -1,6 +1,14 @@
-/* ========================================
-   MODERN AUTH FORM - Purple Dark Theme
-   ======================================== */
+/**
+ * LoginForm.css - Styly pro přihlašovací a registrační formuláře
+ * 
+ * @author Tomáš Holes
+ * @description Styly pro:
+ *   - Login a register formuláře
+ *   - Reset hesla
+ *   - Verifikace emailu
+ * 
+ * @note Proměnné jsou definovány centrálně v variables.css
+ */
 
 /* Main container with subtle gradient background */
 .auth-container {

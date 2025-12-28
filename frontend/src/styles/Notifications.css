@@ -1,15 +1,14 @@
-:root {
-  --bg-dark: #0a0a0c;
-  --card-bg: #111113;
-  --text-white: #ffffff;
-  --text-gray: #888888;
-  --accent-purple: #8b5cf6;
-  --accent-green: #10b981;
-  --accent-yellow: #ccff00;
-  --accent-teal: #14b8a6;
-  --accent-red: #8b5cf6;
-  --border-color: #222224;
-}
+/**
+ * Notifications.css - Styly pro stránku notifikací
+ * 
+ * @author Tomáš Holes
+ * @description Styly pro:
+ *   - Seznam notifikací
+ *   - Stavy přečtené/nepřečtené
+ *   - Typy notifikací (varning, info, success)
+ * 
+ * @note Proměnné jsou definovány centrálně v variables.css
+ */
 
 .notifications-page {
   background-color: var(--bg-dark);

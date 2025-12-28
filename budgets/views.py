@@ -57,6 +57,8 @@ class BudgetViewSet(viewsets.ModelViewSet):
                 'category_icon': budget.category.icon if budget.category else 'wallet',
                 'category_color': budget.category.color if budget.category else '#8b5cf6',
                 'period': budget.period,
+                'start_date': budget.start_date.isoformat() if budget.start_date else None,
+                'end_date': budget.end_date.isoformat() if budget.end_date else None,
                 'is_active': budget.is_active
             }
             

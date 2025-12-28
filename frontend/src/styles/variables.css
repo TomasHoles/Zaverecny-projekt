@@ -1,0 +1,121 @@
+/**
+ * variables.css - Centrální definice CSS proměnných pro aplikaci Plutoa
+ * 
+ * @author Tomáš Holes
+ * @description Tento soubor obsahuje všechny globální CSS proměnné používané
+ *              v celé aplikaci. Importujte tento soubor jako první v index.css.
+ * 
+ * @structure
+ *   - Barvy pozadí (--bg-*)
+ *   - Barvy textu (--text-*)
+ *   - Akcentové barvy (--accent-*)
+ *   - Barvy karet a ohraničení (--card-*, --border-*)
+ *   - Efekty a stíny (--glow-*, --shadow-*)
+ * 
+ * @note Všechny komponenty by měly používat tyto proměnné místo hardcoded hodnot
+ */
+
+:root {
+  /* ============================================
+     BARVY POZADÍ
+     ============================================ */
+  --bg-dark: #0a0a0c;           /* Hlavní tmavé pozadí */
+  --bg-darker: #05050a;         /* Ještě tmavší pozadí pro kontrast */
+  --bg-primary: #0a0a0b;        /* Primární pozadí stránek */
+  --bg-secondary: #1a1a1d;      /* Sekundární pozadí (karty) */
+  --bg-tertiary: #2a2a2f;       /* Terciární pozadí (hover stavy) */
+  
+  /* ============================================
+     BARVY KARET
+     ============================================ */
+  --card-bg: #111113;           /* Pozadí karet */
+  --card-hover: #1a1a24;        /* Hover stav karet */
+  
+  /* ============================================
+     BARVY TEXTU
+     ============================================ */
+  --text-white: #ffffff;        /* Bílý text */
+  --text-primary: #ffffff;      /* Primární text */
+  --text-secondary: #9ca3af;    /* Sekundární/šedý text */
+  --text-gray: #888888;         /* Šedý text */
+  --text-muted: #6b7280;        /* Ztlumený text */
+  
+  /* ============================================
+     AKCENTOVÉ BARVY
+     ============================================ */
+  --accent-yellow: #ccff00;     /* Neonově žlutá - hlavní akcent */
+  --accent-purple: #8b5cf6;     /* Fialová - sekundární akcent */
+  --accent-green: #10b981;      /* Zelená - příjmy, úspěch */
+  --accent-red: #ef4444;        /* Červená - výdaje, chyby */
+  --accent-blue: #3b82f6;       /* Modrá - informace */
+  --accent-teal: #14b8a6;       /* Tyrkysová - speciální akce */
+  --accent-orange: #f59e0b;     /* Oranžová - varování */
+  --accent-pink: #ec4899;       /* Růžová - dekorace */
+  
+  /* Aliasy pro konzistenci */
+  --accent-primary: #ccff00;    /* = accent-yellow */
+  --accent-secondary: #8b5cf6;  /* = accent-purple */
+  --accent-success: #10b981;    /* = accent-green */
+  --accent-danger: #ef4444;     /* = accent-red */
+  --accent-warning: #f59e0b;    /* = accent-orange */
+  --accent-info: #3b82f6;       /* = accent-blue */
+  
+  /* ============================================
+     OHRANIČENÍ
+     ============================================ */
+  --border-color: #222224;              /* Standardní ohraničení */
+  --border-light: rgba(255, 255, 255, 0.1);  /* Lehké ohraničení */
+  --border-focus: #8b5cf6;              /* Focus stav */
+  
+  /* ============================================
+     EFEKTY A STÍNY
+     ============================================ */
+  --glow-yellow: rgba(204, 255, 0, 0.5);   /* Žlutý glow efekt */
+  --glow-purple: rgba(139, 92, 246, 0.5);  /* Fialový glow efekt */
+  --glow-green: rgba(16, 185, 129, 0.3);   /* Zelený glow efekt */
+  --glow-red: rgba(239, 68, 68, 0.3);      /* Červený glow efekt */
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  
+  /* ============================================
+     PŘECHODY A ANIMACE
+     ============================================ */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+  
+  /* ============================================
+     ROZMĚRY
+     ============================================ */
+  --border-radius-sm: 6px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 20px;
+  --border-radius-full: 9999px;
+}
+
+/* ============================================
+   LIGHT MODE THEME
+   Pro budoucí implementaci světlého režimu
+   ============================================ */
+[data-theme="light"] {
+  --bg-dark: #f5f7fa;
+  --bg-darker: #e8ebf0;
+  --bg-primary: #f5f7fa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e8ebf0;
+  
+  --card-bg: #ffffff;
+  --card-hover: #f8fafc;
+  
+  --text-white: #1f2937;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-gray: #9ca3af;
+  
+  --border-color: #e5e7eb;
+  --border-light: rgba(0, 0, 0, 0.1);
+}

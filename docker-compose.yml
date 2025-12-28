@@ -1,0 +1,60 @@
+services:
+  # Django Backend
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: plutoa-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - ./media:/app/media
+    environment:
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=finance_platform.settings
+    depends_on:
+      - db
+    networks:
+      - plutoa-network
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: plutoa-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000/api
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
+    networks:
+      - plutoa-network
+
+  # PostgreSQL Database (pro produkci)
+  db:
+    image: postgres:15-alpine
+    container_name: plutoa-db
+    environment:
+      - POSTGRES_DB=plutoa
+      - POSTGRES_USER=plutoa
+      - POSTGRES_PASSWORD=plutoa123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - plutoa-network
+
+networks:
+  plutoa-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

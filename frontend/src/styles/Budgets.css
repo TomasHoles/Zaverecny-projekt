@@ -1,15 +1,14 @@
-:root {
-  --bg-dark: #0a0a0c;
-  --card-bg: #111113;
-  --text-white: #ffffff;
-  --text-gray: #888888;
-  --accent-purple: #8b5cf6;
-  --accent-green: #10b981;
-  --accent-yellow: #ccff00;
-  --accent-teal: #14b8a6;
-  --accent-red: #8b5cf6;
-  --border-color: #222224;
-}
+/**
+ * Budgets.css - Styly pro stránku rozpočtů
+ * 
+ * @author Tomáš Holes
+ * @description Styly pro:
+ *   - Přehled rozpočtů s progress bary
+ *   - Formulář pro vytvoření rozpočtu
+ *   - Karty rozpočtů se stavy
+ * 
+ * @note Proměnné jsou definovány centrálně v variables.css
+ */
 
 .budgets-page {
   background-color: var(--bg-dark);
@@ -194,6 +193,39 @@
   margin: 0;
 }
 
+/* Období rozpočtu */
+.budget-period {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(139, 92, 246, 0.1);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text-gray);
+  margin-bottom: 12px;
+}
+
+.budget-period svg {
+  color: var(--accent-purple);
+  flex-shrink: 0;
+}
+
+.period-type {
+  color: var(--accent-purple);
+  font-weight: 500;
+}
+
+.period-dates {
+  color: var(--text-gray);
+}
+
+.period-dates::before {
+  content: '•';
+  margin-right: 8px;
+  color: var(--border-color);
+}
+
 .budget-amounts {
   display: flex;
   justify-content: space-between;
@@ -375,6 +407,18 @@ input:focus {
   border-color: var(--accent-purple);
 }
 
+select option {
+  background-color: #1a1a1d;
+  color: #ffffff;
+  padding: 10px;
+}
+
+select option:hover,
+select option:checked {
+  background-color: #2a2a2d;
+  color: #ffffff;
+}
+
 .form-row {
   display: flex;
   gap: 15px;
@@ -398,6 +442,12 @@ input:focus {
   padding: 12px;
   border-radius: 10px;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-purple);
 }
 
 .btn-submit {

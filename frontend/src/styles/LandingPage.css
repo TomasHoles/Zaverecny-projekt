@@ -1,19 +1,20 @@
-/* Landing Page - Neon Theme */
-:root {
-  --bg-dark: #0a0a0f;
-  --bg-darker: #05050a;
-  --card-bg: #13131a;
-  --card-hover: #1a1a24;
-  --accent-yellow: #ccff00;
-  --accent-purple: #8b5cf6;
-  --accent-blue: #3B82F6;
-  --accent-green: #10B981;
-  --text-primary: #ffffff;
-  --text-secondary: #9ca3af;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --glow-yellow: rgba(204, 255, 0, 0.5);
-  --glow-purple: rgba(139, 92, 246, 0.5);
-}
+/**
+ * LandingPage.css - Styly pro úvodní marketingovou stránku
+ * 
+ * @author Tomáš Holes
+ * @description Styly pro:
+ *   - Hero sekce s Prism WebGL animací
+ *   - Feature cards grid
+ *   - CTA sekce
+ *   - Responzivní design pro všechna zařízení
+ * 
+ * @performance
+ *   - content-visibility pro lazy rendering sekcí
+ *   - will-change pro GPU akceleraci animací
+ *   - Fallback pro slabé počítače
+ * 
+ * @note Proměnné jsou definovány centrálně v variables.css
+ */
 
 .landing-page {
   background: var(--bg-dark);
@@ -40,6 +41,63 @@
   height: 100%;
   z-index: 0;
   opacity: 0.6;
+  will-change: transform;
+  contain: layout style paint;
+}
+
+/* Statické pozadí pro slabé počítače */
+.static-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 30% 40%, rgba(139, 92, 246, 0.3) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 60%, rgba(204, 255, 0, 0.2) 0%, transparent 50%),
+              var(--bg-dark);
+  overflow: hidden;
+}
+
+.gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: float 8s ease-in-out infinite;
+}
+
+.gradient-orb.orb-1 {
+  width: 400px;
+  height: 400px;
+  background: rgba(139, 92, 246, 0.4);
+  top: 20%;
+  left: 20%;
+}
+
+.gradient-orb.orb-2 {
+  width: 350px;
+  height: 350px;
+  background: rgba(204, 255, 0, 0.3);
+  bottom: 20%;
+  right: 20%;
+  animation-delay: -4s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -20px); }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .gradient-orb {
+    animation: none;
+  }
+  .floating-card {
+    animation: none !important;
+  }
+  .scroll-arrow span {
+    animation: none !important;
+  }
 }
 
 .hero-section {
@@ -49,6 +107,17 @@
   padding: 2rem;
   max-width: 900px;
   margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .hero-content h1 {
@@ -70,9 +139,10 @@
   color: var(--text-secondary);
   margin-bottom: 2.5rem;
   line-height: 1.8;
-  max-width: 700px;
+  max-width: 500px;
   margin-left: auto;
   margin-right: auto;
+  text-align: center;
 }
 
 .hero-buttons {
@@ -128,7 +198,7 @@
 .scroll-indicator {
   position: absolute;
   bottom: 8rem;
-  left: 50%;
+  left: 49.5%;
   transform: translateX(-50%);
   cursor: pointer;
   z-index: 2;
@@ -442,6 +512,8 @@ section h2 {
 .features-section {
   background: var(--bg-darker);
   padding: 6rem 0;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 800px;
 }
 
 .features-grid-new {
@@ -657,6 +729,8 @@ section h2 {
   padding: 6rem 0;
   position: relative;
   overflow: hidden;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
 }
 
 .cta-section .container {

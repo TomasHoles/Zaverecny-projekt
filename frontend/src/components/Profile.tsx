@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import api from '../services/api';
-import { User, Mail, DollarSign, Lock, Shield, Calendar, Edit2, Camera, Check, AlertCircle, X } from 'lucide-react';
+import { User, Mail, DollarSign, Lock, Shield, Calendar, Edit2, Camera, Check, AlertCircle, X, Trash2, Plus, Clock, Database } from 'lucide-react';
 import '../styles/Profile.css';
 
 interface ProfileData {
@@ -19,12 +20,14 @@ interface PasswordData {
 
 const Profile: React.FC = () => {
   const { user, setUser } = useAuth();
+  const toast = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [generatingData, setGeneratingData] = useState(false);
 
   const [formData, setFormData] = useState<ProfileData>({
     first_name: user?.first_name || '',
@@ -179,6 +182,44 @@ const Profile: React.FC = () => {
       setErrorMessage(err.response?.data?.error || 'Nepodařilo se nahrát avatar. Zkuste to prosím znovu.');
     } finally {
       setUploadingAvatar(false);
+    }
+  };
+
+  const handleGenerateDemoData = async () => {
+    if (!user) return;
+
+    try {
+      setGeneratingData(true);
+      const response = await api.post('/transactions/generate-demo-data/');
+      toast.success(response.data.message || 'Demo data byla úspěšně vytvořena!');
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Nepodařilo se vytvořit demo data');
+      setGeneratingData(false);
+    }
+  };
+
+  const handleDeleteAllData = async () => {
+    if (!user) return;
+
+    if (!window.confirm('Opravdu chcete smazat VŠECHNA data? Tato akce je nevratná!')) {
+      return;
+    }
+
+    try {
+      setGeneratingData(true);
+      const response = await api.post('/transactions/delete-all-data/');
+      toast.success(response.data.message || 'Všechna data byla smazána!');
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Nepodařilo se smazat data');
+      setGeneratingData(false);
     }
   };
 
@@ -465,6 +506,49 @@ const Profile: React.FC = () => {
                   day: 'numeric'
                 })}</p>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="profile-card data-management-card">
+          <div className="profile-card-header">
+            <h2>Správa dat</h2>
+          </div>
+          <div className="data-management-section">
+            <div className="data-action-item">
+              <div className="data-action-info">
+                <Database size={24} />
+                <div>
+                  <h3>Vygenerovat demo data</h3>
+                  <p>Vytvoří ukázkové transakce, rozpočty a finanční cíle pro testování aplikace.</p>
+                </div>
+              </div>
+              <button
+                className="data-action-button generate"
+                onClick={handleGenerateDemoData}
+                disabled={generatingData}
+              >
+                {generatingData ? <Clock size={18} /> : <Plus size={18} />}
+                {generatingData ? 'Generuji...' : 'Vygenerovat'}
+              </button>
+            </div>
+
+            <div className="data-action-item danger">
+              <div className="data-action-info">
+                <Trash2 size={24} />
+                <div>
+                  <h3>Smazat všechna data</h3>
+                  <p>Trvale odstraní všechny vaše transakce, rozpočty, cíle a kategorie. Tato akce je nevratná!</p>
+                </div>
+              </div>
+              <button
+                className="data-action-button delete"
+                onClick={handleDeleteAllData}
+                disabled={generatingData}
+              >
+                <Trash2 size={18} />
+                Smazat vše
+              </button>
             </div>
           </div>
         </div>

@@ -1,4 +1,15 @@
-/* Waterfall Chart Component */
+/**
+ * WaterfallChart.css - Styly pro kaskádový graf cash flow
+ * 
+ * @author Tomáš Holes
+ * @description Waterfall chart vizualizující:
+ *   - Příjmy (zelené sloupce)
+ *   - Výdaje (červené sloupce)
+ *   - Celkový součet
+ * 
+ * @note Proměnné jsou definovány centrálně v variables.css
+ */
+
 .waterfall-chart-container {
   background: var(--bg-secondary);
   border: 1px solid var(--bg-tertiary);
@@ -114,19 +125,6 @@
   color: var(--text-secondary);
   padding-top: 0.5rem;
   border-top: 1px solid var(--bg-tertiary);
-}
-
-/* Color Variables */
-:root {
-  --waterfall-income: rgba(16, 185, 129, 0.8);
-  --waterfall-expense: rgba(239, 68, 68, 0.8);
-  --waterfall-total: rgba(99, 102, 241, 0.8);
-}
-
-[data-theme="light"] {
-  --waterfall-income: rgba(16, 185, 129, 0.9);
-  --waterfall-expense: rgba(239, 68, 68, 0.9);
-  --waterfall-total: rgba(99, 102, 241, 0.9);
 }
 
 /* Responsive */

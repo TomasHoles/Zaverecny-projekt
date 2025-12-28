@@ -1,15 +1,14 @@
-:root {
-  --bg-dark: #0a0a0c;
-  --card-bg: #111113;
-  --text-white: #ffffff;
-  --text-gray: #888888;
-  --accent-purple: #8b5cf6;
-  --accent-green: #10b981;
-  --accent-yellow: #ccff00;
-  --accent-teal: #14b8a6;
-  --accent-red: #8b5cf6;
-  --border-color: #222224;
-}
+/**
+ * Profile.css - Styly pro stránku profilu uživatele
+ * 
+ * @author Tomáš Holes
+ * @description Styly pro:
+ *   - Zobrazení a editace profilu
+ *   - Avatar a osobní údaje
+ *   - Sekce pro správu dat
+ * 
+ * @note Proměnné jsou definovány centrálně v variables.css
+ */
 
 .profile-page {
   background-color: var(--bg-dark);
@@ -211,6 +210,18 @@
   border-color: var(--accent-purple);
 }
 
+.form-group select option {
+  background-color: #1a1a1d;
+  color: #ffffff;
+  padding: 10px;
+}
+
+.form-group select option:hover,
+.form-group select option:checked {
+  background-color: #2a2a2d;
+  color: #ffffff;
+}
+
 .form-group input:disabled,
 .form-group select:disabled {
   opacity: 0.7;
@@ -232,6 +243,12 @@
   border-radius: 10px;
   cursor: pointer;
   font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.cancel-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-purple);
 }
 
 .save-button {
@@ -455,5 +472,115 @@
   .form-select {
     padding: 10px 12px;
     font-size: 14px;
+  }
+}
+
+/* Data Management Section */
+.data-management-card {
+  margin-top: 20px;
+}
+
+.data-management-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.data-action-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  gap: 20px;
+}
+
+.data-action-item.danger {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.data-action-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex: 1;
+}
+
+.data-action-info svg {
+  color: var(--accent-purple);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.data-action-item.danger .data-action-info svg {
+  color: #ef4444;
+}
+
+.data-action-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+  color: var(--text-white);
+}
+
+.data-action-info p {
+  font-size: 14px;
+  color: var(--text-gray);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.data-action-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  border: none;
+}
+
+.data-action-button.generate {
+  background: var(--accent-purple);
+  color: white;
+}
+
+.data-action-button.generate:hover:not(:disabled) {
+  background: #7c3aed;
+  transform: translateY(-1px);
+}
+
+.data-action-button.delete {
+  background: #ef4444;
+  color: white;
+}
+
+.data-action-button.delete:hover:not(:disabled) {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.data-action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 640px) {
+  .data-action-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .data-action-button {
+    justify-content: center;
+    width: 100%;
   }
 }

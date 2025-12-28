@@ -209,6 +209,76 @@ class AnalyticsViewSet(viewsets.ViewSet):
         return Response(analytics_data)
 
     @action(detail=False, methods=['get'])
+    def heatmap(self, request):
+        """
+        Denní data pro heatmap kalendář - zobrazuje aktivitu za posledních N měsíců
+        """
+        months = int(request.query_params.get('months', 3))
+        
+        end_date = timezone.now().date()
+        start_date = end_date - timedelta(days=months * 31)  # Přibližně N měsíců
+        
+        # Získat všechny transakce za období
+        transactions = Transaction.objects.filter(
+            user=request.user,
+            date__range=[start_date, end_date]
+        )
+        
+        # Agregovat podle dní
+        daily_data = {}
+        
+        # Inicializovat všechny dny v rozsahu
+        current_date = start_date
+        while current_date <= end_date:
+            date_str = current_date.isoformat()
+            daily_data[date_str] = {
+                'date': date_str,
+                'income': 0,
+                'expenses': 0,
+                'transaction_count': 0,
+                'balance': 0
+            }
+            current_date += timedelta(days=1)
+        
+        # Naplnit daty z transakcí
+        for tx in transactions:
+            date_str = tx.date.isoformat()
+            if date_str in daily_data:
+                if tx.type == 'INCOME':
+                    daily_data[date_str]['income'] += float(tx.amount)
+                elif tx.type == 'EXPENSE':
+                    daily_data[date_str]['expenses'] += float(tx.amount)
+                daily_data[date_str]['transaction_count'] += 1
+        
+        # Vypočítat bilanci pro každý den
+        for date_str in daily_data:
+            daily_data[date_str]['balance'] = (
+                daily_data[date_str]['income'] - daily_data[date_str]['expenses']
+            )
+        
+        # Převést na seznam seřazený podle data
+        result = list(daily_data.values())
+        result.sort(key=lambda x: x['date'])
+        
+        # Statistiky
+        total_transactions = sum(d['transaction_count'] for d in result)
+        active_days = sum(1 for d in result if d['transaction_count'] > 0)
+        total_income = sum(d['income'] for d in result)
+        total_expenses = sum(d['expenses'] for d in result)
+        
+        return Response({
+            'daily_data': result,
+            'stats': {
+                'total_transactions': total_transactions,
+                'active_days': active_days,
+                'total_days': len(result),
+                'total_income': total_income,
+                'total_expenses': total_expenses,
+                'balance': total_income - total_expenses
+            }
+        })
+
+    @action(detail=False, methods=['get'])
     def spending_patterns(self, request):
         """
         Analýza vzorů utrácení - průměry, frekvence, trendy

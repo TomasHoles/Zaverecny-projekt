@@ -268,6 +268,65 @@ cd frontend && npm start
 POST /api/transactions/generate-demo-data/
 ```
 
+---
+
+## 🐳 Docker
+
+### Spuštění pomocí Docker Compose (development)
+
+```bash
+# Spuštění všech služeb
+docker-compose up -d
+
+# Zobrazení logů
+docker-compose logs -f
+
+# Zastavení
+docker-compose down
+```
+
+Aplikace bude dostupná na:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- PostgreSQL: localhost:5432
+
+### Spuštění v produkčním módu
+
+```bash
+# Nastavení environment proměnných
+export SECRET_KEY="your-secret-key-here"
+export DB_PASSWORD="secure-password"
+
+# Spuštění produkčních kontejnerů
+docker-compose -f docker-compose.prod.yml up -d --build
+```
+
+Produkční aplikace bude dostupná na:
+- Frontend: http://localhost (port 80)
+- Backend API: http://localhost:8000
+
+### Užitečné Docker příkazy
+
+```bash
+# Rebuild kontejnerů
+docker-compose up -d --build
+
+# Spuštění migrací v kontejneru
+docker-compose exec backend python manage.py migrate
+
+# Vytvoření superuživatele
+docker-compose exec backend python manage.py createsuperuser
+
+# Přístup do shell kontejneru
+docker-compose exec backend bash
+docker-compose exec frontend sh
+
+# Vyčištění všeho
+docker-compose down -v --rmi all
+```
+
+---
+
 ### Důležité závislosti
 
 - **OGL**: WebGL knihovna pro Prism animaci na landing page

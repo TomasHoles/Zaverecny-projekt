@@ -1,4 +1,16 @@
-/* Navbar - Fundja Dark Theme */
+/**
+ * Navbar.css - Styly pro navigační lištu
+ * 
+ * @author Tomáš Holes
+ * @description Styly pro:
+ *   - Hlavní navigace s blur efektem
+ *   - Dropdown menu pro profil
+ *   - Notifikace ikonka
+ *   - Responzivní mobilní menu
+ * 
+ * @note Proměnné jsou definovány centrálně v variables.css
+ */
+
 .navbar {
   background: rgba(10, 10, 15, 0.95);
   backdrop-filter: blur(20px);
@@ -109,8 +121,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(139, 92, 246, 0.05);
-  border: 1px solid rgba(139, 92, 246, 0.1);
+  background: transparent;
+  border: none;
   border-radius: 10px;
   width: 40px;
   height: 40px;
@@ -119,10 +131,9 @@
 }
 
 .notification-link:hover {
-  background: rgba(139, 92, 246, 0.15);
-  border-color: rgba(139, 92, 246, 0.3);
-  transform: scale(1.05);
-  color: #8b5cf6;
+  background: transparent;
+  transform: scale(1.1);
+  color: #ccff00;
 }
 
 .notification-link svg {
@@ -130,7 +141,8 @@
 }
 
 .notification-link:hover svg {
-  stroke: #8b5cf6;
+  stroke: #ccff00;
+  filter: drop-shadow(0 0 8px rgba(204, 255, 0, 0.6));
 }
 
 .notification-link:active {

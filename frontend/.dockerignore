@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Build
+build/
+dist/
+
+# IDE
+.idea/
+.vscode/
+
+# Misc
+*.md
+.env
+.env.local
+npm-debug.log

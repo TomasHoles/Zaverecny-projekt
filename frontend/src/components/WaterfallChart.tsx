@@ -147,13 +147,13 @@ const WaterfallChart: React.FC<WaterfallChartProps> = ({ transactions, startBala
     switch (type) {
       case 'start':
       case 'end':
-        return 'var(--waterfall-total)';
+        return 'rgba(99, 102, 241, 0.8)';  // Fialová pro stav účtu
       case 'income':
-        return 'var(--waterfall-income)';
+        return 'rgba(16, 185, 129, 0.8)';  // Zelená pro příjmy
       case 'expense':
-        return 'var(--waterfall-expense)';
+        return 'rgba(239, 68, 68, 0.8)';   // Červená pro výdaje
       default:
-        return 'var(--text-secondary)';
+        return '#9ca3af';
     }
   };
 
@@ -236,15 +236,15 @@ const WaterfallChart: React.FC<WaterfallChartProps> = ({ transactions, startBala
       
       <div className="waterfall-legend">
         <div className="legend-item">
-          <div className="legend-color" style={{ background: 'var(--waterfall-income)' }}></div>
+          <div className="legend-color" style={{ background: 'rgba(16, 185, 129, 0.8)' }}></div>
           <span>Příjmy</span>
         </div>
         <div className="legend-item">
-          <div className="legend-color" style={{ background: 'var(--waterfall-expense)' }}></div>
+          <div className="legend-color" style={{ background: 'rgba(239, 68, 68, 0.8)' }}></div>
           <span>Výdaje</span>
         </div>
         <div className="legend-item">
-          <div className="legend-color" style={{ background: 'var(--waterfall-total)' }}></div>
+          <div className="legend-color" style={{ background: 'rgba(99, 102, 241, 0.8)' }}></div>
           <span>Stav účtu</span>
         </div>
       </div>

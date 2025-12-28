@@ -1,40 +1,14 @@
-:root {
-  /* Moderní kryptoměnový dark mode design */
-  --bg-primary: #0A0A0B;
-  /* Téměř černé pozadí s nádechem fialové */
-  --bg-secondary: #1A1A1D;
-  /* Antracitová pro karty */
-  --bg-tertiary: #2A2A2F;
-  /* Tmavě šedá pro hover efekty */
-
-  /* Text */
-  --text-primary: #FFFFFF;
-  /* Čistě bílý hlavní text */
-  --text-secondary: #A0A0B0;
-  /* Světle šedý sekundární text */
-
-  /* Akcenty - kryptoměnová paleta */
-  --accent-primary: #ccff00;
-  /* Neonově žlutá */
-  --accent-secondary: #8b5cf6;
-  /* Fialová */
-  --accent-tertiary: #E91E63;
-  /* Růžová pro detaily */
-}
-
-/* Light Mode Theme */
-[data-theme="light"] {
-  --bg-primary: #F5F7FA;
-  --bg-secondary: #FFFFFF;
-  --bg-tertiary: #E8EBF0;
-
-  --text-primary: #1A1A1D;
-  --text-secondary: #5A5A6B;
-
-  --accent-primary: #ccff00;
-  --accent-secondary: #8b5cf6;
-  --accent-tertiary: #E91E63;
-}
+/**
+ * App.css - Hlavní layoutové styly aplikace
+ * 
+ * @author Tomáš Holes
+ * @description Styly pro:
+ *   - Základní layout aplikace (app wrapper, main content)
+ *   - Body styly a pozadí
+ *   - Light mode override (pokud bude implementován)
+ * 
+ * @note Proměnné jsou definovány centrálně v variables.css
+ */
 
 body {
   background: radial-gradient(circle at center, rgba(139, 92, 246, 0.05) 0%, var(--bg-primary) 70%);

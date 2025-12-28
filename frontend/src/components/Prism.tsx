@@ -62,11 +62,16 @@ const Prism = ({
     const HOVSTR = Math.max(0, hoverStrength || 1);
     const INERT = Math.max(0, Math.min(1, inertia || 0.12));
 
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    // Optimalizace: nižší DPR na mobilech a slabších zařízeních
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const baseDpr = window.devicePixelRatio || 1;
+    const dpr = isMobile ? Math.min(1.5, baseDpr) : Math.min(2, baseDpr);
+    
     const renderer = new Renderer({
       dpr,
       alpha: transparent,
-      antialias: false
+      antialias: false,
+      powerPreference: 'low-power' // Preferuje úspornější GPU
     });
     const gl = renderer.gl;
     gl.disable(gl.DEPTH_TEST);

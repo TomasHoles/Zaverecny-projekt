@@ -1,4 +1,22 @@
+/**
+ * accountService.ts - Služba pro správu finančních účtů
+ * 
+ * @author Tomáš Holes
+ * @description Poskytuje metody pro:
+ *   - CRUD operace s finančními účty
+ *   - Přehled účtů a zůstatků
+ *   - Převody mezi účty
+ * 
+ * @exports
+ *   - FinancialAccount, FinancialAccountSummary
+ *   - AccountOptions, CreateAccountData
+ *   - accountService (singleton)
+ */
 import api from './api';
+
+/* ============================================
+   INTERFACES - Typové definice pro účty
+   ============================================ */
 
 export interface FinancialAccount {
     id: number;

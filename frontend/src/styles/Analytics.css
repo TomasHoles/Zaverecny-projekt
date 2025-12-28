@@ -1,15 +1,14 @@
-:root {
-  --bg-dark: #0a0a0c;
-  --card-bg: #111113;
-  --text-white: #ffffff;
-  --text-gray: #888888;
-  --accent-purple: #8b5cf6;
-  --accent-green: #10b981;
-  --accent-yellow: #ccff00;
-  --accent-teal: #14b8a6;
-  --accent-red: #8b5cf6;
-  --border-color: #222224;
-}
+/**
+ * Analytics.css - Styly pro stránku analytiky
+ * 
+ * @author Tomáš Holes
+ * @description Styly pro:
+ *   - Grafy a vizualizace (pie chart, bar chart, heatmap)
+ *   - Karty s metriky a insights
+ *   - Trendové analýzy
+ * 
+ * @note Proměnné jsou definovány centrálně v variables.css
+ */
 
 .analytics-page {
   background-color: var(--bg-dark);
@@ -17,6 +16,7 @@
   min-height: 100vh;
   padding: 15px 25px;
   font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
 }
 
 /* Header */
@@ -348,6 +348,7 @@
 /* Charts Layout */
 .analytics-charts {
   margin-bottom: 20px;
+  overflow: hidden;
 }
 
 .analytics-charts-row {
@@ -355,9 +356,6 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   margin-bottom: 20px;
-  max-width: 1400px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .chart-card {
@@ -365,13 +363,12 @@
   border-radius: 16px;
   padding: 20px;
   border: 1px solid var(--border-color);
+  overflow: hidden;
+  min-width: 0;
 }
 
 .chart-card-full {
   width: 100%;
-  max-width: 1400px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .chart-header {
@@ -386,7 +383,8 @@
 
 .recharts-container {
   width: 100%;
-  height: 280px;
+  min-height: 280px;
+  overflow: hidden;
 }
 
 .custom-tooltip {

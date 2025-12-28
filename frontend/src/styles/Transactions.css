@@ -1,15 +1,15 @@
-:root {
-  --bg-dark: #0a0a0c;
-  --card-bg: #111113;
-  --text-white: #ffffff;
-  --text-gray: #888888;
-  --accent-purple: #8b5cf6;
-  --accent-green: #10b981;
-  --accent-yellow: #ccff00;
-  --accent-teal: #14b8a6;
-  --accent-red: #8b5cf6;
-  --border-color: #222224;
-}
+/**
+ * Transactions.css - Styly pro stránku transakcí
+ * 
+ * @author Tomáš Holes
+ * @description Styly pro:
+ *   - Seznam transakcí a filtry
+ *   - Formulář pro přidání/editaci transakcí
+ *   - Modální okna
+ *   - Responzivní layout
+ * 
+ * @note Proměnné jsou definovány centrálně v variables.css
+ */
 
 .transactions-page {
   background-color: var(--bg-dark);
@@ -369,6 +369,11 @@
   border-radius: 6px;
   cursor: pointer;
   font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel-delete:hover {
+  background: rgba(239, 68, 68, 0.1);
 }
 
 /* Modal */
@@ -474,17 +479,19 @@ select.form-input option:checked {
 .btn-submit {
   width: 100%;
   background: var(--accent-yellow);
-  color: var(--bg-dark);
+  color: #000000;
   border: none;
   padding: 12px;
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
   margin-top: 10px;
+  transition: all 0.2s ease;
 }
 
 .btn-submit:hover {
-  opacity: 0.9;
+  background: #b8e600;
+  transform: translateY(-1px);
 }
 
 /* Empty State */

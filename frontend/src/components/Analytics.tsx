@@ -24,6 +24,7 @@ import dashboardService, {
 } from '../services/dashboardService';
 import WaterfallChart from './WaterfallChart';
 import CategoryPieChart from './CategoryPieChart';
+import HeatmapCalendar from './HeatmapCalendar';
 import {
   Check, TrendingUp, AlertTriangle, Lightbulb, Star, Info,
   BarChart2, TrendingDown, Minus, PieChart, RefreshCw
@@ -411,6 +412,9 @@ const Analytics: React.FC = () => {
           {/* Enhanced Visualizations */}
           {analytics?.transactions && analytics.transactions.length > 0 && (
             <>
+              {/* Heatmap Calendar */}
+              <HeatmapCalendar months={3} />
+
               {/* Waterfall Chart */}
               <WaterfallChart
                 transactions={analytics.transactions}

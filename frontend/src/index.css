@@ -1,3 +1,19 @@
+/**
+ * index.css - Globální styly aplikace Plutoa
+ * 
+ * @author Tomáš Holes
+ * @description Základní globální styly a resetování výchozích stylů prohlížeče.
+ *              Tento soubor je importován jako první v index.tsx.
+ * 
+ * @imports Importuje variables.css pro centrální CSS proměnné
+ */
+
+/* Import centrálních CSS proměnných */
+@import './styles/variables.css';
+
+/* ============================================
+   RESET A ZÁKLADNÍ STYLY
+   ============================================ */
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,9 +21,52 @@ body {
         sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
 }
 
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
         monospace;
+}
+
+/* ============================================
+   GLOBÁLNÍ OPRAVY PRO FORMULÁŘE
+   Řeší problém bílé na bílé v dark theme
+   ============================================ */
+select {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+}
+
+select option {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 10px;
+}
+
+select option:hover,
+select option:focus,
+select option:checked {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+/* Oprava pro input date/time v tmavém režimu */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+    color-scheme: dark;
+}
+
+/* Oprava autocomplete pozadí */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px var(--bg-secondary) inset !important;
+    -webkit-text-fill-color: var(--text-primary) !important;
+    transition: background-color 5000s ease-in-out 0s;
 }
