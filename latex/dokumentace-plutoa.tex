@@ -319,15 +319,25 @@ Byla zvolena architektura \textbf{client-server} s~odděleným frontendem a back
 
 \chapter{Použité technologie}
 
-V~následujících sekcích jsou popsány hlavní použité technologie.
+V~následujících sekcích jsou popsány hlavní použité technologie, které byly zvoleny s~ohledem na moderní trendy a škálovatelnost aplikace.
 
 \section{Backend technologie}
 
-Backend je postaven na \textbf{Django 5.2} s~\textbf{Django REST Framework 3.16} pro API a \textbf{SimpleJWT 5.5} pro JWT autentizaci.
+Backend aplikace je vybudován na frameworku \textbf{Django 5.2}, který byl zvolen pro svou rychlost vývoje. Django poskytuje integrovaný ORM (Object-Relational Mapping) pro efektivní práci s~databází a abstrakci nad SQL dotazy.
+
+Pro tvorbu RESTful API byl využit \textbf{Django REST Framework (DRF) 3.16}. Tento toolkit umožňuje efektivní serializaci dat z~Django modelů do formátu JSON a poskytuje nástroje pro správu viewsetů a routerů. Autentizace je zajištěna knihovnou \textbf{SimpleJWT 5.5}, která implementuje standard JSON Web Token (JWT) pro bezstavové ověřování uživatelů.
+
+Jako databázový systém pro produkční prostředí slouží \textbf{PostgreSQL 16}, který nabízí pokročilé funkce a transakční integritu. Pro vývojové účely byla využita databáze \textbf{SQLite}.
 
 \section{Frontend technologie}
 
-Frontend je postaven na \textbf{React 19} s~\textbf{TypeScriptem 4.9}. Pro vizualizace dat je použita knihovna \textbf{Recharts 3.4}, která poskytuje interaktivní grafy (BarChart, PieChart, AreaChart, LineChart). Komunikace s~API probíhá přes \textbf{Axios 1.13}.
+Klientská část je implementována jako Single Page Application (SPA) pomocí knihovny \textbf{React 19}.
+
+Pro zvýšení kvality kódu byl zvolen jazyk \textbf{TypeScript 4.9}. Statické typování pomáhá předcházet chybám již v~době kompilace a výrazně zlepšuje našeptávání (IntelliSense) v~editoru kódu.
+
+Vizualizace dat jsou realizovány pomocí knihovny \textbf{Recharts 3.4}, která je postavena na SVG elementech a poskytuje flexibilní sadu komponent pro tvorbu responsivních grafů (např. LineChart, BarChart, PieChart). Komunikaci se serverem zajišťuje \textbf{Axios 1.13}, promise-based HTTP klient, který zjednodušuje práci s~požadavky a umožňuje globální konfiguraci interceptorů pro práci s tokeny.
+
+Pro konzistentní vzhled ikon v~celé aplikaci je využita knihovna \textbf{Lucide React}, která poskytuje sadu moderních a lehkých SVG ikon.
 
 \chapter{Implementace backendu}
 
@@ -445,7 +455,7 @@ Analýza trendů v~jednotlivých kategoriích porovnává aktuální období s~p
 	\label{fig:trend-analysis}
 \end{figure}
 
-\subsection{AI Insights}
+\subsection{Insights}
 
 Modul Insights analyzuje transakční historii uživatele a~generuje personalizované postřehy a rady. Systém automaticky detekuje:
 

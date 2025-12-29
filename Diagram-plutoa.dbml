@@ -1,92 +1,157 @@
-Table users [headercolor: #175e7a] {
-	id integer [ pk, increment, unique ]
-	username varchar(30) [ not null ]
-	email varchar(254)
-	password varchar(128) [ not null ]
-	first_name varchar(30)
-	last_name varchar(30)
-	avatar varchar(100)
-	currency_preference varchar(3) [ default: USD ]
-	is_active boolean [ default: true ]
-	is_verified boolean [ default: true ]
-	is_staff boolean [ default: false ]
-	is_superuser boolean [ default: false ]
-	date_joined timestamp [ not null, default: `now()` ]
-	last_login timestamp
+// Plutoa Database Schema
+// Generated based on Django models
+
+Project Plutoa {
+  database_type: 'PostgreSQL'
+  Note: 'Complex Personal Finance Management System'
 }
 
-Table categories [headercolor: #175e7a] {
-	id integer [ pk, increment, unique ]
-	name varchar(100) [ not null ]
-	description text
-	icon varchar(50)
-	color varchar(7) [ default: #000000 ]
-	user_id integer [ not null ]
-	created_at timestamp [ not null, default: `now()` ]
-	updated_at timestamp [ not null, default: `now()` ]
+Table User {
+  id integer [pk, increment]
+  username varchar [unique, note: 'Required. 30 characters or fewer.']
+  email varchar [note: 'Email address']
+  first_name varchar
+  last_name varchar
+  is_active boolean [default: true]
+  is_staff boolean [default: false]
+  is_superuser boolean [default: false]
+  date_joined datetime
+  avatar varchar [note: 'Path to avatar image']
+  currency_preference varchar [default: 'CZK']
+  is_verified boolean [default: true]
 }
 
-Table transactions [headercolor: #175e7a] {
-	id integer [ pk, increment, unique ]
-	amount decimal(10,2) [ not null ]
-	type varchar(10) [ not null ]
-	category_id integer
-	user_id integer [ not null ]
-	date date [ not null ]
-	description text
-	created_at timestamp [ not null, default: `now()` ]
-	updated_at timestamp [ not null, default: `now()` ]
+Table PasswordResetToken {
+  id integer [pk, increment]
+  user_id integer [ref: > User.id]
+  token varchar [unique]
+  created_at datetime
+  used boolean [default: false]
 }
 
-Table budgets [headercolor: #175e7a] {
-	id integer [ pk, increment, unique ]
-	name varchar(100) [ not null ]
-	amount decimal(10,2) [ not null ]
-	start_date date [ not null ]
-	end_date date [ not null ]
-	period varchar(10) [ not null ]
-	user_id integer [ not null ]
-	created_at timestamp [ not null, default: `now()` ]
-	updated_at timestamp [ not null, default: `now()` ]
+Table FinancialAccount {
+  id integer [pk, increment]
+  user_id integer [ref: > User.id]
+  name varchar
+  account_type varchar [note: 'CHECKING, SAVINGS, CASH, CREDIT, INVESTMENT, OTHER']
+  initial_balance decimal [default: 0]
+  currency varchar [default: 'CZK']
+  color varchar
+  icon varchar
+  is_active boolean [default: true]
+  is_default boolean [default: false]
+  include_in_total boolean [default: true]
+  description text
+  created_at datetime
+  updated_at datetime
 }
 
-Table budget_categories [headercolor: #175e7a] {
-	id integer [ pk, increment, unique ]
-	budget_id integer [ not null ]
-	category_id integer [ not null ]
-	allocated_amount decimal(10,2) [ not null ]
+Table Category {
+  id integer [pk, increment]
+  user_id integer [ref: > User.id]
+  name varchar
+  description text
+  icon varchar
+  color varchar [default: '#000000']
+  category_type varchar [note: 'EXPENSE, INCOME, BOTH']
 }
 
-Table authtoken_token [headercolor: #175e7a] {
-	key varchar(40) [ pk, unique ]
-	created timestamp [ not null, default: `now()` ]
-	user_id integer [ not null ]
+Table Transaction {
+  id integer [pk, increment]
+  user_id integer [ref: > User.id]
+  account_id integer [ref: > FinancialAccount.id, note: 'Source account / Target for income']
+  to_account_id integer [ref: > FinancialAccount.id, note: 'Target account for transfers']
+  category_id integer [ref: > Category.id]
+  amount decimal
+  type varchar [note: 'EXPENSE, INCOME, TRANSFER']
+  date date
+  description text
+  created_at datetime
+  updated_at datetime
 }
 
-Ref fk_categories_user_id_users {
-	categories.user_id > users.id [ delete: no action, update: no action ]
+Table RecurringTransaction {
+  id integer [pk, increment]
+  user_id integer [ref: > User.id]
+  category_id integer [ref: > Category.id]
+  name varchar
+  description text
+  amount decimal
+  type varchar [note: 'INCOME, EXPENSE']
+  frequency varchar [note: 'DAILY, WEEKLY, BIWEEKLY, MONTHLY, QUARTERLY, YEARLY']
+  start_date date
+  end_date date
+  next_due_date date
+  status varchar [default: 'ACTIVE']
+  auto_create boolean [default: false]
+  notify_before_days integer [default: 3]
+  created_at datetime
+  updated_at datetime
 }
 
-Ref fk_transactions_user_id_users {
-	transactions.user_id > users.id [ delete: no action, update: no action ]
+Table RecurringTransactionHistory {
+  id integer [pk, increment]
+  recurring_transaction_id integer [ref: > RecurringTransaction.id]
+  transaction_id integer [ref: > Transaction.id]
+  created_at datetime
+  was_auto_created boolean [default: false]
 }
 
-Ref fk_transactions_category_id_categories {
-	transactions.category_id > categories.id [ delete: no action, update: no action ]
+Table Budget {
+  id integer [pk, increment]
+  user_id integer [ref: > User.id]
+  category_id integer [ref: > Category.id, note: 'Optional specific category']
+  name varchar
+  amount decimal
+  start_date date
+  end_date date
+  period varchar [note: 'MONTHLY, YEARLY, CUSTOM']
+  is_active boolean [default: true]
+  created_at datetime
+  updated_at datetime
 }
 
-Ref fk_budgets_user_id_users {
-	budgets.user_id > users.id [ delete: no action, update: no action ]
+Table BudgetCategory {
+  id integer [pk, increment]
+  budget_id integer [ref: > Budget.id]
+  category_id integer [ref: > Category.id]
+  allocated_amount decimal
 }
 
-Ref fk_budget_categories_budget_id_budgets {
-	budget_categories.budget_id > budgets.id [ delete: no action, update: no action ]
+Table FinancialGoal {
+  id integer [pk, increment]
+  user_id integer [ref: > User.id]
+  name varchar
+  description text
+  goal_type varchar [default: 'SAVINGS']
+  target_amount decimal
+  current_amount decimal [default: 0]
+  target_date date
+  status varchar [default: 'ACTIVE']
+  icon varchar
+  color varchar
+  created_at datetime
+  updated_at datetime
+  completed_at datetime
 }
 
-Ref fk_budget_categories_category_id_categories {
-	budget_categories.category_id > categories.id [ delete: no action, update: no action ]
+Table GoalContribution {
+  id integer [pk, increment]
+  goal_id integer [ref: > FinancialGoal.id]
+  amount decimal
+  date date
+  note varchar
+  created_at datetime
 }
 
-Ref fk_authtoken_token_user_id_users {
-	authtoken_token.user_id > users.id [ delete: no action, update: no action ]
+Table Notification {
+  id integer [pk, increment]
+  user_id integer [ref: > User.id]
+  related_budget_id integer [ref: > Budget.id]
+  related_goal_id integer [ref: > FinancialGoal.id]
+  type varchar [note: 'BUDGET_EXCEEDED, BUDGET_WARNING, RECURRING_DUE, GOAL_ACHIEVED...']
+  title varchar
+  message text
+  is_read boolean [default: false]
+  created_at datetime
 }
