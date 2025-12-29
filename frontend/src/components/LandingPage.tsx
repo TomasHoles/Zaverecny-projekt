@@ -17,11 +17,11 @@
  */
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  TrendingUp, 
-  PieChart, 
-  Target, 
-  Bell, 
+import {
+  TrendingUp,
+  PieChart,
+  Target,
+  Bell,
   Wallet,
   ArrowRight,
   CreditCard
@@ -31,38 +31,12 @@ import '../styles/LandingPage.css';
 // Lazy load Prism komponenty - načte se až když je potřeba
 const Prism = lazy(() => import('./Prism'));
 
-// Detekce slabého hardware
-const isLowEndDevice = (): boolean => {
-  // Detekce mobilů
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  
-  // Detekce počtu CPU jader (méně než 4 = slabý)
-  const lowCPU = navigator.hardwareConcurrency ? navigator.hardwareConcurrency < 4 : false;
-  
-  // Detekce málo paměti (méně než 4GB)
-  const lowMemory = (navigator as any).deviceMemory ? (navigator as any).deviceMemory < 4 : false;
-  
-  // Preference reduced motion
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  
-  return isMobile || lowCPU || lowMemory || prefersReducedMotion;
-};
 
-// Fallback gradient pozadí pro slabé počítače
-const StaticBackground: React.FC = () => (
-  <div className="static-background">
-    <div className="gradient-orb orb-1"></div>
-    <div className="gradient-orb orb-2"></div>
-  </div>
-);
 
 const LandingPage: React.FC = () => {
-  const [useStaticBg, setUseStaticBg] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Zkontroluj hardware při načtení
-    setUseStaticBg(isLowEndDevice());
     setIsLoaded(true);
   }, []);
 
@@ -80,24 +54,20 @@ const LandingPage: React.FC = () => {
         {/* Prism Background nebo statický fallback */}
         <div className="dither-background">
           {isLoaded && (
-            useStaticBg ? (
-              <StaticBackground />
-            ) : (
-              <Suspense fallback={<StaticBackground />}>
-                <Prism
-                  animationType="rotate"
-                  timeScale={0.5}
-                  height={3.5}
-                  baseWidth={5.5}
-                  scale={2.5}
-                  hueShift={0.46}
-                  colorFrequency={2.15}
-                  noise={0}
-                  glow={1}
-                  suspendWhenOffscreen={true}
-                />
-              </Suspense>
-            )
+            <Suspense fallback={null}>
+              <Prism
+                animationType="rotate"
+                timeScale={0.5}
+                height={3.5}
+                baseWidth={5.5}
+                scale={2.5}
+                hueShift={0.46}
+                colorFrequency={2.15}
+                noise={0}
+                glow={1}
+                suspendWhenOffscreen={true}
+              />
+            </Suspense>
           )}
         </div>
 
@@ -140,7 +110,7 @@ const LandingPage: React.FC = () => {
       <section className="features-section">
         <div className="container">
           <h2>Co Plutoa nabízí</h2>
-          
+
           <div className="features-grid-new">
             {/* Feature 1 - velká karta */}
             <div className="feature-card-large">
@@ -159,7 +129,7 @@ const LandingPage: React.FC = () => {
                 </div>
                 <h3>Sledování transakcí</h3>
                 <p>
-                  Zaznamenávejte všechny své příjmy a výdaje. Kategorizujte je, 
+                  Zaznamenávejte všechny své příjmy a výdaje. Kategorizujte je,
                   přidávejte poznámky a mějte přehled o každé koruně.
                 </p>
               </div>

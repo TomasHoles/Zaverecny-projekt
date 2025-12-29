@@ -1,3 +1,14 @@
+"""
+views.py - ViewSety a API Views pro aplikaci Accounts
+
+@author Tomáš Holes
+@description Obsahuje logiku pro:
+    - Správu uživatelů (registrace, přihlášení, profil)
+    - Správu finančních účtů (CRUD, nastavení výchozího účtu)
+    - Reset hesla a nahrávání avatara
+
+@note Používá Django REST Framework (ViewSet, GenericAPIView)
+"""
 from rest_framework import viewsets, status, generics
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response

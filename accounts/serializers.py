@@ -1,3 +1,13 @@
+"""
+serializers.py - Serializery pro aplikaci Accounts
+
+@author Tomáš Holes
+@description Obsahuje implementaci serializace a deserializace dat pro:
+    - Uživatele (registrace, login, profil)
+    - Finanční účty (CRUD operace, souhrny)
+
+@note Používá Django REST Framework serializery
+"""
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
@@ -9,7 +19,12 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer pro registraci a úpravu uživatelů.
-    Obsahuje validaci pro registraci pouze s username a heslem.
+    
+    Hashuje hesla při vytváření a úpravách.
+    Obsahuje validaci pro:
+    - Unikátní username
+    - Shodu hesel (password a password2)
+    - Sílu hesla (pomocí Django validátorů)
     """
     
     # Povinná pole pro registraci

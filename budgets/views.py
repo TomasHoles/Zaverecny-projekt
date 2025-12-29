@@ -1,3 +1,15 @@
+"""
+views.py - ViewSety pro aplikaci Budgets
+
+@author Tomáš Holes
+@description Obsahuje logiku pro:
+    - Správu rozpočtů (CRUD, aktivní/neaktivní)
+    - Kategorie rozpočtů (BudgetCategory)
+    - Přehledy (overview) a výpočty čerpání rozpočtu
+    - Budget Alerts (kontrola překročení, notifikace)
+
+@note Spolupracuje s BudgetAlertService pro výpočty a notifikace
+"""
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
@@ -9,6 +21,9 @@ from .serializers import BudgetSerializer, BudgetCategorySerializer
 from .services import BudgetAlertService
 
 class BudgetCategoryViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet pro správu kategorií v rámci rozpočtů.
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = BudgetCategorySerializer
 
@@ -20,6 +35,13 @@ class BudgetCategoryViewSet(viewsets.ModelViewSet):
 
 
 class BudgetViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet pro správu rozpočtů.
+    Poskytuje endpointy pro:
+    - CRUD operace s rozpočty
+    - Získání přehledu čerpání (overview)
+    - Kontrolu stavu (status) a alertů
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = BudgetSerializer
 

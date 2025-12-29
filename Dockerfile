@@ -1,5 +1,5 @@
 # Dockerfile pro Django backend
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 # Nastavení prostředí
 ENV PYTHONDONTWRITEBYTECODE=1

@@ -1,3 +1,12 @@
+"""
+views.py - ViewSety pro aplikaci Goals
+
+@author Tomáš Holes
+@description Obsahuje logiku pro:
+    - Správu finančních cílů (CRUD)
+    - Zaznamenávání příspěvků (contributions)
+    - Sledování pokroku a notifikace (při 50% a splnění)
+"""
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -9,6 +18,10 @@ from django.utils import timezone
 
 
 class FinancialGoalViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet pro správu finančních cílů.
+    Umožňuje přidávat příspěvky a kontrolovat stav cílů.
+    """
     serializer_class = FinancialGoalSerializer
     permission_classes = [IsAuthenticated]
     

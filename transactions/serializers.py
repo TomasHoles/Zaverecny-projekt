@@ -1,3 +1,12 @@
+"""
+serializers.py - Serializery pro aplikaci Transactions
+
+@author Tomáš Holes
+@description Obsahuje serializery pro:
+    - Transakce (vytváření, výpis, validace)
+    - Kategorie (vytváření, validace)
+    - Opakující se transakce
+"""
 from rest_framework import serializers
 from .models import Category, Transaction, RecurringTransaction, RecurringTransactionHistory
 from accounts.models import FinancialAccount

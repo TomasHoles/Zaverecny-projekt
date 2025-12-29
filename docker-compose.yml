@@ -13,8 +13,14 @@ services:
     environment:
       - DEBUG=True
       - DJANGO_SETTINGS_MODULE=finance_platform.settings
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=plutoa
+      - POSTGRES_USER=plutoa
+      - POSTGRES_PASSWORD=plutoa123
+    restart: unless-stopped
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - plutoa-network
 
@@ -32,14 +38,15 @@ services:
     environment:
       - REACT_APP_API_URL=http://localhost:8000/api
       - CHOKIDAR_USEPOLLING=true
+    restart: unless-stopped
     depends_on:
       - backend
     networks:
       - plutoa-network
 
-  # PostgreSQL Database (pro produkci)
+  # PostgreSQL Database (pro produkci i dev)
   db:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     container_name: plutoa-db
     environment:
       - POSTGRES_DB=plutoa
@@ -49,6 +56,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U plutoa -d plutoa" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
     networks:
       - plutoa-network
 

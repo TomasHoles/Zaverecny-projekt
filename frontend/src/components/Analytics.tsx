@@ -37,6 +37,12 @@ import '../styles/Analytics.css';
 
 // Helper funkce pro hodnocení finančního zdraví
 const getHealthRating = (score: number) => {
+  if (score === 0) {
+    return {
+      icon: <Info size={32} color="#9CA3AF" />,
+      color: '#9CA3AF'
+    };
+  }
   if (score >= 80) {
     return {
       icon: <Check size={32} color="#10b981" />,
@@ -229,6 +235,15 @@ const Analytics: React.FC = () => {
   const topCategory = getTopCategory();
   const savingsRate = getSavingsRate();
 
+
+  // Defaultní health score pro zobrazení i bez dat
+  const displayHealthScore = healthScore || {
+    score: 0,
+    max_score: 100,
+    rating: 'Zatím žádná data',
+    recommendations: ['Začněte přidávat transakce pro výpočet skóre finančního zdraví.']
+  };
+
   // Kontrola, zda má uživatel nějaká data
   const hasData = analytics && (
     analytics.total_income > 0 ||
@@ -286,6 +301,57 @@ const Analytics: React.FC = () => {
         </div>
       </div>
 
+      {/* Financial Health Score - Vždy zobrazeno */}
+      <div className="health-score-card" style={{ marginBottom: '24px' }}>
+        <div className="health-score-header">
+          <div className="health-score-icon">
+            {getHealthRating(displayHealthScore.score).icon}
+          </div>
+          <div className="health-score-info">
+            <h2>Finanční zdraví</h2>
+            <p className="health-score-rating">{displayHealthScore.rating}</p>
+          </div>
+        </div>
+        <div className="health-score-body">
+          <div className="health-score-gauge">
+            <svg viewBox="0 0 200 120" className="gauge-svg">
+              <path
+                d="M 20 100 A 80 80 0 0 1 180 100"
+                fill="none"
+                stroke="rgba(255,255,255,0.1)"
+                strokeWidth="20"
+                strokeLinecap="round"
+              />
+              <path
+                d="M 20 100 A 80 80 0 0 1 180 100"
+                fill="none"
+                stroke={getHealthRating(displayHealthScore.score).color}
+                strokeWidth="20"
+                strokeLinecap="round"
+                strokeDasharray={`${(displayHealthScore.score / 100) * 251.2} 251.2`}
+                style={{ transition: 'stroke-dasharray 1s ease' }}
+              />
+              <text x="100" y="90" textAnchor="middle" className="gauge-score">
+                {displayHealthScore.score.toFixed(0)}
+              </text>
+              <text x="100" y="110" textAnchor="middle" className="gauge-max">
+                / {displayHealthScore.max_score}
+              </text>
+            </svg>
+          </div>
+          {displayHealthScore.recommendations && displayHealthScore.recommendations.length > 0 && (
+            <div className="health-recommendations">
+              <h4>Doporučení:</h4>
+              <ul>
+                {displayHealthScore.recommendations.map((rec: string, idx: number) => (
+                  <li key={idx}>{rec}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Empty State - když nemáte žádná data */}
       {!hasData && (
         <div className="analytics-empty">
@@ -300,58 +366,7 @@ const Analytics: React.FC = () => {
       {/* Data content */}
       {hasData && (
         <>
-          {/* Financial Health Score Card */}
-          {healthScore && (
-            <div className="health-score-card">
-              <div className="health-score-header">
-                <div className="health-score-icon">
-                  {getHealthRating(healthScore.score).icon}
-                </div>
-                <div className="health-score-info">
-                  <h2>Finanční zdraví</h2>
-                  <p className="health-score-rating">{healthScore.rating}</p>
-                </div>
-              </div>
-              <div className="health-score-body">
-                <div className="health-score-gauge">
-                  <svg viewBox="0 0 200 120" className="gauge-svg">
-                    <path
-                      d="M 20 100 A 80 80 0 0 1 180 100"
-                      fill="none"
-                      stroke="rgba(255,255,255,0.1)"
-                      strokeWidth="20"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M 20 100 A 80 80 0 0 1 180 100"
-                      fill="none"
-                      stroke={getHealthRating(healthScore.score).color}
-                      strokeWidth="20"
-                      strokeLinecap="round"
-                      strokeDasharray={`${(healthScore.score / 100) * 251.2} 251.2`}
-                      style={{ transition: 'stroke-dasharray 1s ease' }}
-                    />
-                    <text x="100" y="90" textAnchor="middle" className="gauge-score">
-                      {healthScore.score.toFixed(0)}
-                    </text>
-                    <text x="100" y="110" textAnchor="middle" className="gauge-max">
-                      / {healthScore.max_score}
-                    </text>
-                  </svg>
-                </div>
-                {healthScore.recommendations && healthScore.recommendations.length > 0 && (
-                  <div className="health-recommendations">
-                    <h4>Doporučení:</h4>
-                    <ul>
-                      {healthScore.recommendations.map((rec, idx) => (
-                        <li key={idx}>{rec}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+
 
           {/* Insights Section */}
           {insights && insights.length > 0 && (
@@ -504,12 +519,12 @@ const Analytics: React.FC = () => {
             <div className="chart-card chart-card-full">
               <div className="chart-header">
                 <h3>
-                  {analytics?.monthly_data && analytics.monthly_data.length > 0 
-                    ? analytics.monthly_data[0].month.includes('.') 
+                  {analytics?.monthly_data && analytics.monthly_data.length > 0
+                    ? analytics.monthly_data[0].month.includes('.')
                       ? 'Denní přehled - Příjmy vs Výdaje'
                       : analytics.monthly_data[0].month.startsWith('T')
-                      ? 'Týdenní přehled - Příjmy vs Výdaje'
-                      : 'Měsíční přehled - Příjmy vs Výdaje'
+                        ? 'Týdenní přehled - Příjmy vs Výdaje'
+                        : 'Měsíční přehled - Příjmy vs Výdaje'
                     : 'Přehled - Příjmy vs Výdaje'}
                 </h3>
               </div>

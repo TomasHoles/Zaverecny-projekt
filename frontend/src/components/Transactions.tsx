@@ -116,6 +116,8 @@ const Transactions: React.FC = () => {
   const [recurring, setRecurring] = useState<RecurringTransaction[]>([]);
   const [showRecurringModal, setShowRecurringModal] = useState(false);
   const [editingRecurring, setEditingRecurring] = useState<RecurringTransaction | null>(null);
+
+  // Stav formuláře pro opakované platby
   const [recurringFormData, setRecurringFormData] = useState<RecurringFormData>({
     name: '',
     description: '',
@@ -200,6 +202,9 @@ const Transactions: React.FC = () => {
     fetchData();
   }, [debouncedSearchTerm, filterType, filterCategory, filterAccount, filterDateFrom, filterDateTo, sortBy]);
 
+  /**
+   * Načte seznam opakujících se transakcí
+   */
   const fetchRecurring = async () => {
     try {
       const response = await api.get('/transactions/recurring/');
@@ -231,6 +236,9 @@ const Transactions: React.FC = () => {
     );
   };
 
+  /**
+   * Handler pro změnu hodnot ve formuláři
+   */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
@@ -249,6 +257,9 @@ const Transactions: React.FC = () => {
     }
   };
 
+  /**
+   * Handler pro odeslání formuláře (Vytvoření / Editace transakce)
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -295,7 +306,7 @@ const Transactions: React.FC = () => {
 
       // Najdi výchozí účet pro reset
       const defaultAccount = accounts.find(a => a.is_default);
-      
+
       // Resetujeme formulář
       setFormData({
         amount: '',
@@ -373,7 +384,13 @@ const Transactions: React.FC = () => {
     setSortBy('-date');
   };
 
-  // Recurring transaction handlers
+  /* =========================================
+     RECURRING TRANSACTIONS LOGIC
+     ========================================= */
+
+  /**
+   * Uložení opakující se transakce (Vytvoření / Editace)
+   */
   const handleRecurringSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -427,6 +444,9 @@ const Transactions: React.FC = () => {
     setShowRecurringModal(true);
   };
 
+  /**
+   * Přepne status opakující se transakce (ACTIVE <-> PAUSED)
+   */
   const toggleRecurringStatus = async (id: number) => {
     try {
       await api.post(`/transactions/recurring/${id}/toggle_status/`);
@@ -436,6 +456,9 @@ const Transactions: React.FC = () => {
     }
   };
 
+  /**
+   * Manuálně vytvoří transakci z opakující se šablony
+   */
   const createTransactionNow = async (id: number) => {
     try {
       await api.post(`/transactions/recurring/${id}/create_transaction/`);
@@ -738,7 +761,7 @@ const Transactions: React.FC = () => {
                       )}
                     </div>
                   ))}
-                  
+
                   {/* Tlačítko pro zobrazení dalších transakcí */}
                   {visibleCount < transactions.length && (
                     <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>

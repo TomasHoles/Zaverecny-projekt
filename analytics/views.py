@@ -1,3 +1,14 @@
+"""
+views.py - ViewSety pro aplikaci Analytics
+
+@author Tomáš Holes
+@description Obsahuje logiku pro pokročilou analytiku a insights:
+    - Přehledy (overview) s dynamickou granularitou (denní/týdenní/měsíční)
+    - Heatmapy aktivity
+    - Analýza vzorů utrácení (spending patterns)
+    - Automatické insights (detekce neobvyklých výdajů, rady)
+    - Finanční zdraví (scoring system)
+"""
 from django.shortcuts import render
 from django.db.models import Sum, Count, Avg, Q, F
 from django.utils import timezone
@@ -24,7 +35,8 @@ from .serializers import (
 
 class AnalyticsViewSet(viewsets.ViewSet):
     """
-    ViewSet pro pokročilou analytiku a insights
+    ViewSet pro pokročilou analytiku a insights.
+    Nepoužívá standardní model queryset, ale agreguje data z transakcí.
     """
     permission_classes = [IsAuthenticated]
 

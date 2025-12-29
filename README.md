@@ -84,7 +84,7 @@ Plutoa je Progressive Web Application pro správu osobních financí. Aplikace k
 | Django REST Framework | 3.16.1 | REST API |
 | SimpleJWT | 5.5.1 | JWT autentizace |
 | SQLite | - | Databáze (development) |
-| PostgreSQL | - | Databáze (production) |
+| PostgreSQL | 16 | Databáze (production) |
 
 ---
 

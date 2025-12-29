@@ -1,3 +1,12 @@
+"""
+views.py - ViewSety pro aplikaci Notifications
+
+@author Tomáš Holes
+@description Obsahuje logiku pro:
+    - Zobrazení notifikací (všechny, nepřečtené)
+    - Správu stavu přečtení (označit jako přečtené)
+    - Počítadlo nepřečtených zpráv
+"""
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -7,6 +16,9 @@ from .serializers import NotificationSerializer
 
 
 class NotificationViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet pro správu uživatelských notifikací.
+    """
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
     

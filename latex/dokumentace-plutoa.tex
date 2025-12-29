@@ -4,8 +4,8 @@
 % Projekt: Plutoa - Personal Finance Manager
 %
 \documentclass[12pt, a4paper,
-twoside,
-openright
+oneside,
+openany
 ]{report}
 
 %% Nutné balíčky a nastavení
@@ -39,7 +39,7 @@ openright
 \usepackage{hyperref}
 
 \linespread{1.25}
-\setlength{\parskip}{0.5em}
+\usepackage{parskip}
 
 \usepackage[pagestyles]{titlesec}
 \titleformat{\chapter}[block]{\scshape\bfseries\LARGE}{\thechapter}{10pt}{\vspace{0pt}}[\vspace{-22pt}]
@@ -137,6 +137,7 @@ openright
 }
 
 \setlength{\headheight}{15pt}
+\raggedbottom
 
 %% Začátek dokumentu
 %%%%%%%%%%%%%%%%%%%%
@@ -211,7 +212,7 @@ openright
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 
 \noindent{\Large{\bfseries{Abstrakt}\\}}
-\noindent Tato závěrečná práce se zabývá vývojem moderní webové aplikace Plutoa určené pro komplexní správu osobních financí. Aplikace je postavena na architektuře client-server s odděleným frontendem v~React s~TypeScriptem a backendem v~Django s~Django REST Framework. Hlavními funkcemi aplikace jsou sledování příjmů a výdajů s~kategorizací, vytváření a monitoring rozpočtů, definování finančních cílů s~vizualizací pokroku a pokročilé analytické nástroje včetně Financial Health Score. Aplikace nabízí intuitivní uživatelské rozhraní s~interaktivními grafy, heatmap kalendářem a waterfall chartem pro vizualizaci cash flow. Bezpečnost je zajištěna JWT autentizací s~automatickou rotací tokenů. Práce popisuje kompletní proces návrhu, implementace a testování aplikace včetně databázového schématu a API endpointů.
+\noindent Tato závěrečná práce se zabývá vývojem moderní webové aplikace Plutoa určené pro komplexní správu osobních financí. Aplikace je postavena na architektuře client-server s~odděleným frontendem v~React s~TypeScriptem a backendem v~Django s~Django REST Framework. Hlavními funkcemi aplikace jsou sledování příjmů a výdajů s~kategorizací, vytváření a monitoring rozpočtů, definování finančních cílů s~vizualizací pokroku a pokročilé analytické nástroje včetně Financial Health Score. Aplikace nabízí intuitivní uživatelské rozhraní s~interaktivními grafy, heatmap kalendářem a waterfall chartem pro vizualizaci cash flow. Bezpečnost je zajištěna JWT autentizací s~automatickou rotací tokenů. Práce popisuje kompletní proces návrhu, implementace a testování aplikace včetně databázového schématu a API endpointů.
 
 \vspace{18pt}
 
@@ -285,6 +286,7 @@ Databázové schéma bylo navrženo s~ohledem na normalizaci, rychlost dotazů a
 		Entita & Klíčové atributy & Popis\\
 		\midrule
 		User & username, email, currency\_preference & Uživatelský účet s~preferencemi\\
+		Account & name, type, balance, currency & Finanční účet (běžný, spořicí...)\\
 		Category & name, icon, color, category\_type & Kategorie pro třídění transakcí\\
 		Transaction & amount, type, date, category & Finanční transakce (příjem/výdaj)\\
 		Budget & name, amount, period, category & Rozpočet pro sledování výdajů\\
@@ -293,7 +295,7 @@ Databázové schéma bylo navrženo s~ohledem na normalizaci, rychlost dotazů a
 	\end{tabular}
 \end{table}
 
-Model \textbf{User} rozšiřuje Django AbstractUser o~atributy jako avatar a preferovaná měna (výchozí CZK). Každý uživatel má vlastní \textbf{Category} pro třídění transakcí s~ikonou a barvou. Entita \textbf{Transaction} eviduje příjmy, výdaje a převody mezi účty. \textbf{Budget} umožňuje nastavit limity pro různá období (měsíční, roční, vlastní). \textbf{FinancialGoal} sleduje pokrok při dosahování finančních cílů.
+Model \textbf{User} rozšiřuje Django AbstractUser o~atributy jako avatar a preferovaná měna (výchozí CZK). Entita \textbf{Account} (FinancialAccount) reprezentuje reálné účty uživatele (běžný účet, hotovost, spoření, investice) a sleduje jejich aktuální zůstatek. Každý uživatel má vlastní \textbf{Category} pro třídění transakcí s~ikonou a barvou. Entita \textbf{Transaction} eviduje příjmy, výdaje a převody mezi účty. \textbf{Budget} umožňuje nastavit limity pro různá období (měsíční, roční, vlastní). \textbf{FinancialGoal} sleduje pokrok při dosahování finančních cílů.
 
 
 \section{Návrh architektury}
@@ -346,17 +348,28 @@ Autentizace je implementována pomocí JWT tokenů. Při přihlášení uživate
 
 
 \begin{figure}[H]
-	\raggedright
-	\includegraphics[width=0.6\textwidth]{image/registrace.png}
-	\caption{Registrační formulář pro nové uživatele}
-	\label{fig:registrace}
+	\centering
+	\begin{minipage}{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{image/registrace.png}
+		\caption{Registrační formulář pro nové uživatele}
+		\label{fig:registrace}
+	\end{minipage}\hfill
+	\begin{minipage}{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{image/login.png}
+		\caption{Přihlašovací formulář pro existující uživatele}
+		\label{fig:login}
+	\end{minipage}
 \end{figure}
 
 Při přihlášení uživatel obdrží access token (krátkodobý, 5 minut) a refresh token (dlouhodobý, 7 dní). Access token se používá pro autorizaci API požadavků.
 
+Systém také podporuje obnovu zapomenutého hesla pomocí jednorázových tokenů (PasswordResetToken), které jsou zasílány na email uživatele a mají platnost 1 hodinu.
+
 
 \begin{figure}[H]
-	\raggedright
+	\centering
 	\includegraphics[width=0.7\textwidth]{image/jwt-flow.png}
 	\caption{Sekvenční diagram JWT autentizace}
 	\label{fig:jwt-flow}
@@ -404,11 +417,12 @@ Algoritmus pro výpočet finančního zdraví (0-100 bodů) zohledňuje:
 	\item Diverzifikaci výdajů
 \end{itemize}
 
-% TODO: Přidat obrázek health-score-detail.png
-% Detail komponenty Financial Health Score - kruhový graf s číslem a breakdown komponent
+Výsledné skóre je vizualizováno barevným grafem a doplněno o~konkrétní textová doporučení, jak finanční zdraví zlepšit (např. ,,Zvyšte úspory'' nebo ,,Pozor na překračování rozpočtů'').
+
+
 \begin{figure}[H]
-	\raggedright
-	\includegraphics[width=0.6\textwidth]{image/health-score-detail.png}
+	\centering
+	\includegraphics[width=1\textwidth]{image/health-score-detail.png}
 	\caption{Detail Financial Health Score s rozpisem jednotlivých komponent}
 	\label{fig:health-score-detail}
 \end{figure}
@@ -423,14 +437,32 @@ Analýza trendů v~jednotlivých kategoriích porovnává aktuální období s~p
 	\item Stabilní kategorie
 \end{itemize}
 
-% TODO: Přidat obrázek trend-analysis.png
-% Screenshot analýzy trendů - kategorie s šipkami nahoru/dolů a procentuální změnou
+
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.8\textwidth]{image/trend-analysis.png}
+	\includegraphics[width=1\textwidth]{image/trend-analysis.png}
 	\caption{Analýza trendů výdajů podle kategorií}
 	\label{fig:trend-analysis}
 \end{figure}
+
+\subsection{AI Insights}
+
+Modul Insights analyzuje transakční historii uživatele a~generuje personalizované postřehy a rady. Systém automaticky detekuje:
+
+\begin{itemize}
+	\item \textbf{Varování} -- např. při neobvykle vysokých výdajích v~kategorii
+	\item \textbf{Úspěchy} -- pochvala za dodržení rozpočtu nebo vysokou míru úspor
+	\item \textbf{Tipy} -- doporučení pro efektivnější hospodaření
+\end{itemize}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{image/insights.png}
+	\caption{Ukázka personalizovaných finančních postřehů (Insights)}
+	\label{fig:insights}
+\end{figure}
+
+Tato funkce poskytuje uživateli okamžitou zpětnou vazbu a pomáhá mu lépe porozumět jeho finančním návykům.
 
 \chapter{Implementace frontendu}
 
@@ -468,6 +500,12 @@ Hlavní dashboard zobrazuje:
 	\item Top kategorie výdajů a příjmů
 \end{itemize}
 
+\subsection{Další klíčové stránky}
+
+\textbf{Transactions} umožňuje prohlížení historie transakcí s~možností filtrování, vyhledávání a exportu.
+
+\textbf{Settings} slouží pro správu uživatelského profilu (změna avatara, hesla), nastavení měny a správu vlastních kategorií.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.95\textwidth]{image/prehled.png}
@@ -486,17 +524,15 @@ Aplikace používá různé typy vizualizací:
 	\item \textbf{Category Pie Charts} -- koláčové grafy rozložení výdajů a příjmů podle kategorií
 \end{itemize}
 
-% TODO: Přidat obrázek heatmap.png
-% Screenshot heatmap kalendáře s barevnými buňkami zobrazujícími aktivitu
+
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.95\textwidth]{image/heatmap.png}
+	\includegraphics[width=0.7\textwidth]{image/heatmap.png}
 	\caption{Heatmap kalendář zobrazující denní finanční aktivitu}
 	\label{fig:heatmap}
 \end{figure}
 
-% TODO: Přidat obrázek waterfall.png
-% Screenshot waterfall chartu zobrazujícího cash flow
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.95\textwidth]{image/waterfall.png}
@@ -546,7 +582,7 @@ Modul opakujících se transakcí automatizuje evidenci pravidelných plateb:
 
 \section{Import a export dat}
 
-Aplikace podporuje CSV import a export transakcí pro zálohu dat a migraci z~jiných aplikací.
+Aplikace podporuje export dat do formátů \textbf{CSV} (vhodné pro tabulkové procesory jako Excel) a \textbf{JSON} (pro strojové zpracování). Uživatel si může zvolit časové období exportu. Podporován je také import transakcí z~CSV souborů pro snadnou migraci dat.
 
 
 
@@ -560,6 +596,7 @@ Systém notifikací automaticky upozorňuje na důležité události:
 	\item \textbf{RECURRING\_DUE} -- blížící se pravidelná platba
 	\item \textbf{GOAL\_ACHIEVED} -- dosažení finančního cíle
 	\item \textbf{GOAL\_PROGRESS} -- významný pokrok v~cíli
+	\item \textbf{MONTHLY\_SUMMARY} -- měsíční přehled hospodaření
 \end{itemize}
 
 
@@ -608,8 +645,5 @@ Mezi plánované funkce patří integrace s~bankovními API, mobilní aplikace p
 
 %% Seznam tabulek
 \listoftables
-
-%% Seznam kódů
-\lstlistoflistings
 
 \end{document}l

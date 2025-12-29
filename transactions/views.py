@@ -1,3 +1,16 @@
+"""
+views.py - ViewSety pro aplikaci Transactions
+
+@author Tomáš Holes
+@description Obsahuje logiku pro:
+    - Správu transakcí (CRUD, filtrování, řazení)
+    - Dashboard statistiky (výpočty zůstatků, grafy, KPI)
+    - Správu kategorií
+    - Import a export dat (CSV, JSON)
+    - Opakující se platby (generování, historie)
+
+@note Dashboard statistiky obsahují komplexní výpočty pro frontend grafy
+"""
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action, api_view, permission_classes
