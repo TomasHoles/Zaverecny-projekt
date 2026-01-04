@@ -303,10 +303,10 @@ Model \textbf{User} rozšiřuje Django AbstractUser o~atributy jako avatar a pre
 Byla zvolena architektura \textbf{client-server} s~odděleným frontendem a backendem. Hlavní komponenty:
 
 \begin{itemize}
-	\item \textbf{Frontend} -- Single Page Application (SPA) v~Reactu s~TypeScriptem
-	\item \textbf{Backend} -- REST API v~Django s~Django REST Framework
-	\item \textbf{Komunikace} -- HTTP/JSON přes Axios s~JWT autentizací
-	\item \textbf{Databáze} -- SQLite pro vývoj, PostgreSQL pro produkci
+	\item \textbf{Frontend} -- Single Page Application (SPA) v~Reactu s~TypeScriptem.
+	\item \textbf{Backend} -- REST API v~Django s~Django REST Framework.
+	\item \textbf{Komunikace} -- HTTP/JSON přes Axios s~JWT autentizací.
+	\item \textbf{Databáze} -- SQLite pro vývoj, PostgreSQL pro produkci.
 \end{itemize}
 
 
@@ -353,9 +353,9 @@ Vlastní model uživatele rozšiřuje Django AbstractUser o~pole jako \texttt{av
 
 \section{Autentizace}
 
-Autentizace je implementována pomocí JWT tokenů. Při přihlášení uživatel obdrží access token (krátkodobý) a refresh token (dlouhodobý).
+Autentizace je implementována pomocí JWT tokenů. Při přihlášení uživatel obdrží access token (krátkodobý, 5 minut) a refresh token (dlouhodobý, 7 dní). Access token se používá pro autorizaci API požadavků a je automaticky přikládán ke každému požadavku na chráněné endpointy.
 
-
+Systém také podporuje obnovu zapomenutého hesla pomocí jednorázových tokenů (PasswordResetToken), které jsou zasílány na email uživatele a mají platnost 1 hodinu. Uživatelské rozhraní pro registraci a přihlášení je navrženo s~důrazem na jednoduchost a bezpečnost.
 
 \begin{figure}[H]
 	\centering
@@ -372,11 +372,6 @@ Autentizace je implementována pomocí JWT tokenů. Při přihlášení uživate
 		\label{fig:login}
 	\end{minipage}
 \end{figure}
-
-Při přihlášení uživatel obdrží access token (krátkodobý, 5 minut) a refresh token (dlouhodobý, 7 dní). Access token se používá pro autorizaci API požadavků.
-
-Systém také podporuje obnovu zapomenutého hesla pomocí jednorázových tokenů (PasswordResetToken), které jsou zasílány na email uživatele a mají platnost 1 hodinu.
-
 
 \begin{figure}[H]
 	\centering
@@ -421,10 +416,10 @@ Backend poskytuje pokročilé analytické funkce.
 Algoritmus pro výpočet finančního zdraví (0-100 bodů) zohledňuje:
 
 \begin{itemize}
-	\item Poměr příjmů a výdajů (savings rate)
-	\item Plnění rozpočtů
-	\item Pravidelnost příjmů
-	\item Diverzifikaci výdajů
+	\item Poměr příjmů a výdajů (savings rate).
+	\item Plnění rozpočtů.
+	\item Pravidelnost příjmů.
+	\item Diverzifikaci výdajů.
 \end{itemize}
 
 Výsledné skóre je vizualizováno barevným grafem a doplněno o~konkrétní textová doporučení, jak finanční zdraví zlepšit (např. ,,Zvyšte úspory'' nebo ,,Pozor na překračování rozpočtů'').
@@ -442,9 +437,9 @@ Výsledné skóre je vizualizováno barevným grafem a doplněno o~konkrétní t
 Analýza trendů v~jednotlivých kategoriích porovnává aktuální období s~předchozím a detekuje:
 
 \begin{itemize}
-	\item Rostoucí trendy (výdaje se zvyšují)
-	\item Klesající trendy (výdaje se snižují)
-	\item Stabilní kategorie
+	\item Rostoucí trendy (výdaje se zvyšují).
+	\item Klesající trendy (výdaje se snižují).
+	\item Stabilní kategorie.
 \end{itemize}
 
 
@@ -460,9 +455,9 @@ Analýza trendů v~jednotlivých kategoriích porovnává aktuální období s~p
 Modul Insights analyzuje transakční historii uživatele a~generuje personalizované postřehy a rady. Systém automaticky detekuje:
 
 \begin{itemize}
-	\item \textbf{Varování} -- např. při neobvykle vysokých výdajích v~kategorii
-	\item \textbf{Úspěchy} -- pochvala za dodržení rozpočtu nebo vysokou míru úspor
-	\item \textbf{Tipy} -- doporučení pro efektivnější hospodaření
+	\item \textbf{Varování} -- např. při neobvykle vysokých výdajích v~kategorii.
+	\item \textbf{Úspěchy} -- pochvala za dodržení rozpočtu nebo vysokou míru úspor.
+	\item \textbf{Tipy} -- doporučení pro efektivnější hospodaření.
 \end{itemize}
 
 \begin{figure}[H]
@@ -493,9 +488,9 @@ Kořenová komponenta obsahuje providery (ThemeProvider, AuthProvider, ToastProv
 Context pro správu autentizace poskytuje:
 
 \begin{itemize}
-	\item Stav přihlášeného uživatele
-	\item Metody pro přihlášení a odhlášení
-	\item Automatické obnovení session při refreshi stránky
+	\item Stav přihlášeného uživatele.
+	\item Metody pro přihlášení a odhlášení.
+	\item Automatické obnovení session při refreshi stránky.
 \end{itemize}
 
 \subsection{Overview}
@@ -503,11 +498,11 @@ Context pro správu autentizace poskytuje:
 Hlavní dashboard zobrazuje:
 
 \begin{itemize}
-	\item Celkový zůstatek a měsíční bilanci
-	\item Přehled finančních účtů
-	\item Grafy příjmů vs výdajů
-	\item Rozpočty a jejich plnění
-	\item Top kategorie výdajů a příjmů
+	\item Celkový zůstatek a měsíční bilanci.
+	\item Přehled finančních účtů.
+	\item Grafy příjmů vs výdajů.
+	\item Rozpočty a jejich plnění.
+	\item Top kategorie výdajů a příjmů.
 \end{itemize}
 
 \subsection{Další klíčové stránky}
@@ -528,10 +523,10 @@ Hlavní dashboard zobrazuje:
 Aplikace používá různé typy vizualizací:
 
 \begin{itemize}
-	\item \textbf{Grafy příjmů a výdajů} -- interaktivní sloupcové grafy s~možností změny časového období
-	\item \textbf{Heatmap Calendar} -- kalendář zobrazující denní aktivitu, inspirovaný GitHub grafem
-	\item \textbf{Waterfall Chart} -- kaskádový graf cash flow ukazující vývoj zůstatku
-	\item \textbf{Category Pie Charts} -- koláčové grafy rozložení výdajů a příjmů podle kategorií
+	\item \textbf{Grafy příjmů a výdajů} -- interaktivní sloupcové grafy s~možností změny časového období.
+	\item \textbf{Heatmap Calendar} -- kalendář zobrazující denní aktivitu, inspirovaný GitHub grafem.
+	\item \textbf{Waterfall Chart} -- kaskádový graf cash flow ukazující vývoj zůstatku.
+	\item \textbf{Category Pie Charts} -- koláčové grafy rozložení výdajů a příjmů podle kategorií.
 \end{itemize}
 
 
@@ -552,7 +547,23 @@ Aplikace používá různé typy vizualizací:
 
 \section{Responsivní design}
 
-Aplikace je plně responsivní s~podporou pro desktop, tablet i mobil.
+Aplikace je plně responsivní s~podporou pro desktop, tablet i mobil. Rozhraní se automaticky přizpůsobuje velikosti obrazovky a poskytuje optimální uživatelský zážitek na všech zařízeních.
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}{0.30\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{image/mobile-responsive.png}
+		\caption{Mobilní verze - hlavní dashboard}
+		\label{fig:mobile-responsive}
+	\end{minipage}\hspace{0.5cm}
+	\begin{minipage}{0.30\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{image/mobile-responsive-analytics.png}
+		\caption{Mobilní verze - analytika}
+		\label{fig:mobile-responsive-analytics}
+	\end{minipage}
+\end{figure}
 
 
 
@@ -583,10 +594,10 @@ Modul finančních cílů pomáhá spořit na konkrétní účely. Podporovány 
 Modul opakujících se transakcí automatizuje evidenci pravidelných plateb:
 
 \begin{itemize}
-	\item Různé frekvence (denně, týdně, měsíčně, čtvrtletně, ročně)
-	\item Automatické vytváření transakcí
-	\item Upozornění před splatností
-	\item Možnost pozastavení nebo zrušení
+	\item Různé frekvence (denně, týdně, měsíčně, čtvrtletně, ročně).
+	\item Automatické vytváření transakcí.
+	\item Upozornění před splatností.
+	\item Možnost pozastavení nebo zrušení.
 \end{itemize}
 
 
@@ -601,12 +612,12 @@ Aplikace podporuje export dat do formátů \textbf{CSV} (vhodné pro tabulkové 
 Systém notifikací automaticky upozorňuje na důležité události:
 
 \begin{itemize}
-	\item \textbf{BUDGET\_EXCEEDED} -- překročení rozpočtu
-	\item \textbf{BUDGET\_WARNING} -- varování o~blížícím se limitu
-	\item \textbf{RECURRING\_DUE} -- blížící se pravidelná platba
-	\item \textbf{GOAL\_ACHIEVED} -- dosažení finančního cíle
-	\item \textbf{GOAL\_PROGRESS} -- významný pokrok v~cíli
-	\item \textbf{MONTHLY\_SUMMARY} -- měsíční přehled hospodaření
+	\item \textbf{BUDGET\_EXCEEDED} -- překročení rozpočtu.
+	\item \textbf{BUDGET\_WARNING} -- varování o~blížícím se limitu.
+	\item \textbf{RECURRING\_DUE} -- blížící se pravidelná platba.
+	\item \textbf{GOAL\_ACHIEVED} -- dosažení finančního cíle.
+	\item \textbf{GOAL\_PROGRESS} -- významný pokrok v~cíli.
+	\item \textbf{MONTHLY\_SUMMARY} -- měsíční přehled hospodaření.
 \end{itemize}
 
 
@@ -618,11 +629,11 @@ Cílem této závěrečné práce bylo vytvořit moderní webovou aplikaci pro s
 \section*{Hlavní přínosy aplikace}
 
 \begin{itemize}
-	\item \textbf{Intuitivní uživatelské rozhraní} -- moderní design s~důrazem na přehlednost
-	\item \textbf{Pokročilé analytické nástroje} -- Financial Health Score, heatmapy, waterfall grafy
-	\item \textbf{Bezpečná autentizace} -- JWT tokeny s~automatickou rotací
-	\item \textbf{Modulární architektura} -- snadné rozšíření o~nové funkce
-	\item \textbf{Lokalizace pro ČR} -- podpora české měny a jazyka
+	\item \textbf{Intuitivní uživatelské rozhraní} -- moderní design s~důrazem na přehlednost.
+	\item \textbf{Pokročilé analytické nástroje} -- Financial Health Score, heatmapy, waterfall grafy.
+	\item \textbf{Bezpečná autentizace} -- JWT tokeny s~automatickou rotací.
+	\item \textbf{Modulární architektura} -- snadné rozšíření o~nové funkce.
+	\item \textbf{Lokalizace pro ČR} -- podpora české měny a jazyka.
 \end{itemize}
 
 \section*{Možnosti dalšího rozvoje}

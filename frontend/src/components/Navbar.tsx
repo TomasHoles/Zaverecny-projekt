@@ -12,6 +12,8 @@ const Navbar: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [isNavbarHidden, setIsNavbarHidden] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = () => {
@@ -39,6 +41,25 @@ const Navbar: React.FC = () => {
     };
   }, []);
 
+  // Detekce scrollování pro skrytí/zobrazení navbaru na mobilech
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // Skryj navbar při scrollování dolů, zobraz při scrollování nahoru
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsNavbarHidden(true);
+      } else {
+        setIsNavbarHidden(false);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
   // Načte počet nepřečtených notifikací
   useEffect(() => {
     const fetchUnreadCount = async () => {
@@ -60,7 +81,7 @@ const Navbar: React.FC = () => {
   }, [user]);
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar ${isNavbarHidden && !mobileMenuOpen ? 'hidden' : ''}`}>
       <div className="navbar-brand">
         <Link to="/" className="navbar-logo">
           <img src="/logo.png" alt="Plutoa Logo" className="logo-icon" />

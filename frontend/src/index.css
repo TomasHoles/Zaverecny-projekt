@@ -11,6 +11,11 @@
 /* Import centrálních CSS proměnných */
 @import './styles/variables.css';
 
+* {
+    box-sizing: border-box;
+}
+
+
 /* ============================================
    RESET A ZÁKLADNÍ STYLY
    ============================================ */
@@ -23,6 +28,8 @@ body {
     -moz-osx-font-smoothing: grayscale;
     background-color: var(--bg-dark);
     color: var(--text-primary);
+    overflow-x: hidden;
+    width: 100%;
 }
 
 code {

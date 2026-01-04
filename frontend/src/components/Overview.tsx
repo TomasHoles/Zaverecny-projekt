@@ -115,7 +115,7 @@ const Overview: React.FC = () => {
 
     // Top 3 categories for Spending Summary
     const topCategories = categories.slice(0, 3);
-    
+
     // Top 3 income categories
     const topIncomeCategories = incomeCategories.slice(0, 3);
 
@@ -210,8 +210,8 @@ const Overview: React.FC = () => {
                                 </div>
                                 <div className="chart-label">{cat.category_name}</div>
                                 <div className="chart-value">{formatCurrency(cat.total_amount)}</div>
-                                <div 
-                                    className="mini-chart-viz" 
+                                <div
+                                    className="mini-chart-viz"
                                     style={{ backgroundColor: cat.category_color || '#8b5cf6' }}
                                 ></div>
                             </div>
@@ -266,8 +266,8 @@ const Overview: React.FC = () => {
                         <>
                             <div className="accounts-list">
                                 {accounts.map((account) => (
-                                    <div 
-                                        key={account.id} 
+                                    <div
+                                        key={account.id}
                                         className={`account-item ${account.is_default ? 'default' : ''}`}
                                         style={{ borderLeftColor: account.color || '#8b5cf6' }}
                                     >
@@ -290,7 +290,7 @@ const Overview: React.FC = () => {
                             <div className="accounts-total">
                                 <span>Celkem na účtech:</span>
                                 <span className="total-amount">
-                                    {formatCurrency(accounts.reduce((sum, acc) => sum + acc.current_balance, 0))}
+                                    {formatCurrency(accounts.reduce((sum, acc) => sum + Number(acc.current_balance), 0))}
                                 </span>
                             </div>
                         </>
@@ -340,10 +340,10 @@ const Overview: React.FC = () => {
                     <div className="cashflow-chart-container">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={cashFlowData}>
-                                <XAxis 
-                                    dataKey="name" 
-                                    axisLine={false} 
-                                    tickLine={false} 
+                                <XAxis
+                                    dataKey="name"
+                                    axisLine={false}
+                                    tickLine={false}
                                     tick={{ fill: '#888', fontSize: 11 }}
                                 />
                                 <YAxis hide />
@@ -420,7 +420,7 @@ const Overview: React.FC = () => {
                                     <Target size={16} /> Čerpání rozpočtu
                                 </div>
                                 <p>
-                                    {(budgets?.overall_percentage || 0) < 50 
+                                    {(budgets?.overall_percentage || 0) < 50
                                         ? 'Výborně! Držíte své výdaje pod kontrolou.'
                                         : (budgets?.overall_percentage || 0) < 80
                                             ? 'Spravujete rozpočet efektivně.'
